@@ -11,7 +11,7 @@ export function Nav() {
   return (
     <header className="sticky top-0 z-40 border-b rule-hair bg-bg/85 backdrop-blur">
       <nav className="mx-auto flex max-w-4xl items-center justify-between px-6 py-3">
-        <Link href="/" className="font-serif text-lg tracking-tight" aria-label="Home">
+        <Link href="/" className="font-serif text-lg tracking-tight" aria-label="Abu Ammar — home">
           <CircuitMark />
           <span className="ml-2 align-middle">Abu Ammar</span>
         </Link>

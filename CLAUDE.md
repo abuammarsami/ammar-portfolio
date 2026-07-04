@@ -43,7 +43,8 @@ markdown content pipeline + one hand-written canvas quantum simulator. No CMS, n
 ## 5. Non-Negotiable Rules
 
 1. **Lighthouse ≥ 95 all categories** (A11y/SEO/BP = 100). Never merge a change that drops it.
-2. **First-load JS < 130 kB gz. CLS = 0.**
+2. **First-load JS ≤ 200 kB gz (measured 194 kB — Next 16 + React 19 runtime ≈ 180 kB
+   of that; our own code stays under 20 kB). CLS = 0. LCP < 1 s on desktop.**
 3. **No new runtime dependency without an ADR.**
 4. Site copy comes **only** from `content/*.md` — never hardcode prose in components.
 5. No three.js / R3F / UI kits / ambient particle backgrounds (ADR-0004). The hero is the

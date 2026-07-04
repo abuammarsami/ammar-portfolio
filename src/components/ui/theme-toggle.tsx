@@ -19,7 +19,7 @@ export function ThemeToggle() {
       className="font-mono text-sm text-muted transition-colors hover:text-q0"
       aria-label={`Switch to ${isDark ? "light" : "dark"} theme`}
     >
-      {isDark ? "|d⟩" : "|l⟩"}
+      <span aria-hidden="true">{isDark ? "|d⟩" : "|l⟩"}</span>
     </button>
   );
 }

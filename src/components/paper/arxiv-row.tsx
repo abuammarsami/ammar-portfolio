@@ -8,16 +8,27 @@ export type ArxivRowProps = {
   categories: string[]; // e.g. ["quant-ph", "cs.LG"]
   abstract: string; // plain text
   links: { label: string; href: string }[];
+  /** h3 under a section heading (homepage); h2 directly under a page h1 (/research). */
+  headingLevel?: "h2" | "h3";
 };
 
 /** arXiv-style listing row — /research (ADR-0003). Abstract expands via <details>, zero JS. */
-export function ArxivRow({ id, title, date, categories, abstract, links }: ArxivRowProps) {
+export function ArxivRow({
+  id,
+  title,
+  date,
+  categories,
+  abstract,
+  links,
+  headingLevel = "h3",
+}: ArxivRowProps) {
+  const Heading = headingLevel;
   return (
     <article className="entangled border-b rule-hair py-5">
       <p className="font-mono text-xs text-muted">
         <span className="entangled-a text-q0">{id}</span> · {date}
       </p>
-      <h3 className="mt-1 font-serif text-xl">{title}</h3>
+      <Heading className="mt-1 font-serif text-xl">{title}</Heading>
       <p className="mt-1.5 flex flex-wrap gap-1.5">
         {categories.map((c) => (
           <TagChip key={c} label={c} />

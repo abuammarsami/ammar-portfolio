@@ -3,6 +3,7 @@ import { IBM_Plex_Mono, IBM_Plex_Sans, STIX_Two_Text } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { FooterTerminal } from "@/components/ui/footer-terminal";
 import { Nav } from "@/components/ui/nav";
+import { LINKS, SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "@/lib/site";
 import "@/styles/globals.css";
 
 const stix = STIX_Two_Text({
@@ -26,12 +27,40 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "Md. Abu Ammar — Software Engineer · Quantum ML Researcher",
+    default: SITE_TITLE,
     template: "%s · Md. Abu Ammar",
   },
-  description:
-    "Backend engineer (.NET, Azure, distributed systems) and quantum machine learning researcher.",
+  description: SITE_DESCRIPTION,
+  openGraph: {
+    siteName: SITE_NAME,
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
+};
+
+const personJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Md. Abu Ammar",
+  jobTitle: "Software Engineer",
+  worksFor: { "@type": "Organization", name: "Masjid Solutions" },
+  alumniOf: { "@type": "CollegeOrUniversity", name: "North South University" },
+  email: `mailto:${LINKS.email}`,
+  url: SITE_URL,
+  sameAs: [LINKS.github, LINKS.linkedin],
+  knowsAbout: [
+    "Backend engineering",
+    ".NET",
+    "Microsoft Azure",
+    "Distributed systems",
+    "Machine learning",
+    "Quantum machine learning",
+  ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -42,6 +71,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${stix.variable} ${plexSans.variable} ${plexMono.variable}`}
     >
       <body>
+        <script
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger -- static first-party JSON-LD
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+        />
         <ThemeProvider attribute="data-theme" defaultTheme="dark" enableSystem={false}>
           <a
             href="#main"
