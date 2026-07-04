@@ -52,11 +52,20 @@ export function Bloch3D({ targets, height = 300 }: { targets: BlochTarget[]; hei
   const use3d = !reduced && webgl;
   const effects = use3d && typeof window !== "undefined" && matchMedia("(pointer: fine)").matches;
 
+  const colors =
+    typeof window !== "undefined"
+      ? (() => {
+          const cs = getComputedStyle(document.documentElement);
+          const v = (n: string) => cs.getPropertyValue(n).trim();
+          return { q0: v("--color-q0"), q1: v("--color-q1"), muted: v("--color-muted") };
+        })()
+      : undefined;
+
   return (
     <div style={{ minHeight: height }} className="flex items-center justify-center">
       {use3d ? (
         <div className="w-full">
-          <BlochStage targets={targets} effects={effects} height={height} />
+          <BlochStage targets={targets} effects={effects} height={height} colors={colors} />
         </div>
       ) : (
         <div className="flex gap-6">

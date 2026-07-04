@@ -6,8 +6,9 @@ import { useMemo, useRef } from "react";
 import * as THREE from "three";
 
 export type BlochTarget = { x: number; y: number; z: number; accent: "q0" | "q1"; label?: string };
+export type StageColors = { q0: string; q1: string; muted: string };
 
-const COLORS = { q0: "#5FC9BF", q1: "#9D8CFF", muted: "#8A8F9C" };
+const DEFAULT_COLORS: StageColors = { q0: "#5FC9BF", q1: "#9D8CFF", muted: "#8A8F9C" };
 
 /** Glowing state arrow that damps toward its target vector (length = purity). */
 function StateArrow({ target, accent }: { target: THREE.Vector3; accent: string }) {
@@ -53,40 +54,40 @@ function StateArrow({ target, accent }: { target: THREE.Vector3; accent: string 
   );
 }
 
-function Sphere({ t, offsetX }: { t: BlochTarget; offsetX: number }) {
+function Sphere({ t, offsetX, palette }: { t: BlochTarget; offsetX: number; palette: StageColors }) {
   const target = useMemo(() => new THREE.Vector3(t.x, t.z, t.y), [t.x, t.y, t.z]); // z-up → three y-up
   const spin = useRef<THREE.Group>(null);
   useFrame((_, dt) => {
     if (spin.current) spin.current.rotation.y += dt * 0.12; // slow ambient rotation
   });
-  const accent = COLORS[t.accent];
+  const accent = palette[t.accent];
   return (
     <group position={[offsetX, 0, 0]}>
       <group ref={spin}>
         {/* wireframe shell */}
         <mesh>
           <sphereGeometry args={[1, 24, 16]} />
-          <meshBasicMaterial color={COLORS.muted} wireframe transparent opacity={0.12} />
+          <meshBasicMaterial color={palette.muted} wireframe transparent opacity={0.12} />
         </mesh>
         {/* equator ring */}
         <mesh rotation={[Math.PI / 2, 0, 0]}>
           <torusGeometry args={[1, 0.006, 8, 64]} />
-          <meshBasicMaterial color={COLORS.muted} transparent opacity={0.5} />
+          <meshBasicMaterial color={palette.muted} transparent opacity={0.5} />
         </mesh>
       </group>
       {/* poles */}
       <mesh position={[0, 1, 0]}>
         <sphereGeometry args={[0.035, 12, 12]} />
-        <meshStandardMaterial color={COLORS.q0} emissive={COLORS.q0} emissiveIntensity={1.5} />
+        <meshStandardMaterial color={palette.q0} emissive={palette.q0} emissiveIntensity={1.5} />
       </mesh>
       <mesh position={[0, -1, 0]}>
         <sphereGeometry args={[0.035, 12, 12]} />
-        <meshStandardMaterial color={COLORS.q1} emissive={COLORS.q1} emissiveIntensity={1.5} />
+        <meshStandardMaterial color={palette.q1} emissive={palette.q1} emissiveIntensity={1.5} />
       </mesh>
       {/* axis */}
       <mesh>
         <cylinderGeometry args={[0.004, 0.004, 2, 6]} />
-        <meshBasicMaterial color={COLORS.muted} transparent opacity={0.3} />
+        <meshBasicMaterial color={palette.muted} transparent opacity={0.3} />
       </mesh>
       <StateArrow target={target} accent={accent} />
     </group>
@@ -101,11 +102,14 @@ export default function BlochStage({
   targets,
   effects = true,
   height = 300,
+  colors,
 }: {
   targets: BlochTarget[];
   effects?: boolean;
   height?: number;
+  colors?: StageColors;
 }) {
+  const palette = colors ?? DEFAULT_COLORS; // theme-aware palette from CSS tokens (P7)
   const spread = targets.length > 1 ? 1.35 : 0;
   return (
     <div style={{ height, touchAction: "pan-y" }} aria-hidden="true">
@@ -117,7 +121,7 @@ export default function BlochStage({
         <ambientLight intensity={0.5} />
         <pointLight position={[3, 4, 5]} intensity={40} color="#ffffff" />
         {targets.map((t, i) => (
-          <Sphere key={i} t={t} offsetX={(i - (targets.length - 1) / 2) * 2 * spread} />
+          <Sphere key={i} t={t} offsetX={(i - (targets.length - 1) / 2) * 2 * spread} palette={palette} />
         ))}
         {effects && (
           <EffectComposer>
