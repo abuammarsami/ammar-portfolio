@@ -31,9 +31,10 @@ content/papers/   # the research library (ADR-0008): one .md per real paper/thes
 docs/             # architecture (ADRs), plans, guides, reference — YAML frontmatter on every doc
 papers/           # UNTRACKED raw manuscript archive — never publish; curated copies go to public/papers
 public/           # resume.pdf, photos, favicon; public/papers/ = reviewed PDFs only
-src/app/          # Next App Router routes (all force-static)
-src/components/   # hero/ quantum/ paper/ ui/ (palette/ stretch)
+src/app/          # Next App Router routes (all force-static); .well-known/ = agent card
+src/components/   # hero/ quantum/ paper/ ui/ agent/ (palette/ stretch)
 src/lib/content/  # typed markdown loader (fs + gray-matter + zod + unified)
+src/lib/agent/    # the tool layer (ADR-0007/0009): corpus, mcp-tools, webmcp-tools, hero-bridge, fit-prompt
 src/styles/       # globals.css — Tailwind v4 @theme tokens = the entire visual identity
 ```
 
@@ -59,6 +60,8 @@ markdown content pipeline + one hand-written canvas quantum simulator. No CMS, n
 7. Every doc in `docs/` carries YAML frontmatter (`title,type,status,owner,created,last-reviewed,tags,related`).
 8. TypeScript strict; no `any` without an inline justification comment.
 9. The quantum sim (`src/components/quantum/statevector.ts`) stays dependency-free and unit-tested.
+   Likewise WebMCP tool definitions stay in the pure unit-tested module
+   `src/lib/agent/webmcp-tools.ts` — the React provider only mounts them (ADR-0009).
 10. Dark is the default theme; both themes must pass WCAG AA contrast.
 
 ## 6. Naming Conventions
@@ -81,6 +84,7 @@ markdown content pipeline + one hand-written canvas quantum simulator. No CMS, n
 | Motion | `motion` via LazyMotion (scroll reveals only) |
 | Hero | Hand-written 2D canvas + pure-TS 2-qubit statevector sim — ADR-0004/0006 |
 | /learn | r3f + drei + postprocessing, route-scoped WebGL scrollytelling — ADR-0006 |
+| Agent surfaces | MCP server + WebMCP (Chrome OT) + A2A card + fit API, one tool layer — ADR-0007/0009 |
 | Theme | next-themes, dark default |
 | Fonts | STIX Two Text · IBM Plex Sans · IBM Plex Mono via `next/font` |
 | Tests | Vitest |
