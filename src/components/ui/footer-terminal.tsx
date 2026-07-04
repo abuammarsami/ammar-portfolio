@@ -11,8 +11,9 @@ const HELP = [
   "cv              download resume.pdf",
   "email           copy my email address",
   "theme           toggle dark/light",
-  "goto <page>     learn · work · research · about · writing",
+  "goto <page>     learn · work · research · agents · about · writing",
   "ask <question>  ask my AI agent anything about me",
+  "fit             paste a job description, get an honest fit report",
   "clear           clear output",
 ];
 
@@ -46,12 +47,16 @@ export function FooterTerminal() {
         out.push(`theme → ${resolvedTheme === "dark" ? "light" : "dark"}`);
         break;
       case "goto":
-        if (arg && ["learn", "work", "research", "about", "writing"].includes(arg)) {
+        if (arg && ["learn", "work", "research", "agents", "about", "writing"].includes(arg)) {
           out.push(`navigating to /${arg} …`);
           router.push(`/${arg}`);
         } else {
-          out.push("usage: goto work | research | about | writing");
+          out.push("usage: goto work | research | agents | about | writing");
         }
+        break;
+      case "fit":
+        out.push("opening the fit report …");
+        router.push("/agents#fit");
         break;
       case "ask": {
         const q = raw.trim().slice(4).trim();

@@ -19,6 +19,8 @@ export function CommandPalette() {
     { id: "learn", label: "goto learn", hint: "qubit → QML, interactive", run: () => router.push("/learn") },
     { id: "work", label: "goto work", hint: "engineering case studies", run: () => router.push("/work") },
     { id: "research", label: "goto research", hint: "arXiv-style listing", run: () => router.push("/research") },
+    { id: "agents", label: "goto agents", hint: "the machine interface", run: () => router.push("/agents") },
+    { id: "fit", label: "fit report", hint: "paste a JD, get an honest match", run: () => router.push("/agents#fit") },
     { id: "about", label: "goto about", hint: "narrative · experience · skills", run: () => router.push("/about") },
     { id: "home", label: "goto home", hint: "the quantum hero", run: () => router.push("/") },
     { id: "cv", label: "download cv", hint: "resume.pdf", run: () => { window.location.assign("/resume.pdf"); } },

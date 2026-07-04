@@ -143,6 +143,18 @@ describe("papers (ADR-0008)", () => {
   });
 });
 
+describe("agents page (ADR-0009)", () => {
+  it("loads all required sections of agents.md in order", async () => {
+    const { getAgentsPage } = await import("./loader");
+    const { AGENTS_SECTIONS } = await import("./schema");
+    const sections = await getAgentsPage();
+    expect(sections.map((s) => s.heading)).toEqual([...AGENTS_SECTIONS]);
+    for (const s of sections) {
+      expect(s.bodyHtml.length, s.heading).toBeGreaterThan(20);
+    }
+  });
+});
+
 describe("lessons + explainers (P2)", () => {
   it("loads 6 ordered lessons with all required sections", async () => {
     const { getLessons } = await import("./loader");
