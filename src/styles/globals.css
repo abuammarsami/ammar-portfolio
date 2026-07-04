@@ -99,9 +99,30 @@ body::after {
 
 /* entangled glow field behind the hero */
 .hero-atmosphere {
+  position: relative;
   background:
     radial-gradient(38rem 24rem at 78% 30%, color-mix(in srgb, var(--color-q1) 9%, transparent), transparent 70%),
     radial-gradient(30rem 20rem at 62% 75%, color-mix(in srgb, var(--color-q0) 8%, transparent), transparent 70%);
+}
+/* third, slowly drifting glow layer (P6) */
+.hero-atmosphere::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    26rem 18rem at 30% 55%,
+    color-mix(in srgb, var(--color-q0) 6%, transparent),
+    transparent 70%
+  );
+  animation: atmosphere-drift 26s ease-in-out infinite alternate;
+}
+@keyframes atmosphere-drift {
+  from { transform: translate(0, 0); opacity: 0.8; }
+  to { transform: translate(6%, -4%); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-atmosphere::before { animation: none; }
 }
 
 /* ───────────────────────── motion language ────────────────────────────────── */

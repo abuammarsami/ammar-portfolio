@@ -105,6 +105,34 @@ export function QuantumCircuitCanvas() {
       "monospace";
     const mono = (px: number) => `${px}px ${monoFamily}`;
 
+    // ── glow sprites: offscreen radial gradients, composited "lighter" (P6) ──
+    const glowCache = new Map<string, HTMLCanvasElement>();
+    function glowSprite(color: string): HTMLCanvasElement {
+      let c = glowCache.get(color);
+      if (c) return c;
+      c = document.createElement("canvas");
+      c.width = c.height = 64;
+      const g = c.getContext("2d")!;
+      const grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+      grad.addColorStop(0, color);
+      grad.addColorStop(1, "transparent");
+      g.fillStyle = grad;
+      g.fillRect(0, 0, 64, 64);
+      glowCache.set(color, c);
+      return c;
+    }
+    function drawGlow(x: number, y: number, radius: number, color: string, alpha: number) {
+      if (!ctx) return;
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      ctx.globalAlpha = alpha;
+      ctx.drawImage(glowSprite(color), x - radius, y - radius, radius * 2, radius * 2);
+      ctx.restore();
+    }
+
+    let frameCount = 0;
+    const trails: { x: number; y: number }[][] = [[], []];
+
     // ── training state ──
     const data: Sample[] = INITIAL_DATA.map((d) => ({ ...d }));
     let initIdx = 0;
@@ -201,8 +229,16 @@ export function QuantumCircuitCanvas() {
         ctx.stroke();
       }
 
+      // photon pulses: the circuit visibly "runs" while training (P6)
+      if (hold === 0) {
+        const pulseX = 30 + ((frameCount * 5) % 348);
+        drawGlow(pulseX, wireY[0], 10, col.q0, 0.8);
+        drawGlow(pulseX, wireY[1], 10, col.q1, 0.8);
+      }
+
       // gate box helper
       const box = (x: number, y: number, label: string, value: number, accent: string) => {
+        drawGlow(x + 22, y, 34, accent, 0.22);
         ctx.fillStyle = col.surface;
         ctx.strokeStyle = accent;
         ctx.lineWidth = 1.3;
@@ -271,17 +307,35 @@ export function QuantumCircuitCanvas() {
       ctx.strokeRect(420, 28, 130, 100);
       ctx.globalAlpha = 1;
       const maxLoss = Math.max(...lossHistory, 0.001);
-      ctx.strokeStyle = col.q0;
-      ctx.lineWidth = 1.6;
+      const lossGrad = ctx.createLinearGradient(428, 0, 542, 0);
+      lossGrad.addColorStop(0, col.q1);
+      lossGrad.addColorStop(1, col.q0);
+      ctx.strokeStyle = lossGrad;
+      ctx.lineWidth = 1.8;
       ctx.beginPath();
       const n = lossHistory.length;
+      let lastPx = 428;
+      let lastPy = 118;
       for (let i = 0; i < n; i++) {
         const px = 428 + (114 * i) / Math.max(n - 1, 1);
         const py = 38 + 80 * (1 - lossHistory[i]! / maxLoss);
         if (i === 0) ctx.moveTo(px, py);
         else ctx.lineTo(px, py);
+        lastPx = px;
+        lastPy = py;
       }
       ctx.stroke();
+      // soft area fill under the curve
+      ctx.save();
+      ctx.globalAlpha = 0.1;
+      ctx.lineTo(lastPx, 128);
+      ctx.lineTo(428, 128);
+      ctx.closePath();
+      ctx.fillStyle = lossGrad;
+      ctx.fill();
+      ctx.restore();
+      // glowing tip of descent
+      drawGlow(lastPx, lastPy, 8, col.q0, 0.9);
       ctx.fillStyle = col.muted;
       ctx.font = mono(9);
       ctx.textAlign = "center";
@@ -301,27 +355,55 @@ export function QuantumCircuitCanvas() {
       for (let k = 0; k < 2; k++) {
         const { cx, accent, label } = centers[k]!;
         const cy = 196;
-        const r = 26;
+        const r = 32;
+        // rim-lit shell
+        const rim = ctx.createRadialGradient(cx, cy, r * 0.55, cx, cy, r);
+        rim.addColorStop(0, "transparent");
+        rim.addColorStop(1, accent + "26"); // ~15% alpha hex
+        ctx.fillStyle = rim;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.fill();
         ctx.strokeStyle = col.muted;
-        ctx.globalAlpha = 0.4;
+        ctx.globalAlpha = 0.45;
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.arc(cx, cy, r, 0, Math.PI * 2);
         ctx.stroke();
         ctx.beginPath();
-        ctx.ellipse(cx, cy, r, r * 0.32, 0, 0, Math.PI * 2);
+        ctx.ellipse(cx, cy, r, r * 0.3, 0, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.globalAlpha = 0.25;
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, r * 0.3, r, 0, 0, Math.PI * 2);
         ctx.stroke();
         ctx.globalAlpha = 1;
         const b = bloch[k]!;
+        const tipX = cx + b.x * r;
+        const tipY = cy - b.z * r;
+        // fading trail (P6)
+        const tr = trails[k]!;
+        tr.push({ x: tipX, y: tipY });
+        if (tr.length > 22) tr.shift();
+        for (let i = 1; i < tr.length; i++) {
+          ctx.strokeStyle = accent;
+          ctx.globalAlpha = (i / tr.length) * 0.3;
+          ctx.beginPath();
+          ctx.moveTo(tr[i - 1]!.x, tr[i - 1]!.y);
+          ctx.lineTo(tr[i]!.x, tr[i]!.y);
+          ctx.stroke();
+        }
+        ctx.globalAlpha = 1;
         ctx.strokeStyle = accent;
-        ctx.lineWidth = 1.6;
+        ctx.lineWidth = 1.8;
         ctx.beginPath();
         ctx.moveTo(cx, cy);
-        ctx.lineTo(cx + b.x * r, cy - b.z * r);
+        ctx.lineTo(tipX, tipY);
         ctx.stroke();
+        drawGlow(tipX, tipY, 9, accent, 0.85);
         ctx.fillStyle = accent;
         ctx.beginPath();
-        ctx.arc(cx + b.x * r, cy - b.z * r, 2.4, 0, Math.PI * 2);
+        ctx.arc(tipX, tipY, 2.6, 0, Math.PI * 2);
         ctx.fill();
         ctx.fillStyle = col.muted;
         ctx.font = mono(9);
@@ -344,6 +426,7 @@ export function QuantumCircuitCanvas() {
         const accent = d.y === 1 ? col.q0 : col.q1;
         const pred = classify(d.x, params);
         const correct = Math.sign(pred) === d.y && Math.abs(pred) > 0.5;
+        drawGlow(hx, LINE_Y, 14, accent, 0.55);
         ctx.fillStyle = accent;
         ctx.beginPath();
         ctx.arc(hx, LINE_Y, 7, 0, Math.PI * 2);
@@ -375,6 +458,7 @@ export function QuantumCircuitCanvas() {
     function frame() {
       raf = 0;
       if (!visible) return; // paused off-screen; IO restarts us
+      frameCount++;
       step();
       draw();
       raf = requestAnimationFrame(frame);
