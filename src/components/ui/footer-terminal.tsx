@@ -12,6 +12,7 @@ const HELP = [
   "email           copy my email address",
   "theme           toggle dark/light",
   "goto <page>     learn · work · research · about · writing",
+  "ask <question>  ask my AI agent anything about me",
   "clear           clear output",
 ];
 
@@ -52,6 +53,29 @@ export function FooterTerminal() {
           out.push("usage: goto work | research | about | writing");
         }
         break;
+      case "ask": {
+        const q = raw.trim().slice(4).trim();
+        if (!q) {
+          out.push("usage: ask <question about Ammar>");
+          break;
+        }
+        out.push("thinking…");
+        setLines((prev) => [...prev.slice(-14), ...out]);
+        void (async () => {
+          try {
+            const res = await fetch("/api/chat", {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({ question: q }),
+            });
+            const text = await res.text();
+            setLines((prev) => [...prev.filter((l) => l !== "thinking…").slice(-10), ...text.split("\n").filter(Boolean)]);
+          } catch {
+            setLines((prev) => [...prev, "agent unreachable — try /llms-full.txt"]);
+          }
+        })();
+        return;
+      }
       case "clear":
         setLines([]);
         return;
