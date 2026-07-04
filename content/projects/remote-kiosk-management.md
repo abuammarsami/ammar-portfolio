@@ -7,7 +7,7 @@ category: engineering
 links:
   github: null
   live: null
-status: draft
+status: active
 ---
 
 # Remote Kiosk Device Management System

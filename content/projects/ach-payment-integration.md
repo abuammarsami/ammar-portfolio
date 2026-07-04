@@ -7,7 +7,7 @@ category: engineering
 links:
   github: null
   live: null
-status: draft
+status: active
 ---
 
 # ACH Payment Integration — One-time & Recurring

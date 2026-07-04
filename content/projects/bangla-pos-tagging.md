@@ -7,7 +7,7 @@ category: research
 links:
   github: null
   live: null
-status: draft
+status: active
 ---
 
 # Bangla Parts-of-Speech Tagging with Knowledge Distillation

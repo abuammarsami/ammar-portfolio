@@ -7,7 +7,7 @@ category: research
 links:
   github: https://github.com/abuammarsami/Startups-Success-Prediction-using-Ensemble-Classification
   live: null
-status: draft
+status: active
 ---
 
 # Startup Success Prediction with Ensemble Classification

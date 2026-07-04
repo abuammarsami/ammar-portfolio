@@ -7,7 +7,7 @@ category: research
 links:
   github: https://github.com/abuammarsami/Age-Gender-and-Race-Estimation-with-Multi-Output-CNN-Architecture
   live: null
-status: draft
+status: active
 ---
 
 # Age, Gender & Race Estimation with a Multi-Output CNN

@@ -2,8 +2,6 @@ import { ArxivRow } from "@/components/paper/arxiv-row";
 import { BibtexBlock } from "@/components/paper/bibtex-block";
 import { PaperFigure } from "@/components/paper/figure";
 import { SectionHeading } from "@/components/paper/section-heading";
-import { FooterTerminal } from "@/components/ui/footer-terminal";
-import { Nav } from "@/components/ui/nav";
 import { TagChip } from "@/components/ui/tag-chip";
 
 export const dynamic = "force-static";
@@ -13,8 +11,6 @@ export const metadata = { title: "Design System", robots: { index: false } };
 // Not linked from anywhere; noindex.
 export default function DesignPage() {
   return (
-    <>
-      <Nav />
       <main className="mx-auto max-w-4xl px-6 pb-16">
         <h1 className="mt-10 font-serif text-4xl">Design system</h1>
         <p className="mt-2 text-muted">Tokens, type, and primitives — both themes must pass AA.</p>
@@ -76,7 +72,5 @@ export default function DesignPage() {
           links={[{ label: "github", href: "https://github.com/abuammarsami/CSE499.06-QML-" }]}
         />
       </main>
-      <FooterTerminal />
-    </>
   );
 }

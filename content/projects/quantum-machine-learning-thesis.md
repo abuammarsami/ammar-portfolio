@@ -7,7 +7,7 @@ category: research
 links:
   github: https://github.com/abuammarsami/CSE499.06-QML-
   live: null
-status: draft
+status: active
 ---
 
 # Machine Learning in the Realm of Quantum
