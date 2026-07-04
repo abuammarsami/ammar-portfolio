@@ -224,7 +224,8 @@ export function QuantumCircuitCanvas() {
     }
 
     function draw() {
-      if (!ctx || !canvas) return;
+      // detached during a view transition → CSS vars read as "" and gradients throw
+      if (!ctx || !canvas || !canvas.isConnected) return;
       const col = readColors(canvas);
       ctx.clearRect(0, 0, W, H);
 

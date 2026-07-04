@@ -21,6 +21,18 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async headers() {
+    // WebMCP origin-trial token (ADR-0009). Chrome needs it as an HTTP header
+    // or http-equiv meta; Next metadata can't emit http-equiv. No token = no-op.
+    const token = process.env.WEBMCP_ORIGIN_TRIAL_TOKEN;
+    if (!token) return [];
+    return [
+      {
+        source: "/(.*)",
+        headers: [{ key: "Origin-Trial", value: token }],
+      },
+    ];
+  },
 };
 
 export default nextConfig;
