@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { LESSON_COMPONENTS } from "./lessons";
 
 const GATE_GLYPHS = ["RY", "H", "⊕", "📏", "∂θ", "⊞"] as const;
@@ -22,6 +22,15 @@ export function LearnJourney({
 }) {
   const [active, setActive] = useState(0);
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
+  const isDesktop = useSyncExternalStore(
+    (cb) => {
+      const mq = window.matchMedia("(min-width: 1024px)");
+      mq.addEventListener("change", cb);
+      return () => mq.removeEventListener("change", cb);
+    },
+    () => window.matchMedia("(min-width: 1024px)").matches,
+    () => false,
+  );
 
   useEffect(() => {
     const io = new IntersectionObserver(
@@ -81,9 +90,11 @@ export function LearnJourney({
               className="flex min-h-[85vh] flex-col justify-center py-16"
             >
               {child}
-              {/* mobile: interactive inline under each lesson's prose */}
+              {/* mobile: interactive inline under each lesson's prose (only the
+                  active-ish lesson mounts, and never on desktop where the sticky
+                  stage owns the WebGL context) */}
               <div className="mt-8 rounded-sm border rule-hair bg-surface p-4 lg:hidden">
-                <LessonStageFor index={i} active />
+                <LessonStageFor index={i} active={!isDesktop && Math.abs(i - active) <= 1} />
               </div>
             </section>
           ))}

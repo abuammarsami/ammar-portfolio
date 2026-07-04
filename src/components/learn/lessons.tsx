@@ -17,7 +17,8 @@ import {
   zeroState,
   type State,
 } from "@/components/quantum/statevector";
-import { BlochSvg, ProbBars } from "./bloch-svg";
+import { Bloch3D } from "@/components/quantum/three/bloch-3d";
+import { ProbBars } from "./bloch-svg";
 
 const sliderCls =
   "w-full accent-[var(--color-q0)] cursor-pointer";
@@ -35,7 +36,7 @@ export function QubitLesson() {
   const beta = Math.sin(theta / 2);
   return (
     <div className="flex flex-col items-center gap-4">
-      <BlochSvg x={b.x} z={b.z} size={190} />
+      <Bloch3D targets={[{ x: b.x, y: b.y, z: b.z, accent: "q0" }]} height={260} />
       <ProbBars p0={p0} p1={p1} />
       <p className="font-mono text-xs text-muted">
         α={alpha.toFixed(3)} · |β|={beta.toFixed(3)} · state = α|0⟩ + βe<sup>iφ</sup>|1⟩
@@ -64,7 +65,7 @@ export function SuperpositionLesson() {
   const { p0, p1 } = probZ(s, 0);
   return (
     <div className="flex flex-col items-center gap-4">
-      <BlochSvg x={b.x} z={b.z} size={190} />
+      <Bloch3D targets={[{ x: b.x, y: b.y, z: b.z, accent: "q0" }]} height={260} />
       <ProbBars p0={p0} p1={p1} />
       <div className="flex gap-2">
         <button type="button" className={btnCls} onClick={() => setHApplied(true)} disabled={hApplied}>
@@ -94,10 +95,13 @@ export function EntanglementLesson() {
   const p = probabilities(s);
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="flex gap-6">
-        <BlochSvg x={b0.x} z={b0.z} label="q0" size={140} />
-        <BlochSvg x={b1.x} z={b1.z} label="q1" size={140} />
-      </div>
+      <Bloch3D
+        targets={[
+          { x: b0.x, y: b0.y, z: b0.z, accent: "q0", label: "q0" },
+          { x: b1.x, y: b1.y, z: b1.z, accent: "q1", label: "q1" },
+        ]}
+        height={240}
+      />
       <p className="font-mono text-xs text-muted">
         ⟨Z⊗Z⟩ = <span className="text-q0">{zz.toFixed(3)}</span>
         {zz > 0.99 && gates.includes("h") && " — perfectly correlated ✓"}
@@ -140,7 +144,7 @@ export function MeasurementLesson() {
   }
   return (
     <div className="flex flex-col items-center gap-4">
-      <BlochSvg x={b.x} z={b.z} size={190} />
+      <Bloch3D targets={[{ x: b.x, y: b.y, z: b.z, accent: "q0" }]} height={260} />
       <label className="block w-full max-w-[240px] font-mono text-xs text-muted">
         prepare: θ = {theta.toFixed(2)} (P(1) = {(p1 * 100).toFixed(0)}%)
         <input type="range" min="0" max={Math.PI} step="0.01" value={theta}
