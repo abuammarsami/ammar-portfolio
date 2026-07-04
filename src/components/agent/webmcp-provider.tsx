@@ -66,7 +66,14 @@ export function WebmcpProvider() {
         },
       });
       if (mc.registerTool) {
-        for (const t of tools) await mc.registerTool(t, { signal: ac.signal }).catch(() => {});
+        for (const t of tools) {
+          // Chrome 149 returns undefined, 150+ a promise — and one bad tool must not kill the rest
+          try {
+            await mc.registerTool(t, { signal: ac.signal });
+          } catch {
+            /* rejected or invalid descriptor — skip */
+          }
+        }
       } else {
         mc.provideContext?.({ tools });
       }
