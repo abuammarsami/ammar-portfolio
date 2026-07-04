@@ -69,10 +69,24 @@ export function ConstellationStage({ graph }: { graph: Constellation }) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const q0 = cssColor(wrap, "--q0", "#5FC9BF");
-    const q1 = cssColor(wrap, "--q1", "#9D8CFF");
-    const muted = cssColor(wrap, "--muted", "#8B93A7");
-    const sprites = { q0: glowSprite(q0), q1: glowSprite(q1) };
+    let q0 = "";
+    let q1 = "";
+    let muted = "";
+    const spriteCache = new Map<string, HTMLCanvasElement>();
+    const sprite = (color: string): HTMLCanvasElement => {
+      let s = spriteCache.get(color);
+      if (!s) {
+        s = glowSprite(color);
+        spriteCache.set(color, s);
+      }
+      return s;
+    };
+    const readColors = () => {
+      q0 = cssColor(wrap, "--color-q0", "#5FC9BF");
+      q1 = cssColor(wrap, "--color-q1", "#9D8CFF");
+      muted = cssColor(wrap, "--color-muted", "#8B93A7");
+    };
+    readColors();
 
     let raf = 0;
     let frame = 0;
@@ -124,9 +138,9 @@ export function ConstellationStage({ graph }: { graph: Constellation }) {
           if (!a || !b) return;
           const t = ((frame * 0.4 + i * 37) % 240) / 240;
           const p = bezierPoint(a, b, t);
-          const sprite = i % 2 === 0 ? sprites.q0 : sprites.q1;
+          const glow = i % 2 === 0 ? sprite(q0) : sprite(q1);
           ctx.globalAlpha = 0.7;
-          ctx.drawImage(sprite, p.x - 6, p.y - 6, 12, 12);
+          ctx.drawImage(glow, p.x - 6, p.y - 6, 12, 12);
         });
         ctx.globalAlpha = 1;
         ctx.globalCompositeOperation = "source-over";
@@ -136,10 +150,10 @@ export function ConstellationStage({ graph }: { graph: Constellation }) {
       ctx.globalCompositeOperation = "lighter";
       for (const n of graph.nodes) {
         const p = pos.get(n.id)!;
-        const sprite = n.type === "project" ? sprites.q1 : sprites.q0;
+        const glow = n.type === "project" ? sprite(q1) : sprite(q0);
         const r = n.type === "paper" ? 26 : 18;
         ctx.globalAlpha = hoverRef.current === n.id ? 0.45 : 0.15;
-        ctx.drawImage(sprite, p.x - r, p.y - r, r * 2, r * 2);
+        ctx.drawImage(glow, p.x - r, p.y - r, r * 2, r * 2);
       }
       ctx.globalAlpha = 1;
       ctx.globalCompositeOperation = "source-over";
@@ -166,6 +180,14 @@ export function ConstellationStage({ graph }: { graph: Constellation }) {
     ro.observe(wrap);
     resize();
 
+    // next-themes toggles data-theme on <html>; re-read tokens and repaint
+    // (covers the reduced-motion static frame, which has no rAF loop)
+    const mo = new MutationObserver(() => {
+      readColors();
+      draw();
+    });
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
     const io = new IntersectionObserver(([entry]) => {
       const visible = entry?.isIntersecting ?? false;
       if (visible && !live) {
@@ -183,6 +205,7 @@ export function ConstellationStage({ graph }: { graph: Constellation }) {
       cancelAnimationFrame(raf);
       ro.disconnect();
       io.disconnect();
+      mo.disconnect();
     };
   }, [graph, reduced]);
 

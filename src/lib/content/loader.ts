@@ -37,8 +37,13 @@ function read(rel: string): { data: unknown; body: string } | null {
   const abs = path.join(CONTENT_DIR, rel);
   if (!fs.existsSync(abs)) return null;
   const raw = fs.readFileSync(abs, "utf8");
-  const { data, content } = matter(raw);
-  return { data, body: content };
+  try {
+    const { data, content } = matter(raw);
+    return { data, body: content };
+  } catch (e) {
+    // gray-matter's YAMLException has no file path — attribute it (ADR-0002)
+    throw new Error(`[content] ${rel}: invalid frontmatter YAML — ${e instanceof Error ? e.message : String(e)}`);
+  }
 }
 
 /** Split a markdown body on `**Label:**` bold-label paragraphs (project template). */
@@ -162,13 +167,22 @@ export async function getPapers(): Promise<Paper[]> {
       continue;
     }
 
+    const fm = fmResult.data;
+    // related.* are rendered as hrefs on four surfaces — a dangling slug ships 404 links
+    if (fm.related.project && !fs.existsSync(path.join(CONTENT_DIR, "projects", `${fm.related.project}.md`))) {
+      missing(rel, `existing related.project (content/projects/${fm.related.project}.md not found)`);
+    }
+    if (fm.related.lesson && !fs.existsSync(path.join(CONTENT_DIR, "learn", `${fm.related.lesson}.md`))) {
+      missing(rel, `existing related.lesson (content/learn/${fm.related.lesson}.md not found)`);
+    }
+
     const sections = splitLabelSections(stripComments(parsed.body));
     for (const s of PAPER_SECTIONS) {
       if (!sections.get(s)) missing(rel, `**${s}:** section`);
     }
 
     papers.push({
-      ...fmResult.data,
+      ...fm,
       slug: file.replace(/\.md$/, ""),
       abstractHtml: await markdownToHtml(sections.get("Abstract") ?? ""),
       plainWordsHtml: await markdownToHtml(sections.get("In plain words") ?? ""),
@@ -183,8 +197,9 @@ export async function getPapers(): Promise<Paper[]> {
   return papers.sort((a, b) => Number(b.featured) - Number(a.featured) || b.year - a.year);
 }
 
+/** Resolves only papers visible in the current env — drafts stay dev-only on every surface (MCP included). */
 export async function getPaper(slug: string): Promise<Paper | null> {
-  const all = await getPapers();
+  const all = visiblePapers(await getPapers());
   return all.find((p) => p.slug === slug) ?? null;
 }
 

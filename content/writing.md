@@ -4,7 +4,7 @@ status: active
 
 # Writing & Research
 
-- **Machine learning in the realm of quantum: state of the art, challenges, future vision,
-  and applications** — Undergraduate thesis surveying QML models and interpreting
-  classification in the quantum realm across several encoding methods (PyTorch, PennyLane,
-  IBMQ). · [GitHub](https://github.com/abuammarsami/CSE499.06-QML-)
+- **Machine Learning In The Realm Of Quantum: The State-Of-The-Art, Challenges, Future
+  Vision and Applications Of It** — Undergraduate thesis surveying QML models and testing
+  two hybrid quantum-classical classifiers on MNIST (PennyLane, TensorFlow/Keras).
+  · [GitHub](https://github.com/abuammarsami/CSE499.06-QML-)

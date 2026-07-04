@@ -1,5 +1,5 @@
 ---
-title: "Machine Learning in the Realm of Quantum: The State of the Art, Challenges, Future Vision and Applications"
+title: "Machine Learning In The Realm Of Quantum: The State-Of-The-Art, Challenges, Future Vision and Applications Of It"
 authors: [Md. Abu Ammar, Sadia Afrin Tamanna]
 venue: "B.Sc. thesis (CSE499), North South University"
 year: 2022
@@ -14,7 +14,7 @@ featured: true
 status: active
 ---
 
-# Machine Learning in the Realm of Quantum
+# Machine Learning In The Realm Of Quantum
 
 **Abstract:** A comprehensive review of the state of the art in quantum machine
 learning, paired with hands-on classification experiments: two first-generation
@@ -62,8 +62,9 @@ and a visitor can now get it in six scroll-stops.
 ```bibtex
 @thesis{ammar2022qml,
   author      = {Ammar, Md. Abu and Tamanna, Sadia Afrin},
-  title       = {Machine Learning in the Realm of Quantum: The State of the
-                 Art, Challenges, Future Vision and Applications},
+  title       = {Machine Learning In The Realm Of Quantum: The
+                 State-Of-The-Art, Challenges, Future Vision and
+                 Applications Of It},
   type        = {Bachelor's thesis},
   institution = {North South University},
   address     = {Dhaka, Bangladesh},

@@ -123,6 +123,15 @@ describe("papers (ADR-0008)", () => {
     }
   });
 
+  it("related.project / related.lesson always resolve to real content files", async () => {
+    const { getPapers } = await import("./loader");
+    const fs = await import("node:fs");
+    for (const p of await getPapers()) {
+      if (p.related.project) expect(fs.existsSync(`content/projects/${p.related.project}.md`), `${p.slug} → project ${p.related.project}`).toBe(true);
+      if (p.related.lesson) expect(fs.existsSync(`content/learn/${p.related.lesson}.md`), `${p.slug} → lesson ${p.related.lesson}`).toBe(true);
+    }
+  });
+
   it("extracts raw BibTeX from the fenced block", async () => {
     const { getPaper } = await import("./loader");
     const thesis = await getPaper("quantum-machine-learning-thesis");

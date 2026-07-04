@@ -27,7 +27,7 @@ and clean architecture principles so the systems stay healthy long after they sh
 
 The research thread runs in parallel: my undergraduate thesis explored quantum machine
 learning — variational circuits, encoding methods, hybrid classical-quantum models on
-PennyLane and IBMQ — and continues through my MS: Bangla POS tagging with knowledge
+PennyLane simulators — and continues through my MS: Bangla POS tagging with knowledge
 distillation, multi-output CNNs, ensemble methods.
 
 My mission: continuously improve systems, automate the repetitive, and innovate at scale.

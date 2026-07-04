@@ -17,11 +17,12 @@ export function PaperRow({ paper }: { paper: Paper }) {
         </span>{" "}
         · {paper.venue} · {paper.year}
       </p>
-      <h2 className="mt-1 font-serif text-xl">
+      {/* h3: rows nest under the page's h2 section headings, like ArxivRow */}
+      <h3 className="mt-1 font-serif text-xl">
         <Link href={`/research/${paper.slug}`} className="transition-colors hover:text-q0">
           {paper.title}
         </Link>
-      </h2>
+      </h3>
       <p className="mt-1 font-serif text-sm text-muted">
         {paper.authors.join(", ")}
         {paper.supervisor ? ` · supervised by ${paper.supervisor}` : ""}
