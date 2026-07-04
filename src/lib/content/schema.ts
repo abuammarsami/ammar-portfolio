@@ -64,3 +64,21 @@ export type SkillGroup = {
   group: string;
   bodyHtml: string;
 };
+
+export const lessonFrontmatterSchema = z.object({
+  title: z.string().min(1),
+  order: z.number().int().positive(),
+  status: contentStatus,
+});
+
+/** Required body sections of a lesson file (content/learn/*.md). */
+export const LESSON_SECTIONS = ["Hook", "Explain", "Try it", "Takeaway"] as const;
+
+export type Lesson = z.infer<typeof lessonFrontmatterSchema> & {
+  slug: string;
+  hookHtml: string;
+  explainHtml: string;
+  tryItHtml: string;
+  takeawayHtml: string;
+  deeperHtml: string | null;
+};

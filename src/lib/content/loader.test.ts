@@ -94,3 +94,28 @@ describe("real content/ files", () => {
     expect(groups.map((g) => g.group)).toContain("Quantum");
   });
 });
+
+describe("lessons + explainers (P2)", () => {
+  it("loads 6 ordered lessons with all required sections", async () => {
+    const { getLessons } = await import("./loader");
+    const lessons = await getLessons();
+    expect(lessons).toHaveLength(6);
+    expect(lessons.map((l) => l.order)).toEqual([1, 2, 3, 4, 5, 6]);
+    for (const l of lessons) {
+      expect(l.hookHtml).toContain("<p>");
+      expect(l.explainHtml).toContain("<p>");
+      expect(l.tryItHtml).toContain("<p>");
+      expect(l.takeawayHtml).toContain("<p>");
+    }
+    expect(lessons[0]!.slug).toBe("01-qubit");
+    expect(lessons[5]!.deeperHtml).toContain("thesis");
+  });
+
+  it("loads explainers keyed by section", async () => {
+    const { getExplainers } = await import("./loader");
+    const ex = await getExplainers();
+    expect(ex.get("hero-classifier")).toContain("variational");
+    expect(ex.get("quanvolution")).toContain("filter");
+    expect(ex.size).toBeGreaterThanOrEqual(5);
+  });
+});

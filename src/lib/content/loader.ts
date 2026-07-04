@@ -4,11 +4,14 @@ import matter from "gray-matter";
 import { markdownToHtml } from "./markdown";
 import {
   ABOUT_SECTIONS,
+  LESSON_SECTIONS,
   PROJECT_SECTIONS,
+  lessonFrontmatterSchema,
   projectFrontmatterSchema,
   simpleFrontmatterSchema,
   type About,
   type ExperienceRole,
+  type Lesson,
   type Project,
   type SkillGroup,
 } from "./schema";
@@ -185,6 +188,58 @@ export async function getSkills(): Promise<SkillGroup[]> {
     groups.push({ group, bodyHtml: await markdownToHtml(block) });
   }
   return groups;
+}
+
+// ---------------------------------------------------------------- lessons
+
+/** content/learn/*.md → the /learn curriculum, sorted by frontmatter order. */
+export async function getLessons(): Promise<Lesson[]> {
+  const dir = path.join(CONTENT_DIR, "learn");
+  if (!fs.existsSync(dir)) return [];
+  const files = fs.readdirSync(dir).filter((f) => f.endsWith(".md") && !f.startsWith("_"));
+
+  const lessons: Lesson[] = [];
+  for (const file of files) {
+    const rel = path.join("learn", file);
+    const parsed = read(rel);
+    if (!parsed) continue;
+    const fmResult = lessonFrontmatterSchema.safeParse(parsed.data);
+    if (!fmResult.success) {
+      missing(rel, `valid frontmatter (${fmResult.error.issues.map((i) => i.message).join("; ")})`);
+      continue;
+    }
+    const sections = splitHeadingSections(stripComments(parsed.body));
+    for (const s of LESSON_SECTIONS) {
+      if (!sections.get(s)) missing(rel, `"## ${s}" section`);
+    }
+    const deeper = sections.get("Deeper");
+    lessons.push({
+      ...fmResult.data,
+      slug: file.replace(/\.md$/, ""),
+      hookHtml: await markdownToHtml(sections.get("Hook") ?? ""),
+      explainHtml: await markdownToHtml(sections.get("Explain") ?? ""),
+      tryItHtml: await markdownToHtml(sections.get("Try it") ?? ""),
+      takeawayHtml: await markdownToHtml(sections.get("Takeaway") ?? ""),
+      deeperHtml: deeper ? await markdownToHtml(deeper) : null,
+    });
+  }
+  return lessons
+    .filter((l) => (STRICT ? l.status === "active" : true))
+    .sort((a, b) => a.order - b.order);
+}
+
+// ---------------------------------------------------------------- explainers
+
+/** content/explainers.md `## key` sections → html by key. */
+export async function getExplainers(): Promise<Map<string, string>> {
+  const parsed = read("explainers.md");
+  const map = new Map<string, string>();
+  if (!parsed) return map;
+  const sections = splitHeadingSections(stripComments(parsed.body));
+  for (const [key, body] of sections) {
+    if (body) map.set(key, await markdownToHtml(body));
+  }
+  return map;
 }
 
 // ---------------------------------------------------------------- stats
