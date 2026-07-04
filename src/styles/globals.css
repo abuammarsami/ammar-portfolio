@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens — single source of truth (docs/reference/design-tokens.md, ADR-0003).
+ * Dark is the default theme; [data-theme="light"] is the print-paper inversion.
+ */
+
+@theme {
+  --color-bg: #0b0d12;
+  --color-surface: #12151d;
+  --color-ink: #e9e7e0;
+  --color-muted: #8a8f9c;
+  --color-q0: #5fc9bf;
+  --color-q1: #9d8cff;
+
+  --font-serif: var(--font-stix), "STIX Two Text", Georgia, serif;
+  --font-sans: var(--font-plex-sans), "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), "IBM Plex Mono", ui-monospace, monospace;
+}
+
+[data-theme="light"] {
+  --color-bg: #fbfaf7;
+  --color-surface: #f1efe9;
+  --color-ink: #16181d;
+  --color-muted: #6b7080;
+  --color-q0: #0e7c72;
+  --color-q1: #5f49c9;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* hairline rule utility (preprint dividers) */
+.rule-hair {
+  border-color: color-mix(in srgb, var(--color-muted) 25%, transparent);
+}
