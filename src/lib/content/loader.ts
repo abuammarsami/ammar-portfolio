@@ -4,6 +4,7 @@ import matter from "gray-matter";
 import { markdownToHtml } from "./markdown";
 import {
   ABOUT_SECTIONS,
+  AGENTS_SECTIONS,
   LESSON_SECTIONS,
   PAPER_SECTIONS,
   PROJECT_SECTIONS,
@@ -12,6 +13,7 @@ import {
   projectFrontmatterSchema,
   simpleFrontmatterSchema,
   type About,
+  type AgentsSection,
   type ExperienceRole,
   type Lesson,
   type Paper,
@@ -227,6 +229,29 @@ export async function getAbout(): Promise<About> {
     subheading: sections.get("Hero subheading") ?? "",
     narrativeHtml: await markdownToHtml(sections.get("About me narrative") ?? ""),
   };
+}
+
+// ---------------------------------------------------------------- agents
+
+/** content/agents.md → the /agents machine-interface page, sections in file order (ADR-0009). */
+export async function getAgentsPage(): Promise<AgentsSection[]> {
+  const parsed = read("agents.md");
+  if (!parsed) {
+    missing("agents.md", "file");
+    return [];
+  }
+  simpleFrontmatterSchema.parse(parsed.data ?? {});
+  const sections = splitHeadingSections(stripComments(parsed.body));
+  const out: AgentsSection[] = [];
+  for (const heading of AGENTS_SECTIONS) {
+    const block = sections.get(heading);
+    if (!block) {
+      missing("agents.md", `"## ${heading}" section`);
+      continue;
+    }
+    out.push({ heading, bodyHtml: await markdownToHtml(block) });
+  }
+  return out;
 }
 
 // ---------------------------------------------------------------- experience

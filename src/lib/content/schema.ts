@@ -36,6 +36,20 @@ export type ProjectSection = (typeof PROJECT_SECTIONS)[number] | (typeof PROJECT
 /** Required headings of about.md. */
 export const ABOUT_SECTIONS = ["Hero tagline", "Hero subheading", "About me narrative"] as const;
 
+/** Required headings of agents.md — the /agents machine-interface page (ADR-0009). */
+export const AGENTS_SECTIONS = [
+  "Tagline",
+  "Why agent-native",
+  "MCP server",
+  "WebMCP tools",
+  "Feeds",
+  "Fit report",
+  "Agent card",
+  "How to interview this site",
+] as const;
+
+export type AgentsSection = { heading: (typeof AGENTS_SECTIONS)[number]; bodyHtml: string };
+
 export type Project = ProjectFrontmatter & {
   slug: string;
   summary: string;
