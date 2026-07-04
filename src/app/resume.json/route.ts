@@ -1,14 +1,15 @@
-import { getExperience, getProjects, getSkills, visibleProjects } from "@/lib/content/loader";
+import { getExperience, getPapers, getProjects, getSkills, visiblePapers, visibleProjects } from "@/lib/content/loader";
 import { LINKS, SITE_URL } from "@/lib/site";
 
 export const dynamic = "force-static";
 
 /** JSON Resume schema (https://jsonresume.org) — for recruiters' parsing tools. */
 export async function GET() {
-  const [experience, projects, skills] = await Promise.all([
+  const [experience, projects, skills, papers] = await Promise.all([
     getExperience(),
     getProjects().then(visibleProjects),
     getSkills(),
+    getPapers().then(visiblePapers),
   ]);
   const strip = (h: string) => h.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 
@@ -39,6 +40,13 @@ export async function GET() {
       type: p.category,
     })),
     skills: skills.map((g) => ({ name: g.group, keywords: strip(g.bodyHtml).split(", ") })),
+    publications: papers.map((p) => ({
+      name: p.title,
+      publisher: p.venue,
+      releaseDate: String(p.year),
+      url: `${SITE_URL}/research/${p.slug}`,
+      summary: strip(p.abstractHtml),
+    })),
     education: [
       {
         institution: "North South University",

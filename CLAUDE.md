@@ -27,8 +27,10 @@ npm test             # vitest (content loader + quantum sim)
 
 ```
 content/          # ALL site copy lives here as markdown — the only place content comes from
+content/papers/   # the research library (ADR-0008): one .md per real paper/thesis
 docs/             # architecture (ADRs), plans, guides, reference — YAML frontmatter on every doc
-public/           # resume.pdf, photos, favicon
+papers/           # UNTRACKED raw manuscript archive — never publish; curated copies go to public/papers
+public/           # resume.pdf, photos, favicon; public/papers/ = reviewed PDFs only
 src/app/          # Next App Router routes (all force-static)
 src/components/   # hero/ quantum/ paper/ ui/ (palette/ stretch)
 src/lib/content/  # typed markdown loader (fs + gray-matter + zod + unified)

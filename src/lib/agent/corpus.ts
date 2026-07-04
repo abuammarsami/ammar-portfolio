@@ -1,4 +1,4 @@
-import { getAbout, getExperience, getLessons, getProjects, getSkills, getStats, visibleProjects } from "@/lib/content/loader";
+import { getAbout, getExperience, getLessons, getPapers, getProjects, getSkills, getStats, visiblePapers, visibleProjects } from "@/lib/content/loader";
 import { LINKS, SITE_URL } from "@/lib/site";
 
 function strip(html: string): string {
@@ -11,13 +11,14 @@ function strip(html: string): string {
  * /api/chat (system context), and /api/mcp tools.
  */
 export async function buildCorpus(): Promise<string> {
-  const [about, projects, experience, skills, lessons, stats] = await Promise.all([
+  const [about, projects, experience, skills, lessons, stats, papers] = await Promise.all([
     getAbout(),
     getProjects().then(visibleProjects),
     getExperience(),
     getSkills(),
     getLessons(),
     Promise.resolve(getStats()),
+    getPapers().then(visiblePapers),
   ]);
 
   const lines: string[] = [
@@ -43,6 +44,15 @@ export async function buildCorpus(): Promise<string> {
       `Impact: ${strip(p.impactHtml)}`,
       `Stack: ${p.techStack}`,
       p.links.github ? `GitHub: ${p.links.github}` : "",
+      "",
+    ]),
+    "## Publications & theses (full text distilled at /research)",
+    ...papers.flatMap((p) => [
+      `### ${p.title} [${p.kind}] (${p.venue}, ${p.year}) — ${SITE_URL}/research/${p.slug}`,
+      `Authors: ${p.authors.join(", ")}${p.supervisor ? ` · supervised by ${p.supervisor}` : ""}`,
+      `Abstract: ${strip(p.abstractHtml)}`,
+      `Results: ${strip(p.resultsHtml)}`,
+      p.pdf ? `PDF: ${SITE_URL}/papers/${p.slug}.pdf` : "PDF: available on request",
       "",
     ]),
     "## Skills",

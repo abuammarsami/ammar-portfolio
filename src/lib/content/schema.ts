@@ -65,6 +65,42 @@ export type SkillGroup = {
   bodyHtml: string;
 };
 
+export const paperFrontmatterSchema = z.object({
+  title: z.string().min(1),
+  authors: z.array(z.string()).min(1),
+  venue: z.string().min(1),
+  year: z.number().int().min(2000).max(2100),
+  kind: z.enum(["thesis", "paper", "report"]),
+  supervisor: z.string().nullable().default(null),
+  /** true = a reviewed copy ships in public/papers/<slug>.pdf (ADR-0008 curation). */
+  pdf: z.boolean().default(false),
+  tags: z.array(z.string()).default([]),
+  related: z
+    .object({
+      project: z.string().nullable().default(null),
+      lesson: z.string().nullable().default(null),
+    })
+    .default({ project: null, lesson: null }),
+  featured: z.boolean().default(false),
+  status: contentStatus,
+});
+
+export type PaperFrontmatter = z.infer<typeof paperFrontmatterSchema>;
+
+/** Required body sections of a paper file (content/papers/*.md). */
+export const PAPER_SECTIONS = ["Abstract", "In plain words", "Method", "Results", "Looking back"] as const;
+
+export type Paper = PaperFrontmatter & {
+  slug: string;
+  abstractHtml: string;
+  plainWordsHtml: string;
+  methodHtml: string;
+  resultsHtml: string;
+  lookingBackHtml: string;
+  /** Raw BibTeX (fences stripped) from the optional **BibTeX:** section. */
+  bibtex: string | null;
+};
+
 export const lessonFrontmatterSchema = z.object({
   title: z.string().min(1),
   order: z.number().int().positive(),

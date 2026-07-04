@@ -7,26 +7,23 @@ import { ProjectCard } from "@/components/ui/project-card";
 import { Reveal } from "@/components/ui/reveal";
 import { StatsStrip } from "@/components/ui/stats-strip";
 import { ExplainThis } from "@/components/ui/explain-this";
-import { getAbout, getExplainers, getProjects, visibleProjects } from "@/lib/content/loader";
+import { getAbout, getExplainers, getPapers, getProjects, visiblePapers, visibleProjects } from "@/lib/content/loader";
 
 export const dynamic = "force-static";
 
 export default async function HomePage() {
-  const [about, allProjects, explainers] = await Promise.all([
+  const [about, allProjects, explainers, allPapers] = await Promise.all([
     getAbout(),
     getProjects(),
     getExplainers(),
+    getPapers(),
   ]);
   const projects = visibleProjects(allProjects);
   const featured = projects.find((p) => p.slug === "kioskvisionai");
   const work = projects
     .filter((p) => p.category === "engineering" && p.slug !== "kioskvisionai")
     .slice(0, 3);
-  const allResearch = projects.filter((p) => p.category === "research");
-  const research = [
-    ...allResearch.filter((p) => p.featured),
-    ...allResearch.filter((p) => !p.featured),
-  ].slice(0, 2);
+  const research = visiblePapers(allPapers).slice(0, 2);
 
   return (
     <main>
@@ -141,14 +138,15 @@ export default async function HomePage() {
             {research.map((p) => (
               <ArxivRow
                 key={p.slug}
-                id={p.slug}
+                id={`ammar${p.year}${p.slug.split("-")[0]}`}
                 title={p.title}
-                date={p.date}
+                date={`${p.venue} · ${p.year}`}
                 categories={p.tags.slice(0, 3)}
-                abstract={p.summary}
+                abstract={p.abstractHtml.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()}
                 links={[
-                  { label: "case study", href: `/work/${p.slug}` },
-                  ...(p.links.github ? [{ label: "github", href: p.links.github }] : []),
+                  { label: "read distilled", href: `/research/${p.slug}` },
+                  ...(p.pdf ? [{ label: "pdf", href: `/papers/${p.slug}.pdf` }] : []),
+                  ...(p.related.project ? [{ label: "case study", href: `/work/${p.related.project}` }] : []),
                 ]}
               />
             ))}

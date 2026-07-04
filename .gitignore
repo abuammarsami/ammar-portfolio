@@ -30,3 +30,6 @@ yarn-error.log*
 
 # session/agent artifacts
 .remember/
+
+# unreviewed manuscript archive (source for content/papers — never publish raw)
+/papers/
