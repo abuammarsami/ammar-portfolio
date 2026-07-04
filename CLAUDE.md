@@ -43,12 +43,16 @@ markdown content pipeline + one hand-written canvas quantum simulator. No CMS, n
 ## 5. Non-Negotiable Rules
 
 1. **Lighthouse ≥ 95 all categories** (A11y/SEO/BP = 100). Never merge a change that drops it.
-2. **First-load JS ≤ 200 kB gz (measured 194 kB — Next 16 + React 19 runtime ≈ 180 kB
-   of that; our own code stays under 20 kB). CLS = 0. LCP < 1 s on desktop.**
+2. **Per-route JS budgets (gz first-load), enforced by `scripts/check-budgets.mjs` in CI:**
+   content routes ≤ 200 kB (measured 194 kB baseline) · `/learn` ≤ 350 kB (carries the
+   WebGL stage — ADR-0006) · `/learn`'s LCP element must be server-rendered text.
+   **CLS = 0 everywhere. LCP < 1 s on desktop.**
 3. **No new runtime dependency without an ADR.**
 4. Site copy comes **only** from `content/*.md` — never hardcode prose in components.
-5. No three.js / R3F / UI kits / ambient particle backgrounds (ADR-0004). The hero is the
-   only animated set-piece; it pauses off-screen and respects `prefers-reduced-motion`.
+5. three.js/R3F allowed **only** under `src/app/learn/**` + `src/components/quantum/three/**`
+   (ADR-0006); every other page stays WebGL-free. No UI kits, no ambient particle
+   backgrounds. Every 3D scene reads physics exclusively from `statevector.ts` and ships
+   reduced-motion + no-WebGL static fallbacks. Animated set-pieces pause off-screen.
 6. kebab-case for all files and docs. ADRs are immutable once accepted — supersede, don't edit.
 7. Every doc in `docs/` carries YAML frontmatter (`title,type,status,owner,created,last-reviewed,tags,related`).
 8. TypeScript strict; no `any` without an inline justification comment.
@@ -73,7 +77,8 @@ markdown content pipeline + one hand-written canvas quantum simulator. No CMS, n
 | Styling | Tailwind CSS v4, CSS-first `@theme` tokens |
 | Content | fs + gray-matter + zod + unified — ADR-0002 (no MDX, no CMS) |
 | Motion | `motion` via LazyMotion (scroll reveals only) |
-| Hero | Hand-written 2D canvas + pure-TS 2-qubit statevector sim — ADR-0004 |
+| Hero | Hand-written 2D canvas + pure-TS 2-qubit statevector sim — ADR-0004/0006 |
+| /learn | r3f + drei + postprocessing, route-scoped WebGL scrollytelling — ADR-0006 |
 | Theme | next-themes, dark default |
 | Fonts | STIX Two Text · IBM Plex Sans · IBM Plex Mono via `next/font` |
 | Tests | Vitest |

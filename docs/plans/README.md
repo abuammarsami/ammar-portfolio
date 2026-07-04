@@ -17,7 +17,8 @@ Feature/initiative designs live here from `draft` through `implemented`.
 
 | Plan | Status | Owner | Last reviewed |
 |---|---|---|---|
-| [plan-0001-portfolio-build](plan-0001-portfolio-build.md) | active — Phase 0 in progress | @abuammar | 2026-07-04 |
+| [plan-0001-portfolio-build](plan-0001-portfolio-build.md) | implemented — live on Vercel | @abuammar | 2026-07-04 |
+| [plan-0002-learn-experience](plan-0002-learn-experience.md) | active — P0 | @abuammar | 2026-07-04 |
 
 ## Implemented (historical)
 

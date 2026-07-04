@@ -8,7 +8,7 @@ last-reviewed: 2026-07-04
 deciders: [Md. Abu Ammar]
 tags: [adr, hero, performance]
 supersedes: null
-superseded-by: null
+superseded-by: adr-0006-webgl-learn-experience.md
 related:
   - adr-0003-visual-identity.md
 ---
