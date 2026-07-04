@@ -108,3 +108,49 @@ describe("parameter-shift training", () => {
     expect(classify(data[1]!.x, p)).toBeLessThan(-0.5);
   });
 });
+
+describe("P1 engine extensions", () => {
+  it("probabilities sum to 1 and match probZ marginals", async () => {
+    const { probabilities, probZ } = await import("./statevector");
+    const s = ry(ry(zeroState(), 0, 0.9), 1, 2.1);
+    const p = probabilities(s);
+    expect(p.reduce((a, b) => a + b, 0)).toBeCloseTo(1, 10);
+    const m = probZ(s, 0);
+    expect(m.p0 + m.p1).toBeCloseTo(1, 10);
+    expect(m.p1).toBeCloseTo(p[2]! + p[3]!, 10);
+  });
+
+  it("Bell state: ⟨Z⊗Z⟩ = +1 with 50/50 marginals", async () => {
+    const { expZZ, probZ } = await import("./statevector");
+    const bell = cnot01(h(zeroState(), 0));
+    expect(expZZ(bell)).toBeCloseTo(1, 10);
+    expect(probZ(bell, 0).p0).toBeCloseTo(0.5, 10);
+    expect(probZ(bell, 1).p1).toBeCloseTo(0.5, 10);
+  });
+
+  it("collapseZ projects, renormalizes, and entanglement collapses the partner", async () => {
+    const { collapseZ, probZ, probabilities } = await import("./statevector");
+    const bell = cnot01(h(zeroState(), 0));
+    const after = collapseZ(bell, 0, 1);
+    expect(probabilities(after).reduce((a, b) => a + b, 0)).toBeCloseTo(1, 10);
+    expect(probZ(after, 0).p1).toBeCloseTo(1, 10);
+    expect(probZ(after, 1).p1).toBeCloseTo(1, 10); // partner collapsed too
+  });
+
+  it("quanvPatch: zero patch is deterministic and maps stay in [−1, 1]", async () => {
+    const { quanvPatch, quanvFeatureMaps, QUANV_FILTERS } = await import("./qml");
+    const zero = quanvPatch([0, 0, 0, 0], 0);
+    expect(zero).toBeCloseTo(1, 10); // no rotation ⇒ |00⟩ ⇒ ⟨Z₁⟩ = 1
+    const grid = new Array(16).fill(0).map((_, i) => (i % 3 === 0 ? 1 : 0));
+    const maps = quanvFeatureMaps(grid, 4);
+    expect(maps).toHaveLength(QUANV_FILTERS.length);
+    for (const m of maps) for (const v of m) expect(Math.abs(v)).toBeLessThanOrEqual(1 + 1e-12);
+  });
+
+  it("mulberry32 is deterministic", async () => {
+    const { mulberry32 } = await import("./qml");
+    const a = mulberry32(42);
+    const b = mulberry32(42);
+    expect([a(), a(), a()]).toEqual([b(), b(), b()]);
+  });
+});

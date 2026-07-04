@@ -93,6 +93,41 @@ export function blochVector(s: State, qubit: 0 | 1): { x: number; y: number; z: 
   return { x: 2 * re01, y: -2 * im01, z: expZ(s, qubit) };
 }
 
+/** |amplitude|² per basis state [P00, P01, P10, P11]. */
+export function probabilities(s: State): [number, number, number, number] {
+  return [0, 1, 2, 3].map((i) => s[i]!.re * s[i]!.re + s[i]!.im * s[i]!.im) as [
+    number,
+    number,
+    number,
+    number,
+  ];
+}
+
+/** Marginal measurement probabilities for one qubit in the Z basis. */
+export function probZ(s: State, qubit: 0 | 1): { p0: number; p1: number } {
+  const bit = qubit === 0 ? 2 : 1;
+  const p = probabilities(s);
+  let p1 = 0;
+  for (let i = 0; i < 4; i++) if (i & bit) p1 += p[i]!;
+  return { p0: 1 - p1, p1 };
+}
+
+/** Project one qubit onto |outcome⟩ and renormalize (post-measurement state). */
+export function collapseZ(s: State, qubit: 0 | 1, outcome: 0 | 1): State {
+  const bit = qubit === 0 ? 2 : 1;
+  const keep = (i: number) => ((i & bit) !== 0) === (outcome === 1);
+  const out = s.map((a, i) => (keep(i) ? { ...a } : { re: 0, im: 0 })) as State;
+  const norm = Math.sqrt(probabilities(out).reduce((n, p) => n + p, 0));
+  if (norm === 0) return out; // measuring an impossible outcome — caller's bug
+  return out.map((a) => ({ re: a.re / norm, im: a.im / norm })) as State;
+}
+
+/** ⟨Z⊗Z⟩ correlation: +1 = perfectly correlated (Bell), −1 = anti-correlated. */
+export function expZZ(s: State): number {
+  const p = probabilities(s);
+  return p[0] - p[1] - p[2] + p[3];
+}
+
 // ─────────────────────────────────────────────── variational classifier ──
 
 export type Params = [number, number, number, number];

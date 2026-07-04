@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { cnot01, expZ, ry, zeroState } from "./statevector";
+import { QUANV_FILTERS, quanvFeatureMaps } from "./qml";
 
 const N = 8; // input grid
 const CELL = 26;
@@ -39,36 +39,8 @@ export function QuanvolutionDemo() {
     });
   }
 
-  // 4 filter channels: fixed rotation offsets (deterministic, no randomness)
-  const FILTERS = [0, Math.PI / 4, Math.PI / 2, (3 * Math.PI) / 4];
-
-  function quanv(patch: [number, number, number, number], offset: number): number {
-    let s = zeroState();
-    s = ry(s, 0, patch[0] * Math.PI + offset);
-    s = ry(s, 1, patch[1] * Math.PI + offset);
-    s = cnot01(s);
-    s = ry(s, 0, patch[2] * Math.PI);
-    s = ry(s, 1, patch[3] * Math.PI);
-    s = cnot01(s);
-    return expZ(s, 1); // −1 … +1
-  }
-
   const OUT = N / 2;
-  const maps: number[][] = FILTERS.map((offset) => {
-    const m: number[] = [];
-    for (let r = 0; r < OUT; r++) {
-      for (let c = 0; c < OUT; c++) {
-        const p: [number, number, number, number] = [
-          grid[2 * r * N + 2 * c]!,
-          grid[2 * r * N + 2 * c + 1]!,
-          grid[(2 * r + 1) * N + 2 * c]!,
-          grid[(2 * r + 1) * N + 2 * c + 1]!,
-        ];
-        m.push(quanv(p, offset));
-      }
-    }
-    return m;
-  });
+  const maps = quanvFeatureMaps(grid, N);
 
   return (
     <div className="grid gap-8 sm:grid-cols-[auto_1fr] sm:items-start">
@@ -130,7 +102,7 @@ export function QuanvolutionDemo() {
                 })}
               </div>
               <p className="mt-1.5 text-center font-mono text-[10px] text-muted">
-                ch{k} · φ={FILTERS[k]!.toFixed(2)}
+                ch{k} · φ={QUANV_FILTERS[k]!.toFixed(2)}
               </p>
             </div>
           ))}
