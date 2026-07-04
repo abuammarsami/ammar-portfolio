@@ -23,15 +23,32 @@ function modelContext(): ModelContext | undefined {
   );
 }
 
+/** Third-party OT tokens are ignored in headers — Chrome requires script-injected meta. */
+function injectOriginTrialToken(): void {
+  const token = process.env.NEXT_PUBLIC_WEBMCP_ORIGIN_TRIAL_TOKEN;
+  if (!token || document.querySelector('meta[http-equiv="origin-trial"]')) return;
+  const meta = document.createElement("meta");
+  meta.httpEquiv = "origin-trial";
+  meta.content = token;
+  document.head.appendChild(meta);
+}
+
 export function WebmcpProvider() {
   const router = useRouter();
 
   useEffect(() => {
-    const mc = modelContext();
-    if (!mc || (!mc.registerTool && !mc.provideContext)) return;
+    injectOriginTrialToken();
     const ac = new AbortController();
 
     void (async () => {
+      // the interface may install shortly after runtime token validation
+      let mc = modelContext();
+      for (let i = 0; !mc && i < 4; i++) {
+        await new Promise((r) => setTimeout(r, 250));
+        if (ac.signal.aborted) return;
+        mc = modelContext();
+      }
+      if (!mc || (!mc.registerTool && !mc.provideContext)) return;
       const { createWebmcpTools } = await import("@/lib/agent/webmcp-tools");
       if (ac.signal.aborted) return;
       const tools = createWebmcpTools({
