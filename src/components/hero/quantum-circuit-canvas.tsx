@@ -10,6 +10,7 @@ import {
   type Params,
   type Sample,
 } from "@/components/quantum/statevector";
+import { HERO_SET_EVENT, publishHeroSnapshot } from "@/lib/agent/hero-bridge";
 import { CircuitStatic } from "./circuit-static";
 
 const INITIAL_DATA: Sample[] = [
@@ -180,6 +181,18 @@ export function QuantumCircuitCanvas() {
     canvas.addEventListener("pointerup", onUp);
     canvas.addEventListener("pointercancel", onUp);
 
+    // WebMCP hero bridge (ADR-0009): agents move the data points, we retrain
+    const onAgentSetData = (e: Event) => {
+      const detail = (e as CustomEvent<{ x0?: number; x1?: number }>).detail ?? {};
+      if (typeof detail.x0 === "number") data[0]!.x = Math.min(X_MAX, Math.max(X_MIN, detail.x0));
+      if (typeof detail.x1 === "number") data[1]!.x = Math.min(X_MAX, Math.max(X_MIN, detail.x1));
+      epoch = 0;
+      hold = 0;
+      lossHistory = [loss(data, params)];
+    };
+    window.addEventListener(HERO_SET_EVENT, onAgentSetData);
+    publishHeroSnapshot({ mounted: true, epoch, loss: lossHistory.at(-1) ?? 1, params: [...params], data: data.map((d) => ({ ...d })) });
+
     // ── rAF with IntersectionObserver pause ──
     let raf = 0;
     let visible = true;
@@ -205,6 +218,9 @@ export function QuantumCircuitCanvas() {
       epoch++;
       lossHistory.push(loss(data, params));
       if (lossHistory.length > 900) lossHistory = lossHistory.slice(-600);
+      if (epoch % 15 === 0) {
+        publishHeroSnapshot({ epoch, loss: lossHistory.at(-1) ?? 1, params: [...params], data: data.map((d) => ({ ...d })) });
+      }
     }
 
     function draw() {
@@ -468,6 +484,8 @@ export function QuantumCircuitCanvas() {
     return () => {
       io.disconnect();
       if (raf) cancelAnimationFrame(raf);
+      window.removeEventListener(HERO_SET_EVENT, onAgentSetData);
+      publishHeroSnapshot({ mounted: false });
       canvas.removeEventListener("pointerdown", onDown);
       canvas.removeEventListener("pointermove", onMove);
       canvas.removeEventListener("pointerup", onUp);
