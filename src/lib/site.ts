@@ -1,5 +1,6 @@
-/** Site-wide constants. Domain is finalized at deploy (Phase 6). */
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://abuammar.vercel.app";
+/** Site-wide constants. Stable production domain (Vercel team scope: tammar). */
+export const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://ammar-portfolio-tammar.vercel.app";
 
 export const SITE_NAME = "Md. Abu Ammar";
 export const SITE_TITLE = "Md. Abu Ammar — Software Engineer · Quantum ML Researcher";
