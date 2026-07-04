@@ -1,5 +1,10 @@
+---
+status: draft
+---
+
 # Writing & Research
 
-<!-- Paste ChatGPT/Claude section 6. Thesis, papers, blog posts, talks. -->
-
-- **<title>** — <1-line description> · <link>
+- **Machine learning in the realm of quantum: state of the art, challenges, future vision,
+  and applications** — Undergraduate thesis surveying QML models and interpreting
+  classification in the quantum realm across several encoding methods (PyTorch, PennyLane,
+  IBMQ). · [GitHub](https://github.com/abuammarsami/CSE499.06-QML-)

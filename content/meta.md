@@ -1,10 +1,17 @@
+---
+status: draft
+---
+
 # Meta — design & targeting brief
 
-<!-- Paste ChatGPT/Claude section 7. This steers how the site looks and feels. -->
-
-- **Target roles / next move:** 
-- **Tone:** <bold / minimal / playful / corporate>
-- **Light or dark:** 
-- **Colors / fonts I like:** 
-- **Portfolios I admire:** 
-- **Links:** GitHub github.com/abuammarsami · LinkedIn linkedin.com/in/abu-ammar · email abuammarsami@gmail.com
+- **Target roles / next move:** Senior backend/AI engineering roles AND grad-school
+  research positions (both audiences equally — dual hero CTAs).
+- **Tone:** research-paper minimalism + quantum/engineering identity (ADR-0003).
+- **Light or dark:** dark default with light toggle.
+- **Colors / fonts:** see docs/reference/design-tokens.md — STIX Two Text, IBM Plex
+  Sans/Mono; |0⟩ teal + |1⟩ violet entangled-pair accents.
+- **Links:**
+  - GitHub: https://github.com/abuammarsami
+  - LinkedIn: https://linkedin.com/in/abu-ammar/
+  - Email: abuammarsami@gmail.com
+  - Phone: +8801731786464

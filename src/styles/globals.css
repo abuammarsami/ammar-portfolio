@@ -46,3 +46,37 @@ body {
 .rule-hair {
   border-color: color-mix(in srgb, var(--color-muted) 25%, transparent);
 }
+
+/*
+ * Entangled-pair interaction motif (ADR-0003):
+ * inside an .entangled container, hover shifts .entangled-a elements to q0
+ * and .entangled-b elements to q1 — the accents always respond as a correlated pair.
+ */
+.entangled .entangled-a,
+.entangled .entangled-b {
+  transition:
+    color 200ms ease,
+    border-color 200ms ease;
+}
+.entangled:hover .entangled-a,
+.entangled:focus-within .entangled-a {
+  color: var(--color-q0);
+  border-color: color-mix(in srgb, var(--color-q0) 55%, transparent);
+}
+.entangled:hover .entangled-b,
+.entangled:focus-within .entangled-b {
+  color: var(--color-q1);
+  border-color: color-mix(in srgb, var(--color-q1) 55%, transparent);
+}
+
+/* Superposition link underline: two-color gradient that collapses on hover/click. */
+.link-super {
+  text-decoration: none;
+  background-image: linear-gradient(90deg, var(--color-q0), var(--color-q1));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 1px;
+}
+.link-super:hover {
+  background-image: linear-gradient(90deg, var(--color-q0), var(--color-q0));
+}
