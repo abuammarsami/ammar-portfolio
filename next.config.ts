@@ -8,6 +8,10 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
   },
+  experimental: {
+    // cross-page crossfade via the View Transitions API (progressive enhancement)
+    viewTransition: true,
+  },
   async redirects() {
     return [
       {

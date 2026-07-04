@@ -187,6 +187,22 @@ export async function getSkills(): Promise<SkillGroup[]> {
   return groups;
 }
 
+// ---------------------------------------------------------------- stats
+
+export type Stat = { value: string; label: string };
+
+/** stats.md: one `- value | label` per line. Optional file. */
+export function getStats(): Stat[] {
+  const parsed = read("stats.md");
+  if (!parsed) return [];
+  const stats: Stat[] = [];
+  for (const line of parsed.body.split("\n")) {
+    const m = line.match(/^- +(.+?) +\| +(.+)$/);
+    if (m) stats.push({ value: m[1]!, label: m[2]! });
+  }
+  return stats;
+}
+
 // ---------------------------------------------------------------- optional files
 
 /** writing.md / testimonials.md — optional; empty (or template-only) → null. */

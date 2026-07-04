@@ -5,26 +5,29 @@ status: active
 # About
 
 ## Hero tagline
-I build distributed backend systems — and train quantum circuits to see what's next.
+Backend & AI systems engineer. I ship payment rails, distributed platforms — and train quantum circuits.
 
 ## Hero subheading
-Software Engineer at Masjid Solutions (US, remote), working on .NET distributed systems,
-Azure, and payment infrastructure. MS CS student researching quantum machine learning,
-NLP, and computer vision.
+I build production systems at Masjid Solutions: payment infrastructure moving millions of
+dollars a year, AI-powered kiosk monitoring across 120+ devices, and .NET Aspire
+distributed platforms on Azure. MS CS researcher in quantum machine learning.
 
 ## About me narrative
-I work at the intersection of production engineering and machine learning research.
-By day I design and ship backend systems at Masjid Solutions — breaking a monolith into
-microservices with .NET Aspire, integrating Stripe and Authorize.Net ACH payments, and
-building AI-powered kiosk monitoring on Azure with Vision AI, Blob Storage, and Queues.
-My data-import pipelines cut client onboarding time by 60%; my CI/CD work enables
-zero-downtime deployments across four environments.
+I work where production engineering meets machine learning research — connecting business
+operations, software architecture, AI, payments, and cloud infrastructure into systems
+that run every day.
 
-Before that path, my undergraduate thesis explored quantum machine learning — encoding
-methods, variational quantum circuits, and hybrid classical-quantum models on PennyLane
-and IBMQ. That research thread continues through my MS at North South University: Bangla
-POS tagging with knowledge distillation, multi-output CNNs for demographic estimation,
-and ensemble methods for startup-success prediction.
+At Masjid Solutions I own systems across their full lifecycle: payment infrastructure
+(Stripe, ACH, Apple Pay, Google Pay) supporting millions of dollars in annual volume for
+20,000+ users; KioskVisionAI, which watches 120+ donation kiosks across 60+ U.S.
+organizations with Azure Vision AI; and an automated Salesforce synchronization platform
+that eliminated manual CRM entry. I deploy constantly — roughly 200+ releases a year
+through CI/CD pipelines I architected — and design with DDD, vertical slice architecture,
+and clean architecture principles so the systems stay healthy long after they ship.
 
-My mission: continuously improve systems, automate the repetitive, and innovate at scale —
-with a focus on impactful, AI-driven software engineering.
+The research thread runs in parallel: my undergraduate thesis explored quantum machine
+learning — variational circuits, encoding methods, hybrid classical-quantum models on
+PennyLane and IBMQ — and continues through my MS: Bangla POS tagging with knowledge
+distillation, multi-output CNNs, ensemble methods.
+
+My mission: continuously improve systems, automate the repetitive, and innovate at scale.

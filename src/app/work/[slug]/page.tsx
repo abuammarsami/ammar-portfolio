@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BibtexBlock } from "@/components/paper/bibtex-block";
 import { SectionHeading } from "@/components/paper/section-heading";
+import { QuanvolutionDemo } from "@/components/quantum/quanvolution-demo";
 import { TagChip } from "@/components/ui/tag-chip";
 import { getProject, getProjects, visibleProjects } from "@/lib/content/loader";
 import type { Project } from "@/lib/content/schema";
@@ -85,6 +86,18 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
         className="mt-4 max-w-2xl font-serif leading-relaxed [&>p+p]:mt-4 [&_strong]:text-q0"
         dangerouslySetInnerHTML={{ __html: project.impactHtml }}
       />
+
+      {/* ── interactive figure: quanvolution (thesis page only) ── */}
+      {slug === "quantum-machine-learning-thesis" && (
+        <figure className="mt-12">
+          <div className="rounded-sm border rule-hair bg-surface p-5">
+            <QuanvolutionDemo />
+          </div>
+          <figcaption className="mt-2 text-center font-mono text-xs text-muted">
+            Fig. 1 — interactive quanvolution: a 2×2 quantum filter sweeping your drawing
+          </figcaption>
+        </figure>
+      )}
 
       {/* ── keywords / stack ── */}
       <p className="mt-10 border-t rule-hair pt-4 font-mono text-xs leading-relaxed text-muted">

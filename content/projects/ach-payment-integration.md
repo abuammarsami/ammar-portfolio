@@ -24,8 +24,9 @@ one-time and recurring transactions covering schools, events, and memberships. A
 Apple Pay and Google Pay through Stripe Payment Intents with tokenized wallet flows.
 Hardened the pipeline for retries, webhooks, and reconciliation.
 
-**Impact:** Secure recurring revenue rails for every client; accelerated mobile checkout
-and improved donation conversion across one-time and recurring payments.
+**Impact:** Payment rails supporting **millions of dollars in annual volume for 20,000+
+users** — secure recurring revenue for every client, faster mobile checkout, and improved
+donation conversion across one-time and recurring payments.
 
 **Tech stack:** .NET Core, Stripe API (Payment Intents, ACH), Authorize.Net API,
 SQL Server, webhooks

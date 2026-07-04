@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import {
   blochVector,
+  classify,
   finalState,
   loss,
   trainStep,
@@ -11,10 +12,18 @@ import {
 } from "@/components/quantum/statevector";
 import { CircuitStatic } from "./circuit-static";
 
-const DATA: Sample[] = [
+const INITIAL_DATA: Sample[] = [
   { x: Math.PI / 4, y: 1 },
   { x: -Math.PI / 4, y: -1 },
 ];
+/* draggable number-line geometry */
+const LINE_X0 = 60;
+const LINE_X1 = 380;
+const LINE_Y = 258;
+const X_MIN = -Math.PI / 2;
+const X_MAX = Math.PI / 2;
+const xToPx = (x: number) => LINE_X0 + ((x - X_MIN) / (X_MAX - X_MIN)) * (LINE_X1 - LINE_X0);
+const pxToX = (px: number) => X_MIN + ((px - LINE_X0) / (LINE_X1 - LINE_X0)) * (X_MAX - X_MIN);
 const LR = 0.12;
 const MAX_EPOCH = 300;
 const HOLD_FRAMES = 150;
@@ -26,7 +35,7 @@ const INITS: Params[] = [
 ];
 
 const W = 560;
-const H = 240;
+const H = 292;
 
 type Colors = { bg: string; surface: string; ink: string; muted: string; q0: string; q1: string };
 
@@ -97,11 +106,51 @@ export function QuantumCircuitCanvas() {
     const mono = (px: number) => `${px}px ${monoFamily}`;
 
     // ── training state ──
+    const data: Sample[] = INITIAL_DATA.map((d) => ({ ...d }));
     let initIdx = 0;
     let params: Params = INITS[0]!;
     let epoch = 0;
     let hold = 0;
-    let lossHistory: number[] = [loss(DATA, params)];
+    let lossHistory: number[] = [loss(data, params)];
+
+    // ── draggable data points ──
+    let dragging: number | null = null;
+    const toCanvas = (e: PointerEvent) => {
+      const r = canvas.getBoundingClientRect();
+      return { x: ((e.clientX - r.left) / r.width) * W, y: ((e.clientY - r.top) / r.height) * H };
+    };
+    const hitHandle = (p: { x: number; y: number }) =>
+      data.findIndex((d) => Math.hypot(p.x - xToPx(d.x), p.y - LINE_Y) < 14);
+    const onDown = (e: PointerEvent) => {
+      const i = hitHandle(toCanvas(e));
+      if (i >= 0) {
+        dragging = i;
+        canvas.setPointerCapture(e.pointerId);
+        e.preventDefault();
+      }
+    };
+    const onMove = (e: PointerEvent) => {
+      const p = toCanvas(e);
+      if (dragging === null) {
+        canvas.style.cursor = hitHandle(p) >= 0 ? "grab" : "default";
+        return;
+      }
+      const clamped = Math.min(X_MAX, Math.max(X_MIN, pxToX(p.x)));
+      data[dragging]!.x = clamped;
+      // wake training: new data means a new optimization problem
+      epoch = Math.min(epoch, MAX_EPOCH - 1);
+      hold = 0;
+      if (lossHistory.length > 240) lossHistory = lossHistory.slice(-240);
+      canvas.style.cursor = "grabbing";
+    };
+    const onUp = () => {
+      dragging = null;
+      canvas.style.cursor = "default";
+    };
+    canvas.addEventListener("pointerdown", onDown);
+    canvas.addEventListener("pointermove", onMove);
+    canvas.addEventListener("pointerup", onUp);
+    canvas.addEventListener("pointercancel", onUp);
 
     // ── rAF with IntersectionObserver pause ──
     let raf = 0;
@@ -113,20 +162,21 @@ export function QuantumCircuitCanvas() {
     io.observe(canvas);
 
     function step() {
-      if (epoch >= MAX_EPOCH || (lossHistory.at(-1) ?? 1) < 1e-3) {
+      if (dragging === null && (epoch >= MAX_EPOCH || (lossHistory.at(-1) ?? 1) < 1e-3)) {
         if (++hold > HOLD_FRAMES) {
           initIdx = (initIdx + 1) % INITS.length;
           params = INITS[initIdx]!;
           epoch = 0;
           hold = 0;
-          lossHistory = [loss(DATA, params)];
+          lossHistory = [loss(data, params)];
         }
         return;
       }
       // one gradient step per frame ≈ 5s to convergence at 60fps — watchable
-      params = trainStep(DATA, params, LR);
+      params = trainStep(data, params, LR);
       epoch++;
-      lossHistory.push(loss(DATA, params));
+      lossHistory.push(loss(data, params));
+      if (lossHistory.length > 900) lossHistory = lossHistory.slice(-600);
     }
 
     function draw() {
@@ -242,7 +292,7 @@ export function QuantumCircuitCanvas() {
       );
 
       // ── Bloch projections (X–Z plane) for sample A ──
-      const s = finalState(DATA[0]!.x, params);
+      const s = finalState(data[0]!.x, params);
       const bloch = [blochVector(s, 0), blochVector(s, 1)];
       const centers = [
         { cx: 90, accent: col.q0, label: "q0" },
@@ -279,6 +329,41 @@ export function QuantumCircuitCanvas() {
         ctx.fillText(label, cx, cy + r + 12);
       }
 
+      // ── draggable data number line ──
+      ctx.strokeStyle = col.muted;
+      ctx.globalAlpha = 0.5;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(LINE_X0, LINE_Y);
+      ctx.lineTo(LINE_X1, LINE_Y);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+      for (let i = 0; i < data.length; i++) {
+        const d = data[i]!;
+        const hx = xToPx(d.x);
+        const accent = d.y === 1 ? col.q0 : col.q1;
+        const pred = classify(d.x, params);
+        const correct = Math.sign(pred) === d.y && Math.abs(pred) > 0.5;
+        ctx.fillStyle = accent;
+        ctx.beginPath();
+        ctx.arc(hx, LINE_Y, 7, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = accent;
+        ctx.globalAlpha = 0.35;
+        ctx.beginPath();
+        ctx.arc(hx, LINE_Y, 12, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+        ctx.font = mono(9);
+        ctx.textAlign = "center";
+        ctx.fillStyle = col.muted;
+        ctx.fillText(`y=${d.y > 0 ? "+1" : "−1"}${correct ? " ✓" : ""}`, hx, LINE_Y + 24);
+      }
+      ctx.fillStyle = col.muted;
+      ctx.font = mono(9);
+      ctx.textAlign = "left";
+      ctx.fillText("⇄ drag the points", LINE_X1 + 16, LINE_Y + 3);
+
       // caption
       ctx.fillStyle = col.muted;
       ctx.font = mono(10);
@@ -299,6 +384,10 @@ export function QuantumCircuitCanvas() {
     return () => {
       io.disconnect();
       if (raf) cancelAnimationFrame(raf);
+      canvas.removeEventListener("pointerdown", onDown);
+      canvas.removeEventListener("pointermove", onMove);
+      canvas.removeEventListener("pointerup", onUp);
+      canvas.removeEventListener("pointercancel", onUp);
     };
   }, [live, reduced]);
 
@@ -315,8 +404,8 @@ export function QuantumCircuitCanvas() {
     <canvas
       ref={canvasRef}
       role="img"
-      aria-label="Live demo: a 2-qubit variational quantum classifier training by parameter-shift gradient descent — rotation angles update, the loss curve descends, and two Bloch vectors converge."
-      className="w-full max-w-xl"
+      aria-label="Interactive demo: a 2-qubit variational quantum classifier training by parameter-shift gradient descent. Drag the two data points on the number line and watch the circuit retrain — rotation angles update, the loss curve descends, and two Bloch vectors converge."
+      className="w-full max-w-2xl touch-none select-none"
       style={{ aspectRatio: `${W} / ${H}` }}
     />
   );

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, IBM_Plex_Sans, STIX_Two_Text } from "next/font/google";
 import { ThemeProvider } from "next-themes";
+import { CommandPalette } from "@/components/palette/command-palette";
 import { FooterTerminal } from "@/components/ui/footer-terminal";
 import { Nav } from "@/components/ui/nav";
 import { LINKS, SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "@/lib/site";
@@ -85,6 +86,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Nav />
           <div id="main">{children}</div>
           <FooterTerminal />
+          <CommandPalette />
         </ThemeProvider>
       </body>
     </html>
