@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { BibtexBlock } from "@/components/paper/bibtex-block";
 import { SectionHeading } from "@/components/paper/section-heading";
 import { QuanvolutionDemo } from "@/components/quantum/quanvolution-demo";
+import { ExplainThis } from "@/components/ui/explain-this";
+import { getExplainers } from "@/lib/content/loader";
 import { TagChip } from "@/components/ui/tag-chip";
 import { getProject, getProjects, visibleProjects } from "@/lib/content/loader";
 import type { Project } from "@/lib/content/schema";
@@ -45,6 +47,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
   const { slug } = await params;
   const project = await getProject(slug);
   if (!project) notFound();
+  const explainers = await getExplainers();
 
   return (
     <main className="mx-auto max-w-3xl px-6 pb-16">
@@ -96,6 +99,9 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
           <figcaption className="mt-2 text-center font-mono text-xs text-muted">
             Fig. 1 — interactive quanvolution: a 2×2 quantum filter sweeping your drawing
           </figcaption>
+          {explainers.get("quanvolution") && (
+            <ExplainThis html={explainers.get("quanvolution")!} />
+          )}
         </figure>
       )}
 

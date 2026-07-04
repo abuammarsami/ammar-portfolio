@@ -16,6 +16,7 @@ export function CommandPalette() {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const commands: Command[] = [
+    { id: "learn", label: "goto learn", hint: "qubit → QML, interactive", run: () => router.push("/learn") },
     { id: "work", label: "goto work", hint: "engineering case studies", run: () => router.push("/work") },
     { id: "research", label: "goto research", hint: "arXiv-style listing", run: () => router.push("/research") },
     { id: "about", label: "goto about", hint: "narrative · experience · skills", run: () => router.push("/about") },

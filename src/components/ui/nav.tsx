@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ThemeToggle } from "./theme-toggle";
 
 const links = [
+  { href: "/learn", label: "learn" },
   { href: "/work", label: "work" },
   { href: "/research", label: "research" },
   { href: "/about", label: "about" },

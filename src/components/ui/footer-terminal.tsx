@@ -11,7 +11,7 @@ const HELP = [
   "cv              download resume.pdf",
   "email           copy my email address",
   "theme           toggle dark/light",
-  "goto <page>     work · research · about · writing",
+  "goto <page>     learn · work · research · about · writing",
   "clear           clear output",
 ];
 
@@ -45,7 +45,7 @@ export function FooterTerminal() {
         out.push(`theme → ${resolvedTheme === "dark" ? "light" : "dark"}`);
         break;
       case "goto":
-        if (arg && ["work", "research", "about", "writing"].includes(arg)) {
+        if (arg && ["learn", "work", "research", "about", "writing"].includes(arg)) {
           out.push(`navigating to /${arg} …`);
           router.push(`/${arg}`);
         } else {

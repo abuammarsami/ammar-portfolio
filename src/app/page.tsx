@@ -6,12 +6,17 @@ import { MagneticLink } from "@/components/ui/magnetic-link";
 import { ProjectCard } from "@/components/ui/project-card";
 import { Reveal } from "@/components/ui/reveal";
 import { StatsStrip } from "@/components/ui/stats-strip";
-import { getAbout, getProjects, visibleProjects } from "@/lib/content/loader";
+import { ExplainThis } from "@/components/ui/explain-this";
+import { getAbout, getExplainers, getProjects, visibleProjects } from "@/lib/content/loader";
 
 export const dynamic = "force-static";
 
 export default async function HomePage() {
-  const [about, allProjects] = await Promise.all([getAbout(), getProjects()]);
+  const [about, allProjects, explainers] = await Promise.all([
+    getAbout(),
+    getProjects(),
+    getExplainers(),
+  ]);
   const projects = visibleProjects(allProjects);
   const featured = projects.find((p) => p.slug === "kioskvisionai");
   const work = projects
@@ -51,10 +56,19 @@ export default async function HomePage() {
               >
                 Research &amp; publications →
               </MagneticLink>
+              <MagneticLink
+                href="/learn"
+                className="rounded-sm border rule-hair px-5 py-2.5 text-muted hover:text-ink"
+              >
+                Learn quantum, from zero →
+              </MagneticLink>
             </div>
           </div>
           <div className="enter enter-4 hidden md:block">
             <QuantumCircuitCanvas />
+            {explainers.get("hero-classifier") && (
+              <ExplainThis html={explainers.get("hero-classifier")!} />
+            )}
           </div>
         </div>
       </section>

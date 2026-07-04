@@ -8,6 +8,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const projects = visibleProjects(await getProjects());
   return [
     { url: SITE_URL, priority: 1 },
+    { url: `${SITE_URL}/learn`, priority: 0.9 },
     { url: `${SITE_URL}/work`, priority: 0.9 },
     { url: `${SITE_URL}/research`, priority: 0.9 },
     { url: `${SITE_URL}/about`, priority: 0.8 },
