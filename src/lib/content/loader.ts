@@ -5,13 +5,16 @@ import { markdownToHtml } from "./markdown";
 import {
   ABOUT_SECTIONS,
   LESSON_SECTIONS,
+  PAPER_SECTIONS,
   PROJECT_SECTIONS,
   lessonFrontmatterSchema,
+  paperFrontmatterSchema,
   projectFrontmatterSchema,
   simpleFrontmatterSchema,
   type About,
   type ExperienceRole,
   type Lesson,
+  type Paper,
   type Project,
   type SkillGroup,
 } from "./schema";
@@ -34,8 +37,13 @@ function read(rel: string): { data: unknown; body: string } | null {
   const abs = path.join(CONTENT_DIR, rel);
   if (!fs.existsSync(abs)) return null;
   const raw = fs.readFileSync(abs, "utf8");
-  const { data, content } = matter(raw);
-  return { data, body: content };
+  try {
+    const { data, content } = matter(raw);
+    return { data, body: content };
+  } catch (e) {
+    // gray-matter's YAMLException has no file path — attribute it (ADR-0002)
+    throw new Error(`[content] ${rel}: invalid frontmatter YAML — ${e instanceof Error ? e.message : String(e)}`);
+  }
 }
 
 /** Split a markdown body on `**Label:**` bold-label paragraphs (project template). */
@@ -126,6 +134,78 @@ export async function getProject(slug: string): Promise<Project | null> {
 /** Draft projects are hidden from production listings but still routable in dev. */
 export function visibleProjects(projects: Project[]): Project[] {
   return STRICT ? projects.filter((p) => p.status === "active") : projects;
+}
+
+// ---------------------------------------------------------------- papers
+
+/** Strip ```bibtex fences from the optional BibTeX section, leaving the raw entry. */
+function extractBibtex(section: string | undefined): string | null {
+  if (!section) return null;
+  const fenced = section.match(/```(?:bibtex)?\n([\s\S]*?)```/);
+  const raw = (fenced ? fenced[1]! : section).trim();
+  return raw || null;
+}
+
+/** content/papers/*.md → the research library (ADR-0008). */
+export async function getPapers(): Promise<Paper[]> {
+  const dir = path.join(CONTENT_DIR, "papers");
+  if (!fs.existsSync(dir)) return [];
+  const files = fs
+    .readdirSync(dir)
+    .filter((f) => f.endsWith(".md") && !f.startsWith("_"))
+    .sort();
+
+  const papers: Paper[] = [];
+  for (const file of files) {
+    const rel = path.join("papers", file);
+    const parsed = read(rel);
+    if (!parsed) continue;
+
+    const fmResult = paperFrontmatterSchema.safeParse(parsed.data);
+    if (!fmResult.success) {
+      missing(rel, `valid frontmatter (${fmResult.error.issues.map((i) => i.path.join(".") + ": " + i.message).join("; ")})`);
+      continue;
+    }
+
+    const fm = fmResult.data;
+    // related.* are rendered as hrefs on four surfaces — a dangling slug ships 404 links
+    if (fm.related.project && !fs.existsSync(path.join(CONTENT_DIR, "projects", `${fm.related.project}.md`))) {
+      missing(rel, `existing related.project (content/projects/${fm.related.project}.md not found)`);
+    }
+    if (fm.related.lesson && !fs.existsSync(path.join(CONTENT_DIR, "learn", `${fm.related.lesson}.md`))) {
+      missing(rel, `existing related.lesson (content/learn/${fm.related.lesson}.md not found)`);
+    }
+
+    const sections = splitLabelSections(stripComments(parsed.body));
+    for (const s of PAPER_SECTIONS) {
+      if (!sections.get(s)) missing(rel, `**${s}:** section`);
+    }
+
+    papers.push({
+      ...fm,
+      slug: file.replace(/\.md$/, ""),
+      abstractHtml: await markdownToHtml(sections.get("Abstract") ?? ""),
+      plainWordsHtml: await markdownToHtml(sections.get("In plain words") ?? ""),
+      methodHtml: await markdownToHtml(sections.get("Method") ?? ""),
+      resultsHtml: await markdownToHtml(sections.get("Results") ?? ""),
+      lookingBackHtml: await markdownToHtml(sections.get("Looking back") ?? ""),
+      bibtex: extractBibtex(sections.get("BibTeX")),
+    });
+  }
+
+  // featured first, then newest
+  return papers.sort((a, b) => Number(b.featured) - Number(a.featured) || b.year - a.year);
+}
+
+/** Resolves only papers visible in the current env — drafts stay dev-only on every surface (MCP included). */
+export async function getPaper(slug: string): Promise<Paper | null> {
+  const all = visiblePapers(await getPapers());
+  return all.find((p) => p.slug === slug) ?? null;
+}
+
+/** Draft papers are hidden from production listings but still routable in dev. */
+export function visiblePapers(papers: Paper[]): Paper[] {
+  return STRICT ? papers.filter((p) => p.status === "active") : papers;
 }
 
 // ---------------------------------------------------------------- about

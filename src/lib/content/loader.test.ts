@@ -95,6 +95,54 @@ describe("real content/ files", () => {
   });
 });
 
+describe("papers (ADR-0008)", () => {
+  it("loads the research library with all required sections", async () => {
+    const { getPapers } = await import("./loader");
+    const papers = await getPapers();
+    expect(papers.length).toBeGreaterThanOrEqual(4);
+    for (const p of papers) {
+      expect(p.slug).toMatch(/^[a-z0-9-]+$/);
+      expect(p.authors[0]).toBe("Md. Abu Ammar");
+      expect(p.abstractHtml).toContain("<p>");
+      expect(p.plainWordsHtml).toContain("<p>");
+      expect(p.methodHtml).toContain("<p>");
+      expect(p.resultsHtml).toContain("<p>");
+      expect(p.lookingBackHtml).toContain("<p>");
+    }
+    // featured first, then newest
+    const featured = papers.map((p) => p.featured);
+    expect(featured.indexOf(false)).toBeGreaterThanOrEqual(featured.lastIndexOf(true));
+  });
+
+  it("curates PDFs: hosted papers ship a file, others do not claim one", async () => {
+    const { getPapers } = await import("./loader");
+    const fs = await import("node:fs");
+    for (const p of await getPapers()) {
+      const shipped = fs.existsSync(`public/papers/${p.slug}.pdf`);
+      expect(shipped).toBe(p.pdf);
+    }
+  });
+
+  it("related.project / related.lesson always resolve to real content files", async () => {
+    const { getPapers } = await import("./loader");
+    const fs = await import("node:fs");
+    for (const p of await getPapers()) {
+      if (p.related.project) expect(fs.existsSync(`content/projects/${p.related.project}.md`), `${p.slug} → project ${p.related.project}`).toBe(true);
+      if (p.related.lesson) expect(fs.existsSync(`content/learn/${p.related.lesson}.md`), `${p.slug} → lesson ${p.related.lesson}`).toBe(true);
+    }
+  });
+
+  it("extracts raw BibTeX from the fenced block", async () => {
+    const { getPaper } = await import("./loader");
+    const thesis = await getPaper("quantum-machine-learning-thesis");
+    expect(thesis).not.toBeNull();
+    expect(thesis!.bibtex).toMatch(/^@thesis\{ammar2022qml,/);
+    expect(thesis!.bibtex).not.toContain("```");
+    expect(thesis!.supervisor).toBe("Dr. Mahdy Rahman Chowdhury");
+    expect(thesis!.related.lesson).toBe("06-quanvolution");
+  });
+});
+
 describe("lessons + explainers (P2)", () => {
   it("loads 6 ordered lessons with all required sections", async () => {
     const { getLessons } = await import("./loader");

@@ -8,6 +8,12 @@ const BUDGETS = [
   { route: "/", html: ".next/server/app/index.html", limit: 200_000 },
   { route: "/learn", html: ".next/server/app/learn.html", limit: 350_000 },
   { route: "/work", html: ".next/server/app/work.html", limit: 200_000 },
+  { route: "/research", html: ".next/server/app/research.html", limit: 200_000 },
+  {
+    route: "/research/quantum-machine-learning-thesis",
+    html: ".next/server/app/research/quantum-machine-learning-thesis.html",
+    limit: 200_000,
+  },
 ];
 
 let failed = false;

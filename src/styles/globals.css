@@ -22,8 +22,9 @@
   --color-bg: #fbfaf7;
   --color-surface: #f1efe9;
   --color-ink: #16181d;
-  --color-muted: #6b7080;
-  --color-q0: #0e7c72;
+  /* muted/q0 must hold >= 4.5:1 on --color-surface, not just --color-bg (WCAG AA) */
+  --color-muted: #616676;
+  --color-q0: #0d6f66;
   --color-q1: #5f49c9;
 }
 

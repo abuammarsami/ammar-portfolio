@@ -1,5 +1,5 @@
 import { buildCorpus } from "@/lib/agent/corpus";
-import { getLessons, getProjects, visibleProjects } from "@/lib/content/loader";
+import { getLessons, getPaper, getPapers, getProjects, visiblePapers, visibleProjects } from "@/lib/content/loader";
 import { LINKS, SITE_URL } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
@@ -12,7 +12,8 @@ export const dynamic = "force-dynamic";
 const TOOLS = [
   { name: "get_resume", description: "Md. Abu Ammar's full resume/corpus as plain text.", inputSchema: { type: "object", properties: {} } },
   { name: "list_projects", description: "All projects/case studies with summaries, categories, and links.", inputSchema: { type: "object", properties: {} } },
-  { name: "search_publications", description: "Search research work by keyword.", inputSchema: { type: "object", properties: { query: { type: "string" } }, required: ["query"] } },
+  { name: "search_publications", description: "Full-text search over Md. Abu Ammar's real papers and theses (title, abstract, method, results).", inputSchema: { type: "object", properties: { query: { type: "string" } }, required: ["query"] } },
+  { name: "get_paper", description: "One paper, distilled: abstract, plain-words summary, method, honest results, retrospective, BibTeX.", inputSchema: { type: "object", properties: { slug: { type: "string", description: "Paper slug from search_publications, e.g. quantum-machine-learning-thesis" } }, required: ["slug"] } },
   { name: "get_lessons", description: "The /learn interactive quantum curriculum outline.", inputSchema: { type: "object", properties: {} } },
   { name: "contact", description: "How to contact Md. Abu Ammar.", inputSchema: { type: "object", properties: {} } },
 ] as const;
@@ -32,11 +33,43 @@ async function callTool(name: string, args: Record<string, unknown>): Promise<st
     }
     case "search_publications": {
       const q = String(args.query ?? "").toLowerCase();
+      const strip = (h: string) => h.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+      const papers = visiblePapers(await getPapers());
+      const paperHits = papers
+        .filter((p) =>
+          [p.title, p.venue, p.tags.join(" "), strip(p.abstractHtml), strip(p.methodHtml), strip(p.resultsHtml)]
+            .join(" ")
+            .toLowerCase()
+            .includes(q),
+        )
+        .map((p) => ({
+          slug: p.slug, title: p.title, kind: p.kind, venue: p.venue, year: p.year,
+          abstract: strip(p.abstractHtml), url: `${SITE_URL}/research/${p.slug}`,
+          pdf: p.pdf ? `${SITE_URL}/papers/${p.slug}.pdf` : "on request",
+        }));
       const research = visibleProjects(await getProjects()).filter((p) => p.category === "research");
-      const hits = research.filter((p) =>
-        [p.title, p.summary, p.tags.join(" ")].join(" ").toLowerCase().includes(q),
+      const projectHits = research
+        .filter((p) => [p.title, p.summary, p.tags.join(" ")].join(" ").toLowerCase().includes(q))
+        .map((p) => ({ title: p.title, kind: "research project", summary: p.summary, url: `${SITE_URL}/work/${p.slug}` }));
+      return JSON.stringify({ papers: paperHits, projects: projectHits }, null, 2);
+    }
+    case "get_paper": {
+      const strip = (h: string) => h.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+      const paper = await getPaper(String(args.slug ?? ""));
+      if (!paper) throw new Error(`unknown paper: ${String(args.slug)} — call search_publications first`);
+      return JSON.stringify(
+        {
+          title: paper.title, authors: paper.authors, supervisor: paper.supervisor,
+          venue: paper.venue, year: paper.year, kind: paper.kind, tags: paper.tags,
+          abstract: strip(paper.abstractHtml), inPlainWords: strip(paper.plainWordsHtml),
+          method: strip(paper.methodHtml), results: strip(paper.resultsHtml),
+          lookingBack: strip(paper.lookingBackHtml), bibtex: paper.bibtex,
+          url: `${SITE_URL}/research/${paper.slug}`,
+          pdf: paper.pdf ? `${SITE_URL}/papers/${paper.slug}.pdf` : "available on request",
+        },
+        null,
+        2,
       );
-      return JSON.stringify(hits.map((p) => ({ title: p.title, summary: p.summary, url: `${SITE_URL}/work/${p.slug}` })), null, 2);
     }
     case "get_lessons": {
       const lessons = await getLessons();

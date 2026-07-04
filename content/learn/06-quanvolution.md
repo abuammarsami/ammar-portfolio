@@ -34,7 +34,8 @@ rotations, entangling, and measuring — the three moves you learned in lessons
 1–4 — compose into a working image-processing layer.
 
 ## Deeper
-My undergraduate thesis — "Machine learning in the realm of quantum" — compared
-quanvolutional networks and CVQNNs against classical CNN baselines on MNIST,
-across angle and amplitude encodings, on PennyLane simulators and IBMQ
-hardware. The full case study is on this site.
+My undergraduate thesis — "Machine Learning In The Realm Of Quantum" — compared
+a quanvolutional network and a continuous-variable QNN against classical CNN
+baselines on MNIST, on PennyLane simulators: the gate-based model reached 92%
+test accuracy against a 96% classical CNN. The
+[distilled paper](/research/quantum-machine-learning-thesis) is on this site.

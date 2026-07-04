@@ -7,7 +7,9 @@ Guide for AI agents working with this repository or consuming the deployed site.
 - `/llms.txt` — index for LLM crawlers · `/llms-full.txt` — full corpus
 - `/resume.json` — JSON Resume schema · `/resume.pdf`
 - `/api/mcp` — MCP server (streamable HTTP JSON-RPC): `get_resume`,
-  `list_projects`, `search_publications`, `get_lessons`, `contact`
+  `list_projects`, `search_publications`, `get_paper`, `get_lessons`, `contact`
+- `/research` — the library: real papers/theses distilled from
+  `content/papers/*.md`, curated PDFs under `/papers/<slug>.pdf` (ADR-0008)
 - `/api/chat` — grounded "Ask Ammar" endpoint (also surfaced as `ask <q>` in
   the site's terminal footer and ⌘K palette)
 
