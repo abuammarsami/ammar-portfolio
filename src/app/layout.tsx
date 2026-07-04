@@ -73,7 +73,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <script
           type="application/ld+json"
-          // eslint-disable-next-line react/no-danger -- static first-party JSON-LD
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
         />
         <ThemeProvider attribute="data-theme" defaultTheme="dark" enableSystem={false}>

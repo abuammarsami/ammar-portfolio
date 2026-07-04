@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import {
   blochVector,
   finalState,
@@ -43,19 +43,25 @@ function readColors(el: HTMLElement): Colors {
   };
 }
 
+const REDUCED_MQ = "(prefers-reduced-motion: reduce)";
+
+/** prefers-reduced-motion as an external store — no setState-in-effect. */
+function usePrefersReducedMotion(): boolean {
+  return useSyncExternalStore(
+    (onChange) => {
+      const mq = window.matchMedia(REDUCED_MQ);
+      mq.addEventListener("change", onChange);
+      return () => mq.removeEventListener("change", onChange);
+    },
+    () => window.matchMedia(REDUCED_MQ).matches,
+    () => false, // server snapshot
+  );
+}
+
 export function QuantumCircuitCanvas() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [live, setLive] = useState(false);
-  const [reduced, setReduced] = useState(false);
-
-  // prefers-reduced-motion → stay on the static converged frame
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReduced(mq.matches);
-    const onChange = (e: MediaQueryListEvent) => setReduced(e.matches);
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
-  }, []);
+  const reduced = usePrefersReducedMotion();
 
   // mount the live canvas only after the browser is idle (ADR-0004)
   useEffect(() => {

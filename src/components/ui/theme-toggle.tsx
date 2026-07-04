@@ -1,13 +1,22 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
+
+// Hydration-safe mounted detector (server snapshot = false, client = true)
+// without setState-in-effect.
+const emptySubscribe = () => () => {};
+function useMounted() {
+  return useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
+}
 
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
+  const mounted = useMounted();
 
   // Render a stable placeholder until mounted to avoid hydration mismatch.
   const isDark = mounted ? resolvedTheme === "dark" : true;
