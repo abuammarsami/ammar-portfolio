@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CircuitStatic } from "@/components/hero/circuit-static";
+import { QuantumCircuitCanvas } from "@/components/hero/quantum-circuit-canvas";
 import { ArxivRow } from "@/components/paper/arxiv-row";
 import { ProjectCard } from "@/components/ui/project-card";
 import { getAbout, getProjects, visibleProjects } from "@/lib/content/loader";
@@ -42,7 +42,7 @@ export default async function HomePage() {
           </div>
         </div>
         <div className="hidden md:block" aria-hidden={false}>
-          <CircuitStatic />
+          <QuantumCircuitCanvas />
         </div>
       </section>
 
