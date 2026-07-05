@@ -100,9 +100,15 @@ export async function runAgenticChat(opts: {
       body: JSON.stringify({ model, max_tokens: maxTokens, reasoning_effort: "low", ...body }),
     });
 
+  const upstreamFailure = async (res: Response): Promise<AgenticChatResult> => {
+    // status + body land in the function logs; the client only sees the status class
+    console.error(`[chat] groq upstream ${res.status}: ${(await res.text().catch(() => "")).slice(0, 500)}`);
+    return { kind: "error", status: 502, message: `upstream error (${res.status}) — try again shortly` };
+  };
+
   for (let hop = 0; hop < maxHops && Date.now() - started < deadlineMs; hop++) {
     const res = await call({ stream: false, tools: groqTools, tool_choice: "auto", messages });
-    if (!res.ok) return { kind: "error", status: 502, message: "upstream error — try again shortly" };
+    if (!res.ok) return upstreamFailure(res);
     const data = (await res.json().catch(() => null)) as { choices?: GroqChoice[] } | null;
     const msg = data?.choices?.[0]?.message;
     const calls = msg?.tool_calls ?? [];
@@ -139,6 +145,6 @@ export async function runAgenticChat(opts: {
 
   // final turn: tools still declared (the transcript references them) but no more calls
   const res = await call({ stream: true, tools: groqTools, tool_choice: "none", messages });
-  if (!res.ok || !res.body) return { kind: "error", status: 502, message: "upstream error — try again shortly" };
+  if (!res.ok || !res.body) return upstreamFailure(res);
   return { kind: "stream", preamble, upstream: res };
 }

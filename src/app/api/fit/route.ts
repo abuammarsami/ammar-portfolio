@@ -61,7 +61,8 @@ export async function POST(req: Request) {
     }),
   });
   if (!upstream.ok || !upstream.body) {
-    return new Response("upstream error — try again shortly", { status: 502 });
+    console.error(`[fit] groq upstream ${upstream.status}: ${(await upstream.text().catch(() => "")).slice(0, 500)}`);
+    return new Response(`upstream error (${upstream.status}) — try again shortly`, { status: 502 });
   }
 
   // SSE → plain text stream
