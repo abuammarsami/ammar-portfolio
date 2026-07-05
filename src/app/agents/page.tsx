@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { FitReport } from "@/components/agent/fit-report";
+import { GuestbookWall } from "@/components/agent/guestbook-wall";
 import { TOOLS } from "@/lib/agent/mcp-tools";
 import { createWebmcpTools } from "@/lib/agent/webmcp-tools";
 import { getAgentsPage } from "@/lib/content/loader";
@@ -67,6 +68,7 @@ export default async function AgentsPage() {
               <FitReport placeholder="Paste a job description or a research topic — e.g. 'Senior backend engineer: .NET, Azure, event-driven systems, payment infrastructure…'" />
             </div>
           )}
+          {s.heading === "Guestbook" && <GuestbookWall />}
         </section>
       ))}
     </main>

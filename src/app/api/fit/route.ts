@@ -1,5 +1,6 @@
 import { GROQ_MODEL, GROQ_URL } from "@/lib/agent/chat-loop";
 import { buildCorpus } from "@/lib/agent/corpus";
+import { recordEvent } from "@/lib/agent/guestbook";
 import { BRIEF_MAX, BRIEF_MIN, buildFitSystemPrompt, normalizeAudience, validateBrief } from "@/lib/agent/fit-prompt";
 
 export const dynamic = "force-dynamic";
@@ -41,6 +42,8 @@ export async function POST(req: Request) {
       status: 400,
     });
   }
+
+  void recordEvent({ tool: "fit_report", surface: "fit" }, req.headers.get("user-agent"));
 
   const corpus = await buildCorpus();
   const upstream = await fetch(GROQ_URL, {

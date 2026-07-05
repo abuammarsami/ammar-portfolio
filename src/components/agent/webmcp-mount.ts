@@ -60,6 +60,21 @@ export async function mount(navigate: (path: string) => void, signal: AbortSigna
     },
   });
 
+  // guestbook beacon — tool name only, fire-and-forget (ADR-0010)
+  const report = (tool: string) =>
+    void fetch("/api/beacon", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ tool, surface: "webmcp" }),
+    }).catch(() => {});
+  for (const t of tools) {
+    const inner = t.execute.bind(t);
+    t.execute = (input) => {
+      report(t.name);
+      return inner(input);
+    };
+  }
+
   if (mc.registerTool) {
     for (const t of tools) {
       // Chrome 149 returns undefined, 150+ a promise — and one bad tool must not kill the rest

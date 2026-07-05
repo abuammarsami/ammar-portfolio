@@ -47,6 +47,7 @@ export const AGENTS_SECTIONS = [
   "WebMCP tools",
   "Feeds",
   "Fit report",
+  "Guestbook",
   "Agent card",
   "How to interview this site",
 ] as const;
