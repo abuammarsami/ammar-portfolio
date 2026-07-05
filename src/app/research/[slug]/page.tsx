@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { BibtexBlock } from "@/components/paper/bibtex-block";
 import { SectionHeading } from "@/components/paper/section-heading";
 import { TagChip } from "@/components/ui/tag-chip";
+import { Vt } from "@/components/ui/vt";
 import { getPaper, getPapers, visiblePapers } from "@/lib/content/loader";
 import { LINKS, SITE_URL } from "@/lib/site";
 
@@ -61,7 +62,9 @@ export default async function PaperPage({ params }: { params: Promise<{ slug: st
           </Link>{" "}
           / {paper.slug} · {paper.venue} · {paper.year}
         </p>
-        <h1 className="mt-3 font-serif text-4xl leading-tight">{paper.title}</h1>
+        <Vt name={`paper-${paper.slug}`}>
+          <h1 className="mt-3 font-serif text-4xl leading-tight">{paper.title}</h1>
+        </Vt>
         <p className="mt-3 font-serif text-muted">
           {paper.authors.join(", ")}
           {paper.supervisor ? ` · supervised by ${paper.supervisor}` : ""}

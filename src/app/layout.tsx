@@ -5,6 +5,7 @@ import { WebmcpProvider } from "@/components/agent/webmcp-provider";
 import { CommandPalette } from "@/components/palette/command-palette";
 import { FooterTerminal } from "@/components/ui/footer-terminal";
 import { Nav } from "@/components/ui/nav";
+import { Vt } from "@/components/ui/vt";
 import { DEFAULT_LENS, LENS_INIT_SCRIPT } from "@/lib/agent/lens";
 import { LINKS, SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "@/lib/site";
 import "@/styles/globals.css";
@@ -89,7 +90,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             Skip to content
           </a>
           <Nav />
-          <div id="main">{children}</div>
+          {/* route-level cross-fade (P5); shared-element morphs opt in via named <Vt>s */}
+          <Vt>
+            <div id="main">{children}</div>
+          </Vt>
           <FooterTerminal />
           <CommandPalette />
           <WebmcpProvider />

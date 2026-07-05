@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { applyLens, LENSES } from "@/lib/agent/lens";
 import { AUTOPILOT_EVENT } from "@/lib/agent/autopilot-event";
+import { searchEntries, type SearchEntry } from "@/lib/search";
 
 type Command = { id: string; label: string; hint: string; run: () => void };
 
@@ -21,7 +22,22 @@ export function PaletteUi({ onClose }: { onClose: () => void }) {
   const { resolvedTheme, setTheme } = useTheme();
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
+  const [index, setIndex] = useState<SearchEntry[]>([]);
   const inputRef = useRef<HTMLInputElement | null>(null);
+
+  // full-content search index — static JSON, fetched once per palette open
+  useEffect(() => {
+    let alive = true;
+    void fetch("/search-index.json")
+      .then((r) => r.json())
+      .then((d: { entries?: SearchEntry[] }) => {
+        if (alive && Array.isArray(d.entries)) setIndex(d.entries);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   const commands: Command[] = [
     { id: "learn", label: "goto learn", hint: "qubit → QML, interactive", run: () => router.push("/learn") },
@@ -43,7 +59,15 @@ export function PaletteUi({ onClose }: { onClose: () => void }) {
     { id: "theme", label: "toggle theme", hint: resolvedTheme === "dark" ? "→ light" : "→ dark", run: () => setTheme(resolvedTheme === "dark" ? "light" : "dark") },
     { id: "github", label: "open github", hint: "abuammarsami", run: () => window.open("https://github.com/abuammarsami", "_blank", "noopener") },
   ];
-  const filtered = commands.filter((c) => c.label.includes(query.toLowerCase().trim()));
+  const contentHits: Command[] = query.trim()
+    ? searchEntries(index, query, 5).map((e) => ({
+        id: `open-${e.path}`,
+        label: `open ${e.title.length > 34 ? e.title.slice(0, 33) + "…" : e.title}`,
+        hint: `${e.kind} · ${e.hint}`,
+        run: () => router.push(e.path),
+      }))
+    : [];
+  const filtered = [...commands.filter((c) => c.label.includes(query.toLowerCase().trim())), ...contentHits];
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {

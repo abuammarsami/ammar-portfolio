@@ -7,6 +7,7 @@ import { QuanvolutionDemo } from "@/components/quantum/quanvolution-demo";
 import { ExplainThis } from "@/components/ui/explain-this";
 import { getExplainers } from "@/lib/content/loader";
 import { TagChip } from "@/components/ui/tag-chip";
+import { Vt } from "@/components/ui/vt";
 import { getProject, getProjects, visibleProjects } from "@/lib/content/loader";
 import type { Project } from "@/lib/content/schema";
 
@@ -59,7 +60,9 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
           </Link>{" "}
           / {project.slug} · {project.date}
         </p>
-        <h1 className="mt-3 font-serif text-4xl leading-tight">{project.title}</h1>
+        <Vt name={`project-${project.slug}`}>
+          <h1 className="mt-3 font-serif text-4xl leading-tight">{project.title}</h1>
+        </Vt>
         <p className="mt-3 flex flex-wrap gap-1.5">
           {project.tags.map((t) => (
             <TagChip key={t} label={t} />

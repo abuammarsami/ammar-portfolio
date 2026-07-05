@@ -167,6 +167,7 @@ export default async function HomePage() {
             {research.map((p) => (
               <ArxivRow
                 key={p.slug}
+                vtName={`paper-${p.slug}`}
                 id={`ammar${p.year}${p.slug.split("-")[0]}`}
                 title={p.title}
                 date={`${p.venue} · ${p.year}`}
