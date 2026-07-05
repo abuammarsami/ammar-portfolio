@@ -83,6 +83,12 @@ export default async function HomePage() {
                 })}
               </div>
             ))}
+            <p className="enter enter-4 mt-5 font-mono text-sm">
+              {/* zero-JS entry: /agents auto-starts the tour on #demo */}
+              <Link href="/agents#demo" className="text-muted transition-colors hover:text-q0">
+                ▶ or watch an AI interview this site
+              </Link>
+            </p>
           </div>
           <div className="enter enter-4 hidden md:block">
             <QuantumCircuitCanvas />

@@ -1,4 +1,4 @@
-import { getHeroSnapshot, requestHeroData } from "@/lib/agent/hero-bridge";
+import { claimHeroWriter, getHeroSnapshot, releaseHeroWriter, requestHeroData } from "@/lib/agent/hero-bridge";
 import { isLens, LENSES, type Lens } from "@/lib/agent/lens";
 import { LINKS, SITE_URL } from "@/lib/site";
 
@@ -43,6 +43,8 @@ export function searchCorpusSections(corpus: string, query: string): string[] {
   const sections = corpus.split(/\n(?=##? )/);
   return sections.filter((s) => s.toLowerCase().includes(q));
 }
+
+let demoSeq = 0;
 
 export function createWebmcpTools(deps: WebmcpDeps): WebmcpTool[] {
   let corpusCache: string | null = null;
@@ -118,11 +120,16 @@ export function createWebmcpTools(deps: WebmcpDeps): WebmcpTool[] {
         if (!getHeroSnapshot().mounted) {
           return 'the hero classifier is not on screen — call navigate_to {"page":"home"} first, then retry';
         }
+        const writer = `demo-${++demoSeq}`;
+        if (!claimHeroWriter(writer)) {
+          return "another agent is driving the hero right now — retry in a couple of seconds";
+        }
         const x0 = typeof input.x0 === "number" ? input.x0 : undefined;
         const x1 = typeof input.x1 === "number" ? input.x1 : undefined;
         requestHeroData(x0, x1);
         // let the visible retraining run a beat before reporting back
         await new Promise((r) => setTimeout(r, 1500));
+        releaseHeroWriter(writer);
         const s = getHeroSnapshot();
         return JSON.stringify(
           {

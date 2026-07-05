@@ -5,6 +5,7 @@ import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 
 import { applyLens, LENSES } from "@/lib/agent/lens";
+import { AUTOPILOT_EVENT } from "@/lib/agent/autopilot-event";
 
 type Command = { id: string; label: string; hint: string; run: () => void };
 
@@ -28,6 +29,7 @@ export function PaletteUi({ onClose }: { onClose: () => void }) {
     { id: "research", label: "goto research", hint: "arXiv-style listing", run: () => router.push("/research") },
     { id: "agents", label: "goto agents", hint: "the machine interface", run: () => router.push("/agents") },
     { id: "fit", label: "fit report", hint: "paste a JD, get an honest match", run: () => router.push("/agents#fit") },
+    { id: "autopilot", label: "autopilot demo", hint: "watch the agent interview this site", run: () => window.dispatchEvent(new Event(AUTOPILOT_EVENT)) },
     { id: "about", label: "goto about", hint: "narrative · experience · skills", run: () => router.push("/about") },
     { id: "home", label: "goto home", hint: "the quantum hero", run: () => router.push("/") },
     ...LENSES.map((lens) => ({

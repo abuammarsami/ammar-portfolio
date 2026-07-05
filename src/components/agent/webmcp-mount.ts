@@ -1,5 +1,5 @@
 import { applyLens } from "@/lib/agent/lens";
-import { createWebmcpTools } from "@/lib/agent/webmcp-tools";
+import { createWebmcpTools, type WebmcpDeps } from "@/lib/agent/webmcp-tools";
 
 /**
  * The WebMCP mount body — lazy-loaded by webmcp-provider.tsx so the origin-trial
@@ -31,20 +31,9 @@ function injectOriginTrialToken(): void {
   document.head.appendChild(meta);
 }
 
-export async function mount(navigate: (path: string) => void, signal: AbortSignal): Promise<void> {
-  injectOriginTrialToken();
-
-  // the interface may install shortly after runtime token validation
-  let mc = modelContext();
-  for (let i = 0; !mc && i < 4; i++) {
-    await new Promise((r) => setTimeout(r, 250));
-    if (signal.aborted) return;
-    mc = modelContext();
-  }
-  if (!mc || (!mc.registerTool && !mc.provideContext)) return;
-  if (signal.aborted) return;
-
-  const tools = createWebmcpTools({
+/** The real browser deps — shared by the WebMCP mount and the autopilot tour. */
+export function browserDeps(navigate: (path: string) => void): WebmcpDeps {
+  return {
     navigate,
     download: (path) => window.location.assign(path),
     setLens: applyLens,
@@ -58,7 +47,23 @@ export async function mount(navigate: (path: string) => void, signal: AbortSigna
       const rpc = (await res.json()) as { result?: { content?: { text?: string }[] } };
       return rpc.result?.content?.[0]?.text ?? "";
     },
-  });
+  };
+}
+
+export async function mount(navigate: (path: string) => void, signal: AbortSignal): Promise<void> {
+  injectOriginTrialToken();
+
+  // the interface may install shortly after runtime token validation
+  let mc = modelContext();
+  for (let i = 0; !mc && i < 4; i++) {
+    await new Promise((r) => setTimeout(r, 250));
+    if (signal.aborted) return;
+    mc = modelContext();
+  }
+  if (!mc || (!mc.registerTool && !mc.provideContext)) return;
+  if (signal.aborted) return;
+
+  const tools = createWebmcpTools(browserDeps(navigate));
 
   // guestbook beacon — tool name only, fire-and-forget (ADR-0010)
   const report = (tool: string) =>

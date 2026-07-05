@@ -2,6 +2,7 @@ import type { Dispatch, SetStateAction } from "react";
 
 import { parseActionLine } from "@/lib/agent/chat-actions";
 import { applyLens, isLens, LENSES } from "@/lib/agent/lens";
+import { AUTOPILOT_EVENT } from "@/lib/agent/autopilot-event";
 
 /**
  * The footer terminal's command engine — lazy-loaded on the first Enter so
@@ -26,6 +27,7 @@ const HELP = [
   "lens <who>      view as recruiter · professor · engineer",
   "ask <question>  ask my AI agent — it can search my work and take you there",
   "fit             paste a job description, get an honest fit report",
+  "demo            autopilot: watch the agent interview this site",
   "clear           clear output",
 ];
 
@@ -61,6 +63,10 @@ export function runCommand(raw: string, ctx: TerminalCtx): void {
     case "fit":
       out.push("opening the fit report …");
       ctx.navigate("/agents#fit");
+      break;
+    case "demo":
+      out.push("engaging autopilot — ⟨esc⟩ or scroll to stop …");
+      window.dispatchEvent(new Event(AUTOPILOT_EVENT));
       break;
     case "lens":
       if (arg && isLens(arg)) {

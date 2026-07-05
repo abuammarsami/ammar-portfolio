@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AutopilotButton } from "@/components/agent/autopilot-button";
 import { FitReport } from "@/components/agent/fit-report";
 import { GuestbookWall } from "@/components/agent/guestbook-wall";
 import { TOOLS } from "@/lib/agent/mcp-tools";
@@ -53,6 +54,7 @@ export default async function AgentsPage() {
           dangerouslySetInnerHTML={{ __html: tagline.bodyHtml }}
         />
       )}
+      <AutopilotButton />
 
       {rest.map((s) => (
         <section key={s.heading} id={s.heading === "Fit report" ? "fit" : undefined} className="mt-12">
