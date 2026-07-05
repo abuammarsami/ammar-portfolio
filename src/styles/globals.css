@@ -219,6 +219,48 @@ body {
   letter-spacing: -0.02em;
 }
 
+/* View Transitions (plan-0005 P5) — progressive enhancement.
+   The theme toggle reads as a quantum measurement: the old state collapses
+   (fast fade + blur) while the new one resolves. Scoped by [data-vt] so
+   route navigations keep the browser's plain cross-fade; < 300ms so the
+   root snapshot freeze is invisible on the hero canvas. */
+html[data-vt="measure"]::view-transition-old(root) {
+  animation: vt-collapse 0.26s ease-in both;
+}
+html[data-vt="measure"]::view-transition-new(root) {
+  animation: vt-resolve 0.26s ease-out both;
+}
+@keyframes vt-collapse {
+  to {
+    opacity: 0;
+    filter: blur(6px) saturate(0.5);
+  }
+}
+@keyframes vt-resolve {
+  from {
+    opacity: 0;
+  }
+}
+
+/* reduced motion: every view transition becomes an instant swap */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0s !important;
+  }
+}
+
+/* Adaptive lens (plan-0005): all variants are statically rendered; the active
+   data-lens on <html> (restored pre-paint) shows exactly one. display:none
+   keeps hidden variants out of the accessibility tree — never reorder with
+   flex `order` (visual/DOM order desync). Default lens = recruiter (SEO). */
+[data-lens="recruiter"] :is(.lens-professor, .lens-engineer),
+[data-lens="professor"] :is(.lens-recruiter, .lens-engineer),
+[data-lens="engineer"] :is(.lens-recruiter, .lens-professor) {
+  display: none !important;
+}
+
 @media print {
   .no-print,
   nav,

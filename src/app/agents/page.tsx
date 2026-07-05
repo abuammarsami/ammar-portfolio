@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { AutopilotButton } from "@/components/agent/autopilot-button";
 import { FitReport } from "@/components/agent/fit-report";
+import { GuestbookWall } from "@/components/agent/guestbook-wall";
 import { TOOLS } from "@/lib/agent/mcp-tools";
 import { createWebmcpTools } from "@/lib/agent/webmcp-tools";
 import { getAgentsPage } from "@/lib/content/loader";
@@ -17,6 +19,7 @@ const WEBMCP_TOOLS = createWebmcpTools({
   download: () => {},
   fetchText: async () => "",
   mcpCall: async () => "",
+  setLens: () => {},
 }).map((t) => ({ name: t.name, description: t.description }));
 
 function ToolTable({ tools, caption }: { tools: readonly { name: string; description: string }[]; caption: string }) {
@@ -51,6 +54,7 @@ export default async function AgentsPage() {
           dangerouslySetInnerHTML={{ __html: tagline.bodyHtml }}
         />
       )}
+      <AutopilotButton />
 
       {rest.map((s) => (
         <section key={s.heading} id={s.heading === "Fit report" ? "fit" : undefined} className="mt-12">
@@ -66,6 +70,7 @@ export default async function AgentsPage() {
               <FitReport placeholder="Paste a job description or a research topic — e.g. 'Senior backend engineer: .NET, Azure, event-driven systems, payment infrastructure…'" />
             </div>
           )}
+          {s.heading === "Guestbook" && <GuestbookWall />}
         </section>
       ))}
     </main>

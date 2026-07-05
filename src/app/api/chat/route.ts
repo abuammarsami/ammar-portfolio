@@ -1,6 +1,7 @@
 import { createScrubber } from "@/lib/agent/chat-actions";
 import { runAgenticChat } from "@/lib/agent/chat-loop";
 import { buildCorpus } from "@/lib/agent/corpus";
+import { recordEvent } from "@/lib/agent/guestbook";
 import { callTool, TOOLS } from "@/lib/agent/mcp-tools";
 
 export const dynamic = "force-dynamic";
@@ -55,6 +56,8 @@ export async function POST(req: Request) {
   if (!question || question.length > 500) {
     return new Response("send { question: string } (≤500 chars)", { status: 400 });
   }
+
+  void recordEvent({ tool: "ask", surface: "chat" }, req.headers.get("user-agent"));
 
   const corpus = await buildCorpus();
   const result = await runAgenticChat({

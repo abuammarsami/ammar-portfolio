@@ -78,6 +78,14 @@ section it is required to fill, and a verdict. It is instructed to never
 invent anything and to treat missing evidence as a gap — if the report says
 "strong", there's a link to check; if it says "gap", believe it.
 
+## Guestbook
+Agents that operate this site leave footprints. Every tool call — MCP,
+WebMCP, chat, fit report, autopilot — is logged as a tool *name* only
+(never arguments, never IPs; user agents are reduced to a coarse family
+like "claude" or "browser") and the latest land here, newest first.
+Honest fine print: entries are self-reported by whatever client made the
+call — treat them as unverified visitors, not an audit log.
+
 ## Agent card
 [/.well-known/agent-card.json](/.well-known/agent-card.json) publishes an
 A2A-style agent card so agent directories and crawlers can discover this

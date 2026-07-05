@@ -216,17 +216,30 @@ export async function getAbout(): Promise<About> {
   const parsed = read("about.md");
   if (!parsed) {
     missing("about.md", "file");
-    return { status: "draft", tagline: "", subheading: "", narrativeHtml: "" };
+    return {
+      status: "draft",
+      tagline: "",
+      subheading: "",
+      subheadings: { recruiter: "", professor: "", engineer: "" },
+      narrativeHtml: "",
+    };
   }
   const fm = simpleFrontmatterSchema.parse(parsed.data ?? {});
   const sections = splitHeadingSections(stripComments(parsed.body));
   for (const s of ABOUT_SECTIONS) {
     if (!sections.get(s)) missing("about.md", `"## ${s}" section`);
   }
+  const subheading = sections.get("Hero subheading") ?? "";
   return {
     status: fm.status,
     tagline: sections.get("Hero tagline") ?? "",
-    subheading: sections.get("Hero subheading") ?? "",
+    subheading,
+    // lens variants are optional — absent ones fall back to the base (plan-0005)
+    subheadings: {
+      recruiter: subheading,
+      professor: sections.get("Hero subheading (professor)") || subheading,
+      engineer: sections.get("Hero subheading (engineer)") || subheading,
+    },
     narrativeHtml: await markdownToHtml(sections.get("About me narrative") ?? ""),
   };
 }

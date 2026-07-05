@@ -12,6 +12,18 @@ I build production systems at Masjid Solutions: payment infrastructure moving mi
 dollars a year, AI-powered kiosk monitoring across 120+ devices, and .NET Aspire
 distributed platforms on Azure. MS CS researcher in quantum machine learning.
 
+## Hero subheading (professor)
+My undergraduate thesis explored quantum machine learning — variational circuits and
+encoding methods on PennyLane simulators — and the research thread continues through my
+MS: Bangla POS tagging with knowledge distillation, multi-output CNNs, ensemble methods.
+I bring a production engineer's discipline to research code.
+
+## Hero subheading (engineer)
+Payment rails (Stripe, ACH, wallets) moving millions a year for 20,000+ users, Azure
+Vision AI watching 120+ kiosks, roughly 200 releases a year through CI/CD I architected —
+designed with DDD and vertical slices. The hero beside this text is a quantum classifier
+I wrote from scratch; drag the data points.
+
 ## About me narrative
 I work where production engineering meets machine learning research — connecting business
 operations, software architecture, AI, payments, and cloud infrastructure into systems

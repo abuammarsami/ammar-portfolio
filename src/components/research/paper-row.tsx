@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { TagChip } from "@/components/ui/tag-chip";
+import { Vt } from "@/components/ui/vt";
 import type { Paper } from "@/lib/content/schema";
 
 function stripHtml(html: string): string {
@@ -18,11 +19,13 @@ export function PaperRow({ paper }: { paper: Paper }) {
         · {paper.venue} · {paper.year}
       </p>
       {/* h3: rows nest under the page's h2 section headings, like ArxivRow */}
-      <h3 className="mt-1 font-serif text-xl">
-        <Link href={`/research/${paper.slug}`} className="transition-colors hover:text-q0">
-          {paper.title}
-        </Link>
-      </h3>
+      <Vt name={`paper-${paper.slug}`}>
+        <h3 className="mt-1 font-serif text-xl">
+          <Link href={`/research/${paper.slug}`} className="transition-colors hover:text-q0">
+            {paper.title}
+          </Link>
+        </h3>
+      </Vt>
       <p className="mt-1 font-serif text-sm text-muted">
         {paper.authors.join(", ")}
         {paper.supervisor ? ` · supervised by ${paper.supervisor}` : ""}

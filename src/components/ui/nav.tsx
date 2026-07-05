@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LensPill } from "./lens-pill";
 import { ThemeToggle } from "./theme-toggle";
 
 const links = [
@@ -39,6 +40,7 @@ export function Nav() {
           >
             ⌘K
           </kbd>
+          <LensPill />
           <ThemeToggle />
         </div>
       </nav>

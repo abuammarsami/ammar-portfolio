@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { TagChip } from "@/components/ui/tag-chip";
+import { Vt } from "@/components/ui/vt";
 
 export type ArxivRowProps = {
   id: string; // mono identifier, e.g. "ammar-2022-qml"
@@ -10,6 +11,8 @@ export type ArxivRowProps = {
   links: { label: string; href: string }[];
   /** h3 under a section heading (homepage); h2 directly under a page h1 (/research). */
   headingLevel?: "h2" | "h3";
+  /** Shared-element morph name paired with the detail page title (P5). */
+  vtName?: string;
 };
 
 /** arXiv-style listing row — /research (ADR-0003). Abstract expands via <details>, zero JS. */
@@ -21,6 +24,7 @@ export function ArxivRow({
   abstract,
   links,
   headingLevel = "h3",
+  vtName,
 }: ArxivRowProps) {
   const Heading = headingLevel;
   return (
@@ -28,7 +32,9 @@ export function ArxivRow({
       <p className="font-mono text-xs text-muted">
         <span className="entangled-a text-q0">{id}</span> · {date}
       </p>
-      <Heading className="mt-1 font-serif text-xl">{title}</Heading>
+      <Vt name={vtName}>
+        <Heading className="mt-1 font-serif text-xl">{title}</Heading>
+      </Vt>
       <p className="mt-1.5 flex flex-wrap gap-1.5">
         {categories.map((c) => (
           <TagChip key={c} label={c} />

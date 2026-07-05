@@ -1,4 +1,5 @@
-import { getHeroSnapshot, requestHeroData } from "@/lib/agent/hero-bridge";
+import { claimHeroWriter, getHeroSnapshot, releaseHeroWriter, requestHeroData } from "@/lib/agent/hero-bridge";
+import { isLens, LENSES, type Lens } from "@/lib/agent/lens";
 import { LINKS, SITE_URL } from "@/lib/site";
 
 /**
@@ -23,6 +24,7 @@ export type WebmcpDeps = {
   download(path: string): void;
   fetchText(url: string): Promise<string>;
   mcpCall(tool: string, args: Record<string, unknown>): Promise<string>;
+  setLens(lens: Lens): void;
 };
 
 export const PAGES: Record<string, { path: string; blurb: string }> = {
@@ -41,6 +43,8 @@ export function searchCorpusSections(corpus: string, query: string): string[] {
   const sections = corpus.split(/\n(?=##? )/);
   return sections.filter((s) => s.toLowerCase().includes(q));
 }
+
+let demoSeq = 0;
 
 export function createWebmcpTools(deps: WebmcpDeps): WebmcpTool[] {
   let corpusCache: string | null = null;
@@ -116,11 +120,20 @@ export function createWebmcpTools(deps: WebmcpDeps): WebmcpTool[] {
         if (!getHeroSnapshot().mounted) {
           return 'the hero classifier is not on screen — call navigate_to {"page":"home"} first, then retry';
         }
-        const x0 = typeof input.x0 === "number" ? input.x0 : undefined;
-        const x1 = typeof input.x1 === "number" ? input.x1 : undefined;
-        requestHeroData(x0, x1);
-        // let the visible retraining run a beat before reporting back
-        await new Promise((r) => setTimeout(r, 1500));
+        const writer = `demo-${++demoSeq}`;
+        if (!claimHeroWriter(writer)) {
+          return "another agent is driving the hero right now — retry in a couple of seconds";
+        }
+        try {
+          const x0 = typeof input.x0 === "number" ? input.x0 : undefined;
+          const x1 = typeof input.x1 === "number" ? input.x1 : undefined;
+          requestHeroData(x0, x1);
+          // let the visible retraining run a beat before reporting back
+          await new Promise((r) => setTimeout(r, 1500));
+        } finally {
+          // a throw must not wedge the lock for the rest of the session
+          releaseHeroWriter(writer);
+        }
         const s = getHeroSnapshot();
         return JSON.stringify(
           {
@@ -133,6 +146,18 @@ export function createWebmcpTools(deps: WebmcpDeps): WebmcpTool[] {
           null,
           2,
         );
+      },
+    },
+    {
+      name: "set_lens",
+      description:
+        "Adapt the whole site's emphasis for your principal: recruiter (default — production systems first), professor (research and theses first), or engineer (architecture and shipping cadence first). Applies instantly and persists for the visit.",
+      inputSchema: { type: "object", properties: { lens: { type: "string", enum: [...LENSES] } }, required: ["lens"] },
+      async execute(input) {
+        const lens = input.lens;
+        if (!isLens(lens)) return `unknown lens "${String(lens)}" — valid: ${LENSES.join(", ")}`;
+        deps.setLens(lens);
+        return `lens set to ${lens} — the hero and page emphasis now speak to a ${lens}`;
       },
     },
     {

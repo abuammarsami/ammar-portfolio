@@ -80,6 +80,17 @@ describe("real content/ files", () => {
     expect(about.narrativeHtml).toContain("<p>");
   });
 
+  it("resolves every lens subheading, falling back to the base when a variant is absent", async () => {
+    const about = await getAbout();
+    expect(about.subheadings.recruiter).toBe(about.subheading);
+    for (const lens of ["recruiter", "professor", "engineer"] as const) {
+      expect(about.subheadings[lens].length).toBeGreaterThan(10);
+    }
+    // the authored variants differ from the base (content/about.md carries them)
+    expect(about.subheadings.professor).not.toBe(about.subheading);
+    expect(about.subheadings.engineer).not.toBe(about.subheading);
+  });
+
   it("loads experience roles with meta lines", async () => {
     const roles = await getExperience();
     expect(roles.length).toBeGreaterThanOrEqual(3);

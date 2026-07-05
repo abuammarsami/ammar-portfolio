@@ -34,6 +34,21 @@ export function getHeroSnapshot(): HeroSnapshot {
   return { ...snapshot, params: [...snapshot.params], data: snapshot.data.map((d) => ({ ...d })) };
 }
 
+// Single-writer guard (plan-0005): a WebMCP agent and the autopilot tour must
+// not fight over the hero's data points. Claims are transient and re-entrant
+// per holder id; a competing holder is simply told to wait.
+let heroWriter: string | null = null;
+
+export function claimHeroWriter(who: string): boolean {
+  if (heroWriter !== null && heroWriter !== who) return false;
+  heroWriter = who;
+  return true;
+}
+
+export function releaseHeroWriter(who: string): void {
+  if (heroWriter === who) heroWriter = null;
+}
+
 /** Ask the hero to move its data points and retrain. No-op listener-side if unmounted. */
 export function requestHeroData(
   x0?: number,

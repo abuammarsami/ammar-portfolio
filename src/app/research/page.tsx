@@ -67,6 +67,7 @@ export default async function ResearchPage() {
             <ArxivRow
               key={p.slug}
               headingLevel="h3"
+              vtName={`project-${p.slug}`}
               id={p.slug}
               title={p.title}
               date={p.date}
