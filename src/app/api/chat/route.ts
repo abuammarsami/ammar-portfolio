@@ -1,4 +1,7 @@
+import { createScrubber } from "@/lib/agent/chat-actions";
+import { runAgenticChat } from "@/lib/agent/chat-loop";
 import { buildCorpus } from "@/lib/agent/corpus";
+import { callTool, TOOLS } from "@/lib/agent/mcp-tools";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -16,10 +19,25 @@ function limited(ip: string): boolean {
   return h.n > 10;
 }
 
+// get_resume is excluded: the whole corpus is already in the system prompt
+const CHAT_TOOLS = TOOLS.filter((t) => t.name !== "get_resume");
+
+function systemPrompt(corpus: string): string {
+  return (
+    "You are the portfolio agent of Md. Abu Ammar. Answer questions about him using ONLY the corpus below. " +
+    "Be concise (2-5 sentences), specific, and cite site paths like /work/kioskvisionai when relevant. " +
+    "If the answer isn't in the corpus, say so plainly and suggest emailing him — never invent facts. " +
+    "You have tools: call search_publications/get_paper/list_projects/get_lessons/contact for details beyond the corpus. " +
+    "If the visitor asks to see, open, or go to a page, call navigate with the internal path, then answer in one short sentence.\n\n" +
+    corpus
+  );
+}
+
 /**
- * "Ask Ammar" — grounded chat (ADR-0007). Whole-corpus-in-context, no RAG.
- * Streams plain text. Zero dependencies: direct fetch to Groq's
- * OpenAI-compatible API; graceful offline message without the key.
+ * "Ask Ammar" — agentic grounded chat (ADR-0007, plan-0005). Corpus-in-context
+ * plus a function-calling loop over the MCP tool layer; the model can also
+ * navigate the visitor's browser via @@action lines (see chat-actions.ts).
+ * Streams plain text. Zero dependencies; graceful offline message without the key.
  */
 export async function POST(req: Request) {
   const key = process.env.GROQ_API_KEY;
@@ -39,37 +57,34 @@ export async function POST(req: Request) {
   }
 
   const corpus = await buildCorpus();
-  const upstream = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-    method: "POST",
-    headers: { authorization: `Bearer ${key}`, "content-type": "application/json" },
-    body: JSON.stringify({
-      model: "llama-3.3-70b-versatile",
-      stream: true,
-      max_tokens: 400,
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are the portfolio agent of Md. Abu Ammar. Answer questions about him using ONLY the corpus below. " +
-            "Be concise (2-5 sentences), specific, and cite site paths like /work/kioskvisionai when relevant. " +
-            "If the answer isn't in the corpus, say so plainly and suggest emailing him — never invent facts.\n\n" +
-            corpus,
-        },
-        { role: "user", content: question },
-      ],
-    }),
+  const result = await runAgenticChat({
+    apiKey: key,
+    tools: CHAT_TOOLS,
+    callTool,
+    messages: [
+      { role: "system", content: systemPrompt(corpus) },
+      { role: "user", content: question },
+    ],
   });
-  if (!upstream.ok || !upstream.body) {
-    return new Response("upstream error — try again shortly", { status: 502 });
+
+  if (result.kind === "error") return new Response(result.message, { status: result.status });
+
+  const headers = { "content-type": "text/plain; charset=utf-8" };
+  const scrub = createScrubber();
+
+  if (result.kind === "text") {
+    return new Response(result.preamble + scrub.push(result.text + "\n") + scrub.flush(), { headers });
   }
 
-  // SSE → plain text stream
+  // SSE → plain text stream, action preamble first, model "@@" lines scrubbed
   const decoder = new TextDecoder();
   let buf = "";
+  const upstream = result.upstream;
   const stream = new ReadableStream({
     async start(controller) {
       const reader = upstream.body!.getReader();
       const enc = new TextEncoder();
+      if (result.preamble) controller.enqueue(enc.encode(result.preamble));
       for (;;) {
         const { done, value } = await reader.read();
         if (done) break;
@@ -80,14 +95,19 @@ export async function POST(req: Request) {
           if (!line.startsWith("data: ") || line === "data: [DONE]") continue;
           try {
             const delta = JSON.parse(line.slice(6)).choices?.[0]?.delta?.content;
-            if (delta) controller.enqueue(enc.encode(delta));
+            if (delta) {
+              const out = scrub.push(delta);
+              if (out) controller.enqueue(enc.encode(out));
+            }
           } catch {
             /* partial frame — ignored */
           }
         }
       }
+      const rest = scrub.flush();
+      if (rest) controller.enqueue(enc.encode(rest));
       controller.close();
     },
   });
-  return new Response(stream, { headers: { "content-type": "text/plain; charset=utf-8" } });
+  return new Response(stream, { headers });
 }
