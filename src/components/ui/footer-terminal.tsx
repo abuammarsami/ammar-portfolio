@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useRef, useState } from "react";
 
+import { parseActionLine } from "@/lib/agent/chat-actions";
+
 const PROMPT = "ammar@portfolio:~$";
 
 const HELP = [
@@ -12,7 +14,7 @@ const HELP = [
   "email           copy my email address",
   "theme           toggle dark/light",
   "goto <page>     learn · work · research · agents · about · writing",
-  "ask <question>  ask my AI agent anything about me",
+  "ask <question>  ask my AI agent — it can search my work and take you there",
   "fit             paste a job description, get an honest fit report",
   "clear           clear output",
 ];
@@ -74,7 +76,18 @@ export function FooterTerminal() {
               body: JSON.stringify({ question: q }),
             });
             const text = await res.text();
-            setLines((prev) => [...prev.filter((l) => l !== "thinking…").slice(-10), ...text.split("\n").filter(Boolean)]);
+            // intercept @@action lines (agentic chat — plan-0005); drop any other "@@" line
+            const rendered: string[] = [];
+            for (const line of text.split("\n")) {
+              const action = parseActionLine(line);
+              if (action) {
+                rendered.push(`→ opening ${action.path} …`);
+                router.push(action.path);
+              } else if (line && !line.trimStart().startsWith("@@")) {
+                rendered.push(line);
+              }
+            }
+            setLines((prev) => [...prev.filter((l) => l !== "thinking…").slice(-10), ...rendered]);
           } catch {
             setLines((prev) => [...prev, "agent unreachable — try /llms-full.txt"]);
           }

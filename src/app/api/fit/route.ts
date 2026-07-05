@@ -1,3 +1,4 @@
+import { GROQ_MODEL, GROQ_URL } from "@/lib/agent/chat-loop";
 import { buildCorpus } from "@/lib/agent/corpus";
 import { BRIEF_MAX, BRIEF_MIN, buildFitSystemPrompt, normalizeAudience, validateBrief } from "@/lib/agent/fit-prompt";
 
@@ -42,13 +43,14 @@ export async function POST(req: Request) {
   }
 
   const corpus = await buildCorpus();
-  const upstream = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+  const upstream = await fetch(GROQ_URL, {
     method: "POST",
     headers: { authorization: `Bearer ${key}`, "content-type": "application/json" },
     body: JSON.stringify({
-      model: "llama-3.3-70b-versatile",
+      model: GROQ_MODEL,
       stream: true,
       max_tokens: 1200,
+      reasoning_effort: "low",
       messages: [
         { role: "system", content: buildFitSystemPrompt(corpus, normalizeAudience(body.audience)) },
         { role: "user", content: body.brief },
