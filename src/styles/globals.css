@@ -219,6 +219,16 @@ body {
   letter-spacing: -0.02em;
 }
 
+/* Adaptive lens (plan-0005): all variants are statically rendered; the active
+   data-lens on <html> (restored pre-paint) shows exactly one. display:none
+   keeps hidden variants out of the accessibility tree — never reorder with
+   flex `order` (visual/DOM order desync). Default lens = recruiter (SEO). */
+[data-lens="recruiter"] :is(.lens-professor, .lens-engineer),
+[data-lens="professor"] :is(.lens-recruiter, .lens-engineer),
+[data-lens="engineer"] :is(.lens-recruiter, .lens-professor) {
+  display: none !important;
+}
+
 @media print {
   .no-print,
   nav,

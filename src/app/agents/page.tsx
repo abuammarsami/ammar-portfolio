@@ -17,6 +17,7 @@ const WEBMCP_TOOLS = createWebmcpTools({
   download: () => {},
   fetchText: async () => "",
   mcpCall: async () => "",
+  setLens: () => {},
 }).map((t) => ({ name: t.name, description: t.description }));
 
 function ToolTable({ tools, caption }: { tools: readonly { name: string; description: string }[]; caption: string }) {

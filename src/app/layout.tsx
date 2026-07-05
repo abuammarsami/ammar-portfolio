@@ -5,6 +5,7 @@ import { WebmcpProvider } from "@/components/agent/webmcp-provider";
 import { CommandPalette } from "@/components/palette/command-palette";
 import { FooterTerminal } from "@/components/ui/footer-terminal";
 import { Nav } from "@/components/ui/nav";
+import { DEFAULT_LENS, LENS_INIT_SCRIPT } from "@/lib/agent/lens";
 import { LINKS, SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "@/lib/site";
 import "@/styles/globals.css";
 
@@ -70,9 +71,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang="en"
       suppressHydrationWarning
+      data-lens={DEFAULT_LENS}
       className={`${stix.variable} ${plexSans.variable} ${plexMono.variable}`}
     >
       <body>
+        {/* pre-paint lens restore (plan-0005) — same trick next-themes uses for data-theme */}
+        <script dangerouslySetInnerHTML={{ __html: LENS_INIT_SCRIPT }} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}

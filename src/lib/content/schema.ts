@@ -36,6 +36,9 @@ export type ProjectSection = (typeof PROJECT_SECTIONS)[number] | (typeof PROJECT
 /** Required headings of about.md. */
 export const ABOUT_SECTIONS = ["Hero tagline", "Hero subheading", "About me narrative"] as const;
 
+/** Optional per-lens hero subheadings (plan-0005); absent variants fall back to the base. */
+export const ABOUT_LENS_SECTIONS = ["Hero subheading (professor)", "Hero subheading (engineer)"] as const;
+
 /** Required headings of agents.md — the /agents machine-interface page (ADR-0009). */
 export const AGENTS_SECTIONS = [
   "Tagline",
@@ -65,6 +68,8 @@ export type About = {
   status: z.infer<typeof contentStatus>;
   tagline: string;
   subheading: string;
+  /** Per-lens hero subheadings; every key resolved (missing variants = base subheading). */
+  subheadings: { recruiter: string; professor: string; engineer: string };
   narrativeHtml: string;
 };
 

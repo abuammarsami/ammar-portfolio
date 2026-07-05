@@ -4,22 +4,9 @@ import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useRef, useState } from "react";
 
-import { parseActionLine } from "@/lib/agent/chat-actions";
-
 const PROMPT = "ammar@portfolio:~$";
 
-const HELP = [
-  "help            this list",
-  "cv              download resume.pdf",
-  "email           copy my email address",
-  "theme           toggle dark/light",
-  "goto <page>     learn · work · research · agents · about · writing",
-  "ask <question>  ask my AI agent — it can search my work and take you there",
-  "fit             paste a job description, get an honest fit report",
-  "clear           clear output",
-];
-
-/** The footer prompt is real — type `help`. */
+/** The footer prompt is real — type `help`. Command engine loads on first Enter. */
 export function FooterTerminal() {
   const router = useRouter();
   const { resolvedTheme, setTheme } = useTheme();
@@ -27,80 +14,18 @@ export function FooterTerminal() {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   function run(raw: string) {
-    const cmd = raw.trim().toLowerCase();
-    if (!cmd) return;
-    const echo = `${PROMPT} ${raw}`;
-    const out: string[] = [echo];
-    const [name, arg] = cmd.split(/\s+/);
-    switch (name) {
-      case "help":
-        out.push(...HELP);
-        break;
-      case "cv":
-        out.push("fetching resume.pdf …");
-        window.location.assign("/resume.pdf");
-        break;
-      case "email":
-        void navigator.clipboard.writeText("abuammarsami@gmail.com");
-        out.push("abuammarsami@gmail.com → clipboard ✓");
-        break;
-      case "theme":
-        setTheme(resolvedTheme === "dark" ? "light" : "dark");
-        out.push(`theme → ${resolvedTheme === "dark" ? "light" : "dark"}`);
-        break;
-      case "goto":
-        if (arg && ["learn", "work", "research", "agents", "about", "writing"].includes(arg)) {
-          out.push(`navigating to /${arg} …`);
-          router.push(`/${arg}`);
-        } else {
-          out.push("usage: goto work | research | agents | about | writing");
-        }
-        break;
-      case "fit":
-        out.push("opening the fit report …");
-        router.push("/agents#fit");
-        break;
-      case "ask": {
-        const q = raw.trim().slice(4).trim();
-        if (!q) {
-          out.push("usage: ask <question about Ammar>");
-          break;
-        }
-        out.push("thinking…");
-        setLines((prev) => [...prev.slice(-14), ...out]);
-        void (async () => {
-          try {
-            const res = await fetch("/api/chat", {
-              method: "POST",
-              headers: { "content-type": "application/json" },
-              body: JSON.stringify({ question: q }),
-            });
-            const text = await res.text();
-            // intercept @@action lines (agentic chat — plan-0005); drop any other "@@" line
-            const rendered: string[] = [];
-            for (const line of text.split("\n")) {
-              const action = parseActionLine(line);
-              if (action) {
-                rendered.push(`→ opening ${action.path} …`);
-                router.push(action.path);
-              } else if (line && !line.trimStart().startsWith("@@")) {
-                rendered.push(line);
-              }
-            }
-            setLines((prev) => [...prev.filter((l) => l !== "thinking…").slice(-10), ...rendered]);
-          } catch {
-            setLines((prev) => [...prev, "agent unreachable — try /llms-full.txt"]);
-          }
-        })();
-        return;
-      }
-      case "clear":
-        setLines([]);
-        return;
-      default:
-        out.push(`command not found: ${name} — try \`help\``);
-    }
-    setLines((prev) => [...prev.slice(-14), ...out]);
+    void import("./terminal-engine").then((m) =>
+      m.runCommand(raw, {
+        prompt: PROMPT,
+        navigate: (path) => router.push(path),
+        toggleTheme: () => {
+          const next = resolvedTheme === "dark" ? "light" : "dark";
+          setTheme(next);
+          return next;
+        },
+        setLines,
+      }),
+    );
   }
 
   return (

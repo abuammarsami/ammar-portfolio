@@ -20,6 +20,7 @@ function deps(overrides: Partial<WebmcpDeps> = {}): WebmcpDeps {
     download: vi.fn(),
     fetchText: vi.fn(async () => CORPUS),
     mcpCall: vi.fn(async () => ""),
+    setLens: vi.fn(),
     ...overrides,
   };
 }
@@ -38,7 +39,7 @@ describe("webmcp tool descriptors", () => {
     }
   });
 
-  it("exposes the full surface: query, resume, paper, navigation, download, demo, contact", () => {
+  it("exposes the full surface: query, resume, paper, navigation, download, demo, lens, contact", () => {
     expect(tools.map((t) => t.name)).toEqual([
       "query_portfolio",
       "get_resume_summary",
@@ -46,8 +47,21 @@ describe("webmcp tool descriptors", () => {
       "navigate_to",
       "download_resume",
       "run_quantum_demo",
+      "set_lens",
       "contact",
     ]);
+  });
+});
+
+describe("set_lens", () => {
+  it("applies valid lenses and rejects junk without touching the page", async () => {
+    const d = deps();
+    const tool = createWebmcpTools(d).find((t) => t.name === "set_lens")!;
+    expect(await tool.execute({ lens: "professor" })).toContain("professor");
+    expect(d.setLens).toHaveBeenCalledWith("professor");
+    expect(await tool.execute({ lens: "hacker" })).toContain("unknown lens");
+    expect(await tool.execute({})).toContain("unknown lens");
+    expect(d.setLens).toHaveBeenCalledTimes(1);
   });
 });
 

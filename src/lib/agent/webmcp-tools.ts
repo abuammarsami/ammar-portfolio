@@ -1,4 +1,5 @@
 import { getHeroSnapshot, requestHeroData } from "@/lib/agent/hero-bridge";
+import { isLens, LENSES, type Lens } from "@/lib/agent/lens";
 import { LINKS, SITE_URL } from "@/lib/site";
 
 /**
@@ -23,6 +24,7 @@ export type WebmcpDeps = {
   download(path: string): void;
   fetchText(url: string): Promise<string>;
   mcpCall(tool: string, args: Record<string, unknown>): Promise<string>;
+  setLens(lens: Lens): void;
 };
 
 export const PAGES: Record<string, { path: string; blurb: string }> = {
@@ -133,6 +135,18 @@ export function createWebmcpTools(deps: WebmcpDeps): WebmcpTool[] {
           null,
           2,
         );
+      },
+    },
+    {
+      name: "set_lens",
+      description:
+        "Adapt the whole site's emphasis for your principal: recruiter (default — production systems first), professor (research and theses first), or engineer (architecture and shipping cadence first). Applies instantly and persists for the visit.",
+      inputSchema: { type: "object", properties: { lens: { type: "string", enum: [...LENSES] } }, required: ["lens"] },
+      async execute(input) {
+        const lens = input.lens;
+        if (!isLens(lens)) return `unknown lens "${String(lens)}" — valid: ${LENSES.join(", ")}`;
+        deps.setLens(lens);
+        return `lens set to ${lens} — the hero and page emphasis now speak to a ${lens}`;
       },
     },
     {

@@ -11,6 +11,31 @@ import { getAbout, getExplainers, getPapers, getProjects, visiblePapers, visible
 
 export const dynamic = "force-static";
 
+// hero CTAs — same three destinations under every lens, primary first (plan-0005)
+const HERO_CTAS = {
+  work: {
+    href: "/work",
+    label: "Selected work →",
+    className: "rounded-sm border border-q0/60 px-5 py-2.5 text-q0 hover:bg-q0/10",
+  },
+  research: {
+    href: "/research",
+    label: "Research & publications →",
+    className: "rounded-sm border border-q1/60 px-5 py-2.5 text-q1 hover:bg-q1/10",
+  },
+  learn: {
+    href: "/learn",
+    label: "Learn quantum, from zero →",
+    className: "rounded-sm border rule-hair px-5 py-2.5 text-muted hover:text-ink",
+  },
+} as const;
+
+const HERO_CTA_ORDER: Record<"recruiter" | "professor" | "engineer", (keyof typeof HERO_CTAS)[]> = {
+  recruiter: ["work", "research", "learn"],
+  professor: ["research", "work", "learn"],
+  engineer: ["work", "learn", "research"],
+};
+
 export default async function HomePage() {
   const [about, allProjects, explainers, allPapers] = await Promise.all([
     getAbout(),
@@ -38,28 +63,26 @@ export default async function HomePage() {
               {about.tagline}
             </h1>
             <p className="enter enter-3 mt-6 max-w-lg leading-relaxed text-muted">
-              {about.subheading}
+              {/* adaptive lens (plan-0005): all variants in the DOM, CSS shows one */}
+              <span className="lens-recruiter">{about.subheadings.recruiter}</span>
+              {(["professor", "engineer"] as const).map((lens) => (
+                <span key={lens} className={`lens-${lens}`}>
+                  {about.subheadings[lens]}
+                </span>
+              ))}
             </p>
-            <div className="enter enter-4 mt-10 flex flex-wrap gap-4 font-mono text-sm">
-              <MagneticLink
-                href="/work"
-                className="rounded-sm border border-q0/60 px-5 py-2.5 text-q0 hover:bg-q0/10"
-              >
-                Selected work →
-              </MagneticLink>
-              <MagneticLink
-                href="/research"
-                className="rounded-sm border border-q1/60 px-5 py-2.5 text-q1 hover:bg-q1/10"
-              >
-                Research &amp; publications →
-              </MagneticLink>
-              <MagneticLink
-                href="/learn"
-                className="rounded-sm border rule-hair px-5 py-2.5 text-muted hover:text-ink"
-              >
-                Learn quantum, from zero →
-              </MagneticLink>
-            </div>
+            {(["recruiter", "professor", "engineer"] as const).map((lens) => (
+              <div key={lens} className={`lens-${lens} enter enter-4 mt-10 flex flex-wrap gap-4 font-mono text-sm`}>
+                {HERO_CTA_ORDER[lens].map((key) => {
+                  const cta = HERO_CTAS[key];
+                  return (
+                    <MagneticLink key={key} href={cta.href} className={cta.className}>
+                      {cta.label}
+                    </MagneticLink>
+                  );
+                })}
+              </div>
+            ))}
           </div>
           <div className="enter enter-4 hidden md:block">
             <QuantumCircuitCanvas />
