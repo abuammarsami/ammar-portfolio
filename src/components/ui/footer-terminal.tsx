@@ -2,9 +2,19 @@
 
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
-import { useRef, useState } from "react";
+import { useRef, useState, useSyncExternalStore } from "react";
 
 const PROMPT = "ammar@portfolio:~$";
+
+// Hydration-safe: server says no mic, client checks the real API once.
+const noSub = () => () => {};
+function useVoiceSupported(): boolean {
+  return useSyncExternalStore(
+    noSub,
+    () => "SpeechRecognition" in window || "webkitSpeechRecognition" in window,
+    () => false,
+  );
+}
 
 /** The footer prompt is real — type `help`. Command engine loads on first Enter. */
 export function FooterTerminal() {
@@ -12,20 +22,21 @@ export function FooterTerminal() {
   const { resolvedTheme, setTheme } = useTheme();
   const [lines, setLines] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const voiceSupported = useVoiceSupported();
+
+  const makeCtx = () => ({
+    prompt: PROMPT,
+    navigate: (path: string) => router.push(path),
+    toggleTheme: () => {
+      const next = resolvedTheme === "dark" ? "light" : "dark";
+      setTheme(next);
+      return next;
+    },
+    setLines,
+  });
 
   function run(raw: string) {
-    void import("./terminal-engine").then((m) =>
-      m.runCommand(raw, {
-        prompt: PROMPT,
-        navigate: (path) => router.push(path),
-        toggleTheme: () => {
-          const next = resolvedTheme === "dark" ? "light" : "dark";
-          setTheme(next);
-          return next;
-        },
-        setLines,
-      }),
-    );
+    void import("./terminal-engine").then((m) => m.runCommand(raw, makeCtx()));
   }
 
   return (
@@ -84,6 +95,20 @@ export function FooterTerminal() {
               }
             }}
           />
+          {voiceSupported && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                void import("./voice-controller").then((m) => m.startVoice(makeCtx()));
+              }}
+              aria-label="Ask by voice — the answer is spoken back"
+              title="ask by voice"
+              className="font-mono text-sm text-muted transition-colors hover:text-q0"
+            >
+              ⌾ voice
+            </button>
+          )}
         </p>
       </div>
     </footer>

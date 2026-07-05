@@ -16,6 +16,8 @@ export type TerminalCtx = {
   /** Flips the theme and returns the new one. */
   toggleTheme(): string;
   setLines: Dispatch<SetStateAction<string[]>>;
+  /** Voice mode (P4): receives the answer text of `ask`, minus action lines. */
+  onAnswer?(text: string): void;
 };
 
 const HELP = [
@@ -26,6 +28,7 @@ const HELP = [
   "goto <page>     learn · work · research · agents · about · writing",
   "lens <who>      view as recruiter · professor · engineer",
   "ask <question>  ask my AI agent — it can search my work and take you there",
+  "voice           ask by speaking; the answer talks back (Chrome/Safari)",
   "fit             paste a job description, get an honest fit report",
   "demo            autopilot: watch the agent interview this site",
   "clear           clear output",
@@ -64,6 +67,9 @@ export function runCommand(raw: string, ctx: TerminalCtx): void {
       out.push("opening the fit report …");
       ctx.navigate("/agents#fit");
       break;
+    case "voice":
+      void import("./voice-controller").then((m) => m.startVoice(ctx));
+      break;
     case "demo":
       out.push("engaging autopilot — ⟨esc⟩ or scroll to stop …");
       window.dispatchEvent(new Event(AUTOPILOT_EVENT));
@@ -94,6 +100,7 @@ export function runCommand(raw: string, ctx: TerminalCtx): void {
           const text = await res.text();
           // intercept @@action lines (agentic chat — plan-0005); drop any other "@@" line
           const rendered: string[] = [];
+          const answer: string[] = [];
           for (const line of text.split("\n")) {
             const action = parseActionLine(line);
             if (action) {
@@ -101,9 +108,11 @@ export function runCommand(raw: string, ctx: TerminalCtx): void {
               ctx.navigate(action.path);
             } else if (line && !line.trimStart().startsWith("@@")) {
               rendered.push(line);
+              answer.push(line);
             }
           }
           ctx.setLines((prev) => [...prev.filter((l) => l !== "thinking…").slice(-10), ...rendered]);
+          if (answer.length) ctx.onAnswer?.(answer.join(" "));
         } catch {
           ctx.setLines((prev) => [...prev, "agent unreachable — try /llms-full.txt"]);
         }
