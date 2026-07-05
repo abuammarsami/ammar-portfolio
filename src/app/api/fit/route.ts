@@ -62,6 +62,9 @@ export async function POST(req: Request) {
   });
   if (!upstream.ok || !upstream.body) {
     console.error(`[fit] groq upstream ${upstream.status}: ${(await upstream.text().catch(() => "")).slice(0, 500)}`);
+    if (upstream.status === 429) {
+      return new Response("the free-tier model hit its per-minute token limit — try again in ~20 seconds", { status: 429 });
+    }
     return new Response(`upstream error (${upstream.status}) — try again shortly`, { status: 502 });
   }
 

@@ -103,6 +103,9 @@ export async function runAgenticChat(opts: {
   const upstreamFailure = async (res: Response): Promise<AgenticChatResult> => {
     // status + body land in the function logs; the client only sees the status class
     console.error(`[chat] groq upstream ${res.status}: ${(await res.text().catch(() => "")).slice(0, 500)}`);
+    if (res.status === 429) {
+      return { kind: "error", status: 429, message: "the free-tier model hit its per-minute token limit — ask again in ~15 seconds" };
+    }
     return { kind: "error", status: 502, message: `upstream error (${res.status}) — try again shortly` };
   };
 
