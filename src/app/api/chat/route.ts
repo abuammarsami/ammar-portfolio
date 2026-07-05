@@ -1,6 +1,6 @@
 import { createScrubber } from "@/lib/agent/chat-actions";
 import { runAgenticChat } from "@/lib/agent/chat-loop";
-import { buildCorpus } from "@/lib/agent/corpus";
+import { buildChatProfile } from "@/lib/agent/corpus";
 import { recordEvent } from "@/lib/agent/guestbook";
 import { callTool, TOOLS } from "@/lib/agent/mcp-tools";
 
@@ -23,22 +23,24 @@ function limited(ip: string): boolean {
 // get_resume is excluded: the whole corpus is already in the system prompt
 const CHAT_TOOLS = TOOLS.filter((t) => t.name !== "get_resume");
 
-function systemPrompt(corpus: string): string {
+function systemPrompt(profile: string): string {
   return (
-    "You are the portfolio agent of Md. Abu Ammar. Answer questions about him using ONLY the corpus below. " +
+    "You are the portfolio agent of Md. Abu Ammar. Answer questions about him using ONLY the profile below and your tools. " +
     "Be concise (2-5 sentences), specific, and cite site paths like /work/kioskvisionai when relevant. " +
-    "If the answer isn't in the corpus, say so plainly and suggest emailing him — never invent facts. " +
-    "You have tools: call search_publications/get_paper/list_projects/get_lessons/contact for details beyond the corpus. " +
+    "The profile is a summary — for paper contents, project details, or lesson content, call " +
+    "search_publications/get_paper/list_projects/get_lessons/contact instead of guessing. " +
+    "If the answer isn't in the profile or a tool result, say so plainly and suggest emailing him — never invent facts. " +
     "If the visitor asks to see, open, or go to a page, call navigate with the internal path, then answer in one short sentence.\n\n" +
-    corpus
+    profile
   );
 }
 
 /**
- * "Ask Ammar" — agentic grounded chat (ADR-0007, plan-0005). Corpus-in-context
- * plus a function-calling loop over the MCP tool layer; the model can also
- * navigate the visitor's browser via @@action lines (see chat-actions.ts).
- * Streams plain text. Zero dependencies; graceful offline message without the key.
+ * "Ask Ammar" — agentic grounded chat (ADR-0007, plan-0005). Compact profile
+ * in context plus a function-calling loop over the MCP tool layer for the
+ * details; the model can also navigate the visitor's browser via @@action
+ * lines (see chat-actions.ts). Streams plain text. Zero dependencies;
+ * graceful offline message without the key.
  */
 export async function POST(req: Request) {
   const key = process.env.GROQ_API_KEY;
@@ -59,13 +61,15 @@ export async function POST(req: Request) {
 
   void recordEvent({ tool: "ask", surface: "chat" }, req.headers.get("user-agent"));
 
-  const corpus = await buildCorpus();
+  // compact profile, not the full corpus: the prompt rides EVERY hop of the
+  // tool loop and the free tier allows 8k tokens/minute (plan-0005)
+  const profile = await buildChatProfile();
   const result = await runAgenticChat({
     apiKey: key,
     tools: CHAT_TOOLS,
     callTool,
     messages: [
-      { role: "system", content: systemPrompt(corpus) },
+      { role: "system", content: systemPrompt(profile) },
       { role: "user", content: question },
     ],
   });
