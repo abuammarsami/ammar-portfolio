@@ -1,5 +1,5 @@
 import { getHeroSnapshot, requestHeroData } from "@/lib/agent/hero-bridge";
-import { applyLens, currentLens } from "@/lib/agent/lens";
+import { applyLens, currentLens, type Lens } from "@/lib/agent/lens";
 import { TOUR } from "@/lib/agent/tour-script";
 import { createWebmcpTools } from "@/lib/agent/webmcp-tools";
 
@@ -27,89 +27,99 @@ export async function runTour(navigate: (path: string) => void): Promise<void> {
   if (running) return;
   running = true;
 
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const tools = new Map(createWebmcpTools(browserDeps(navigate)).map((t) => [t.name, t]));
-
-  // remember what we're about to touch
-  const lensBefore = currentLens();
-  const heroBefore = getHeroSnapshot();
-  const heroXs = heroBefore.mounted ? heroBefore.data.map((d) => d.x) : null;
-
-  void fetch("/api/beacon", {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ tool: "autopilot", surface: "autopilot" }),
-  }).catch(() => {});
-
-  // ── the stage: cursor + caption bar, inline-styled so no CSS ships eagerly
-  const cursor = el(
-    "div",
-    `position:fixed;left:0;top:0;width:22px;height:22px;pointer-events:none;z-index:${Z};` +
-      `border:2px solid var(--color-q0);border-radius:50%;background:color-mix(in srgb, var(--color-q0) 25%, transparent);` +
-      `box-shadow:0 0 12px var(--color-q0);transform:translate(-50%,-50%);will-change:left,top;`,
-  );
-  cursor.style.left = `${window.innerWidth / 2}px`;
-  cursor.style.top = `${window.innerHeight / 2}px`;
-
-  const bar = el(
-    "div",
-    `position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:${Z};max-width:min(680px,calc(100vw - 32px));` +
-      `background:var(--color-surface);color:var(--color-ink);border:1px solid color-mix(in srgb, var(--color-muted) 35%, transparent);` +
-      `border-radius:2px;padding:12px 16px;font-family:var(--font-mono);font-size:13px;line-height:1.5;box-shadow:0 8px 32px rgb(0 0 0 / 0.35);`,
-  );
-  bar.setAttribute("role", "status");
-  bar.setAttribute("aria-live", "polite");
-  const caption = el("p", "margin:0;");
-  const result = el("p", "margin:6px 0 0;color:var(--color-q0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;");
-  const hint = el("p", "margin:6px 0 0;color:var(--color-muted);font-size:11px;");
-  hint.textContent = "autopilot · ⟨esc⟩ or scroll to stop";
-  bar.append(caption, result, hint);
-  document.body.append(cursor, bar);
-
-  // ── cancellation: any human intent stops the machine
-  let cancelled = false;
-  const cancel = () => {
-    cancelled = true;
-  };
-  const onKey = (e: KeyboardEvent) => {
-    if (e.key === "Escape") cancel();
-  };
-  window.addEventListener("keydown", onKey);
-  window.addEventListener("wheel", cancel, { passive: true });
-  window.addEventListener("touchmove", cancel, { passive: true });
-  window.addEventListener("pointerdown", cancel);
-
-  const sleep = async (ms: number) => {
-    for (let t = 0; t < ms && !cancelled; t += 100) await new Promise((r) => setTimeout(r, 100));
-  };
-
-  const moveTo = async (x: number, y: number) => {
-    if (reduced) {
-      cursor.style.left = `${x}px`;
-      cursor.style.top = `${y}px`;
-      return;
-    }
-    const anim = cursor.animate(
-      [
-        { left: cursor.style.left, top: cursor.style.top },
-        { left: `${x}px`, top: `${y}px` },
-      ],
-      { duration: 900, easing: "cubic-bezier(0.22, 1, 0.36, 1)" },
-    );
-    await anim.finished.catch(() => {});
-    cursor.style.left = `${x}px`;
-    cursor.style.top = `${y}px`;
-  };
-
-  const pulse = () => {
-    if (reduced) return;
-    cursor.animate(
-      [{ transform: "translate(-50%,-50%) scale(1)" }, { transform: "translate(-50%,-50%) scale(0.6)" }, { transform: "translate(-50%,-50%) scale(1)" }],
-      { duration: 320, easing: "ease-out" },
-    );
-  };
+  // everything the finally block tears down — assigned inside the try so a
+  // setup throw can't wedge `running` or leak half-built stage pieces
+  let cursor: HTMLElement | null = null;
+  let bar: HTMLElement | null = null;
+  let onKey: ((e: KeyboardEvent) => void) | null = null;
+  let cancelFn: (() => void) | null = null;
+  let lensBefore: Lens | null = null;
+  let heroXs: number[] | null = null;
 
   try {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const tools = new Map(createWebmcpTools(browserDeps(navigate)).map((t) => [t.name, t]));
+
+    // remember what we're about to touch
+    lensBefore = currentLens();
+    const heroBefore = getHeroSnapshot();
+    heroXs = heroBefore.mounted ? heroBefore.data.map((d) => d.x) : null;
+
+    void fetch("/api/beacon", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ tool: "autopilot", surface: "autopilot" }),
+    }).catch(() => {});
+
+    // ── the stage: cursor + caption bar, inline-styled so no CSS ships eagerly
+    cursor = el(
+      "div",
+      `position:fixed;left:0;top:0;width:22px;height:22px;pointer-events:none;z-index:${Z};` +
+        `border:2px solid var(--color-q0);border-radius:50%;background:color-mix(in srgb, var(--color-q0) 25%, transparent);` +
+        `box-shadow:0 0 12px var(--color-q0);transform:translate(-50%,-50%);will-change:left,top;`,
+    );
+    cursor.style.left = `${window.innerWidth / 2}px`;
+    cursor.style.top = `${window.innerHeight / 2}px`;
+
+    bar = el(
+      "div",
+      `position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:${Z};max-width:min(680px,calc(100vw - 32px));` +
+        `background:var(--color-surface);color:var(--color-ink);border:1px solid color-mix(in srgb, var(--color-muted) 35%, transparent);` +
+        `border-radius:2px;padding:12px 16px;font-family:var(--font-mono);font-size:13px;line-height:1.5;box-shadow:0 8px 32px rgb(0 0 0 / 0.35);`,
+    );
+    bar.setAttribute("role", "status");
+    bar.setAttribute("aria-live", "polite");
+    const caption = el("p", "margin:0;");
+    const result = el("p", "margin:6px 0 0;color:var(--color-q0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;");
+    const hint = el("p", "margin:6px 0 0;color:var(--color-muted);font-size:11px;");
+    hint.textContent = "autopilot · ⟨esc⟩ or scroll to stop";
+    bar.append(caption, result, hint);
+    document.body.append(cursor, bar);
+
+    // ── cancellation: any human intent stops the machine
+    let cancelled = false;
+    cancelFn = () => {
+      cancelled = true;
+    };
+    onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") cancelled = true;
+    };
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("wheel", cancelFn, { passive: true });
+    window.addEventListener("touchmove", cancelFn, { passive: true });
+    window.addEventListener("pointerdown", cancelFn);
+
+    const sleep = async (ms: number) => {
+      for (let t = 0; t < ms && !cancelled; t += 100) await new Promise((r) => setTimeout(r, 100));
+    };
+
+    const moveTo = async (x: number, y: number) => {
+      if (!cursor) return;
+      if (reduced) {
+        cursor.style.left = `${x}px`;
+        cursor.style.top = `${y}px`;
+        return;
+      }
+      const anim = cursor.animate(
+        [
+          { left: cursor.style.left, top: cursor.style.top },
+          { left: `${x}px`, top: `${y}px` },
+        ],
+        { duration: 900, easing: "cubic-bezier(0.22, 1, 0.36, 1)" },
+      );
+      await anim.finished.catch(() => {});
+      cursor.style.left = `${x}px`;
+      cursor.style.top = `${y}px`;
+    };
+
+    const pulse = () => {
+      if (reduced || !cursor) return;
+      cursor.animate(
+        [{ transform: "translate(-50%,-50%) scale(1)" }, { transform: "translate(-50%,-50%) scale(0.6)" }, { transform: "translate(-50%,-50%) scale(1)" }],
+        { duration: 320, easing: "ease-out" },
+      );
+    };
+
     for (const step of TOUR) {
       if (cancelled) break;
       caption.textContent = step.caption;
@@ -142,14 +152,16 @@ export async function runTour(navigate: (path: string) => void): Promise<void> {
     }
   } finally {
     // put the visitor's world back the way we found it
-    if (currentLens() !== lensBefore) applyLens(lensBefore);
+    if (lensBefore && currentLens() !== lensBefore) applyLens(lensBefore);
     if (heroXs && getHeroSnapshot().mounted) requestHeroData(heroXs[0], heroXs[1]);
-    window.removeEventListener("keydown", onKey);
-    window.removeEventListener("wheel", cancel);
-    window.removeEventListener("touchmove", cancel);
-    window.removeEventListener("pointerdown", cancel);
-    cursor.remove();
-    bar.remove();
+    if (onKey) window.removeEventListener("keydown", onKey);
+    if (cancelFn) {
+      window.removeEventListener("wheel", cancelFn);
+      window.removeEventListener("touchmove", cancelFn);
+      window.removeEventListener("pointerdown", cancelFn);
+    }
+    cursor?.remove();
+    bar?.remove();
     running = false;
   }
 }

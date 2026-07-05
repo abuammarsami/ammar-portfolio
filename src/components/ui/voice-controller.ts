@@ -28,23 +28,37 @@ function recognitionCtor(): SpeechRecognitionCtor | undefined {
   return w.SpeechRecognition ?? w.webkitSpeechRecognition;
 }
 
+// one Escape listener across all speak() calls — removed when speech ends
+// naturally too, so repeated voice answers can't accumulate listeners
+let escListener: ((e: KeyboardEvent) => void) | null = null;
+function clearEscListener(): void {
+  if (escListener) {
+    window.removeEventListener("keydown", escListener);
+    escListener = null;
+  }
+}
+
 export function speak(text: string): void {
   if (!("speechSynthesis" in window)) return;
   speechSynthesis.cancel();
+  clearEscListener();
   const sentences = splitSentences(sanitizeForSpeech(text));
   if (sentences.length === 0) return;
-  for (const s of sentences) {
+  const utterances = sentences.map((s) => {
     const u = new SpeechSynthesisUtterance(s);
     u.rate = 1.05;
-    speechSynthesis.speak(u); // queued — one sentence per utterance
-  }
-  const stop = (e: KeyboardEvent) => {
+    return u;
+  });
+  const last = utterances[utterances.length - 1]!;
+  last.onend = clearEscListener;
+  escListener = (e: KeyboardEvent) => {
     if (e.key === "Escape") {
       speechSynthesis.cancel();
-      window.removeEventListener("keydown", stop);
+      clearEscListener();
     }
   };
-  window.addEventListener("keydown", stop);
+  window.addEventListener("keydown", escListener);
+  for (const u of utterances) speechSynthesis.speak(u); // queued — one sentence per utterance
 }
 
 export function startVoice(ctx: TerminalCtx): void {
@@ -68,8 +82,10 @@ export function startVoice(ctx: TerminalCtx): void {
     if (!q) return;
     runCommand(`ask ${q}`, { ...ctx, onAnswer: (text) => speak(text) });
   };
+  let failed = false; // onerror fires and then onend follows — report once
   const fail = () => {
-    if (!heard) {
+    if (!heard && !failed) {
+      failed = true;
       ctx.setLines((prev) => [...prev.filter((l) => !l.startsWith("listening…")), "didn't catch that — try `voice` again or type `ask <question>`"]);
     }
   };

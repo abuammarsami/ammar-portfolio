@@ -12,7 +12,10 @@ export const dynamic = "force-dynamic";
 
 type RpcRequest = { jsonrpc: "2.0"; id?: number | string | null; method: string; params?: Record<string, unknown> };
 
-async function handle(rpc: RpcRequest, ua: string | null) {
+// batches share one logger so a request writes at most once per tool name
+type RequestLog = { logged: Set<string>; ua: string | null };
+
+async function handle(rpc: RpcRequest, log: RequestLog) {
   const { id = null, method, params = {} } = rpc;
   const ok = (result: unknown) => ({ jsonrpc: "2.0" as const, id, result });
   switch (method) {
@@ -31,8 +34,12 @@ async function handle(rpc: RpcRequest, ua: string | null) {
     case "tools/call": {
       try {
         // guestbook logs the tool NAME only — never arguments (ADR-0010)
-        void recordEvent({ tool: String(params.name), surface: "mcp" }, ua);
-        const text = await callTool(String(params.name), (params.arguments as Record<string, unknown>) ?? {});
+        const tool = String(params.name);
+        if (!log.logged.has(tool)) {
+          log.logged.add(tool);
+          void recordEvent({ tool, surface: "mcp" }, log.ua);
+        }
+        const text = await callTool(tool, (params.arguments as Record<string, unknown>) ?? {});
         return ok({ content: [{ type: "text", text }] });
       } catch (e) {
         return ok({ content: [{ type: "text", text: String(e) }], isError: true });
@@ -48,8 +55,16 @@ export async function POST(req: Request) {
   if (!body) {
     return Response.json({ jsonrpc: "2.0", id: null, error: { code: -32700, message: "parse error" } }, { status: 400 });
   }
-  const ua = req.headers.get("user-agent");
-  const responses = await Promise.all((Array.isArray(body) ? body : [body]).map((r) => handle(r, ua)));
+  // JSON-RPC batches are legal but unauthenticated — cap the fan-out so one
+  // request can't amplify into thousands of tool executions + store writes
+  if (Array.isArray(body) && body.length > 20) {
+    return Response.json(
+      { jsonrpc: "2.0", id: null, error: { code: -32600, message: "batch too large (max 20)" } },
+      { status: 400 },
+    );
+  }
+  const log: RequestLog = { logged: new Set(), ua: req.headers.get("user-agent") };
+  const responses = await Promise.all((Array.isArray(body) ? body : [body]).map((r) => handle(r, log)));
   const nonNull = responses.filter((r) => r !== null);
   if (nonNull.length === 0) return new Response(null, { status: 202 });
   return Response.json(Array.isArray(body) ? nonNull : nonNull[0]);

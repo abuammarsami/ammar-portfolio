@@ -35,7 +35,12 @@ export function GuestbookWall() {
   }, []);
 
   return (
-    <div className="mt-4 min-h-40 rounded-sm border rule-hair bg-surface/60 p-4 font-mono text-sm" aria-live="polite">
+    // fixed-height scroll region: the box never grows when the feed lands,
+    // so the reservation holds wherever the wall sits on the page
+    <div
+      className="mt-4 h-64 overflow-y-auto rounded-sm border rule-hair bg-surface/60 p-4 font-mono text-sm"
+      aria-live="polite"
+    >
       {events === null && <p className="text-muted">reading the guestbook …</p>}
       {events?.length === 0 && (
         <p className="text-muted">no agent visits recorded yet — be the first: point your agent at /api/mcp</p>

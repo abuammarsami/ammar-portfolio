@@ -77,9 +77,28 @@ export function PaletteUi({ onClose }: { onClose: () => void }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
+  // aria-modal contract: focus moves in on open, returns to the trigger on close
   useEffect(() => {
+    const previous = document.activeElement as HTMLElement | null;
     inputRef.current?.focus();
+    return () => previous?.focus?.();
   }, []);
+
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  const trapTab = (e: React.KeyboardEvent) => {
+    if (e.key !== "Tab") return;
+    const focusables = dialogRef.current?.querySelectorAll<HTMLElement>("input, button");
+    if (!focusables || focusables.length === 0) return;
+    const first = focusables[0]!;
+    const last = focusables[focusables.length - 1]!;
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  };
 
   function exec(c: Command | undefined) {
     if (!c) return;
@@ -96,8 +115,10 @@ export function PaletteUi({ onClose }: { onClose: () => void }) {
       aria-label="Command palette"
     >
       <div
+        ref={dialogRef}
         className="w-full max-w-md rounded-sm border rule-hair bg-surface shadow-2xl"
         onClick={(e) => e.stopPropagation()}
+        onKeyDown={trapTab}
       >
         <div className="flex items-center gap-2 border-b rule-hair px-4 py-3 font-mono text-sm">
           <span className="text-q0">⌘</span>
