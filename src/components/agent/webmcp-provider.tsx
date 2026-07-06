@@ -21,12 +21,11 @@ export function WebmcpProvider() {
       if (!ac.signal.aborted) return m.mount(navigate, ac.signal);
     });
     const onStage = (e: Event) => void import("./stage-router").then((m) => m.route(e, navigate));
-    window.addEventListener(AUTOPILOT_EVENT, onStage);
-    window.addEventListener(INTERVIEW_EVENT, onStage);
+    const stageEvents = [AUTOPILOT_EVENT, INTERVIEW_EVENT];
+    for (const ev of stageEvents) window.addEventListener(ev, onStage);
     return () => {
       ac.abort();
-      window.removeEventListener(AUTOPILOT_EVENT, onStage);
-      window.removeEventListener(INTERVIEW_EVENT, onStage);
+      for (const ev of stageEvents) window.removeEventListener(ev, onStage);
     };
   }, [router]);
 

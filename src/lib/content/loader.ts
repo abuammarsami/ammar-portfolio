@@ -15,9 +15,11 @@ import {
   type About,
   type AgentsSection,
   type ExperienceRole,
+  type HirePage,
   type Lesson,
   type Paper,
   type Project,
+  type Service,
   type SkillGroup,
 } from "./schema";
 
@@ -222,6 +224,7 @@ export async function getAbout(): Promise<About> {
       subheading: "",
       subheadings: { recruiter: "", professor: "", engineer: "" },
       narrativeHtml: "",
+      educationHtml: null,
     };
   }
   const fm = simpleFrontmatterSchema.parse(parsed.data ?? {});
@@ -241,6 +244,7 @@ export async function getAbout(): Promise<About> {
       engineer: sections.get("Hero subheading (engineer)") || subheading,
     },
     narrativeHtml: await markdownToHtml(sections.get("About me narrative") ?? ""),
+    educationHtml: sections.get("Education") ? await markdownToHtml(sections.get("Education")!) : null,
   };
 }
 
@@ -265,6 +269,47 @@ export async function getAgentsPage(): Promise<AgentsSection[]> {
     out.push({ heading, bodyHtml: await markdownToHtml(block) });
   }
   return out;
+}
+
+// ---------------------------------------------------------------- hire
+
+/**
+ * content/hire.md → /hire (plan-0006): an "## Intro" section plus one
+ * "## Service" section per offering, each carrying Pitch, Price, and CTA
+ * bold-label lines. The CTA must be a single markdown link; a service
+ * missing any required label fails the production build (ADR-0002).
+ */
+export async function getHirePage(): Promise<HirePage> {
+  const parsed = read("hire.md");
+  if (!parsed) {
+    missing("hire.md", "file");
+    return { introHtml: "", services: [] };
+  }
+  simpleFrontmatterSchema.parse(parsed.data ?? {});
+  const sections = splitHeadingSections(stripComments(parsed.body));
+  const introHtml = await markdownToHtml(sections.get("Intro") ?? missing("hire.md", '"## Intro" section'));
+
+  const services: Service[] = [];
+  for (const [title, block] of sections) {
+    if (title === "Intro") continue;
+    const labels = splitLabelSections(block);
+    const pitch = labels.get("Pitch") ?? missing("hire.md", `"**Pitch:**" in "## ${title}"`);
+    const price = labels.get("Price") ?? missing("hire.md", `"**Price:**" in "## ${title}"`);
+    const ctaRaw = labels.get("CTA") ?? missing("hire.md", `"**CTA:**" in "## ${title}"`);
+    const link = ctaRaw.match(/\[([^\]]+)\]\(([^)\s]+)\)/);
+    if (!link) {
+      missing("hire.md", `a markdown-link CTA in "## ${title}"`);
+      continue;
+    }
+    services.push({
+      title,
+      pitchHtml: await markdownToHtml(pitch),
+      price: price.replace(/\s+/g, " ").trim(),
+      cta: { label: link[1]!, href: link[2]! },
+    });
+  }
+  if (services.length === 0) missing("hire.md", "at least one service section");
+  return { introHtml, services };
 }
 
 // ---------------------------------------------------------------- experience

@@ -72,6 +72,21 @@ export type About = {
   /** Per-lens hero subheadings; every key resolved (missing variants = base subheading). */
   subheadings: { recruiter: string; professor: string; engineer: string };
   narrativeHtml: string;
+  /** Optional "## Education" section (plan-0006, /cv); null when absent. */
+  educationHtml: string | null;
+};
+
+/** One paid offering on /hire (plan-0006): a "## Service" section of hire.md. */
+export type Service = {
+  title: string;
+  pitchHtml: string;
+  price: string;
+  cta: { label: string; href: string };
+};
+
+export type HirePage = {
+  introHtml: string;
+  services: Service[];
 };
 
 export type ExperienceRole = {

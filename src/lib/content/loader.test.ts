@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getAbout, getExperience, getProjects, getSkills, splitHeadingSections, splitLabelSections } from "./loader";
+import { getAbout, getExperience, getHirePage, getProjects, getSkills, splitHeadingSections, splitLabelSections } from "./loader";
 import { projectFrontmatterSchema } from "./schema";
 
 describe("splitLabelSections", () => {
@@ -103,6 +103,24 @@ describe("real content/ files", () => {
     const groups = await getSkills();
     expect(groups.length).toBeGreaterThanOrEqual(6);
     expect(groups.map((g) => g.group)).toContain("Quantum");
+  });
+
+  it("loads the education section for /cv (plan-0006)", async () => {
+    const about = await getAbout();
+    expect(about.educationHtml).toContain("North South University");
+  });
+
+  it("loads hire.md services with pitch, price, and a link CTA (plan-0006)", async () => {
+    const { introHtml, services } = await getHirePage();
+    expect(introHtml).toContain("<p>");
+    expect(services.length).toBeGreaterThanOrEqual(3);
+    for (const s of services) {
+      expect(s.title.length).toBeGreaterThan(3);
+      expect(s.pitchHtml).toContain("<p>");
+      expect(s.price.length).toBeGreaterThan(3);
+      expect(s.cta.href).toMatch(/^(mailto:|https:\/\/)/);
+      expect(s.cta.label.length).toBeGreaterThan(3);
+    }
   });
 });
 

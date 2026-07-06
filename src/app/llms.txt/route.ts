@@ -25,6 +25,8 @@ This site is agent-readable and agent-operable (one tool layer, five surfaces).
 - [Research — the library: real papers, distilled](${SITE_URL}/research)
 - [Learn — interactive quantum curriculum](${SITE_URL}/learn)
 - [Agents — MCP, WebMCP, feeds, fit report](${SITE_URL}/agents)
+- [Hire — paid services: QML tutoring, backend consulting, office hours](${SITE_URL}/hire)
+- [CV — typeset curriculum vitae](${SITE_URL}/cv)
 - [About](${SITE_URL}/about)
 
 ## Contact

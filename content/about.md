@@ -43,3 +43,8 @@ PennyLane simulators — and continues through my MS: Bangla POS tagging with kn
 distillation, multi-output CNNs, ensemble methods.
 
 My mission: continuously improve systems, automate the repetitive, and innovate at scale.
+
+## Education
+
+- **MS in Computer Science**, North South University — expected Nov 2026
+- **BS in Computer Science** (minor: Mathematics), North South University — CGPA 3.58/4.00
