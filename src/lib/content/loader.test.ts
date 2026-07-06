@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getAbout, getExperience, getHirePage, getProjects, getSkills, splitHeadingSections, splitLabelSections } from "./loader";
+import { getAbout, getColophonPage, getExperience, getHirePage, getProjects, getSkills, splitHeadingSections, splitLabelSections } from "./loader";
 import { projectFrontmatterSchema } from "./schema";
 
 describe("splitLabelSections", () => {
@@ -108,6 +108,12 @@ describe("real content/ files", () => {
   it("loads the education section for /cv (plan-0006)", async () => {
     const about = await getAbout();
     expect(about.educationHtml).toContain("North South University");
+  });
+
+  it("loads colophon.md sections in order (plan-0006)", async () => {
+    const sections = await getColophonPage();
+    expect(sections.map((s) => s.heading)).toEqual(["Intro", "Principles", "Template"]);
+    for (const s of sections) expect(s.bodyHtml).toContain("<");
   });
 
   it("loads hire.md services with pitch, price, and a link CTA (plan-0006)", async () => {

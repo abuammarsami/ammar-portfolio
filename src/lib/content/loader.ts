@@ -12,8 +12,10 @@ import {
   paperFrontmatterSchema,
   projectFrontmatterSchema,
   simpleFrontmatterSchema,
+  COLOPHON_SECTIONS,
   type About,
   type AgentsSection,
+  type ColophonSection,
   type ExperienceRole,
   type HirePage,
   type Lesson,
@@ -264,6 +266,29 @@ export async function getAgentsPage(): Promise<AgentsSection[]> {
     const block = sections.get(heading);
     if (!block) {
       missing("agents.md", `"## ${heading}" section`);
+      continue;
+    }
+    out.push({ heading, bodyHtml: await markdownToHtml(block) });
+  }
+  return out;
+}
+
+// ---------------------------------------------------------------- colophon
+
+/** content/colophon.md → /colophon prose sections, in COLOPHON_SECTIONS order. */
+export async function getColophonPage(): Promise<ColophonSection[]> {
+  const parsed = read("colophon.md");
+  if (!parsed) {
+    missing("colophon.md", "file");
+    return [];
+  }
+  simpleFrontmatterSchema.parse(parsed.data ?? {});
+  const sections = splitHeadingSections(stripComments(parsed.body));
+  const out: ColophonSection[] = [];
+  for (const heading of COLOPHON_SECTIONS) {
+    const block = sections.get(heading);
+    if (!block) {
+      missing("colophon.md", `"## ${heading}" section`);
       continue;
     }
     out.push({ heading, bodyHtml: await markdownToHtml(block) });
