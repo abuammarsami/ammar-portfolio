@@ -11,8 +11,8 @@ import { runCommand, type TerminalCtx } from "./terminal-engine";
 
 // The Web Speech API recognition types are not in TypeScript's dom lib —
 // minimal ambient shapes for the parts used here.
-type SpeechRecognitionResultEvent = { results: { 0: { 0: { transcript: string } } } };
-type SpeechRecognitionLike = {
+export type SpeechRecognitionResultEvent = { results: { 0: { 0: { transcript: string } } } };
+export type SpeechRecognitionLike = {
   lang: string;
   interimResults: boolean;
   maxAlternatives: number;
@@ -23,7 +23,7 @@ type SpeechRecognitionLike = {
 };
 type SpeechRecognitionCtor = new () => SpeechRecognitionLike;
 
-function recognitionCtor(): SpeechRecognitionCtor | undefined {
+export function recognitionCtor(): SpeechRecognitionCtor | undefined {
   const w = window as Window & { SpeechRecognition?: SpeechRecognitionCtor; webkitSpeechRecognition?: SpeechRecognitionCtor };
   return w.SpeechRecognition ?? w.webkitSpeechRecognition;
 }

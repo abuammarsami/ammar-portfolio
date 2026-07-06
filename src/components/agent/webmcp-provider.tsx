@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-import { AUTOPILOT_EVENT } from "@/lib/agent/autopilot-event";
+import { AUTOPILOT_EVENT, INTERVIEW_EVENT } from "@/lib/agent/autopilot-event";
 
 /**
  * Mounts the WebMCP tool registry when the browser exposes a model context
@@ -20,14 +20,13 @@ export function WebmcpProvider() {
     void import("./webmcp-mount").then((m) => {
       if (!ac.signal.aborted) return m.mount(navigate, ac.signal);
     });
-    const onAutopilot = (e: Event) => {
-      const interest = (e as CustomEvent<{ interest?: string }>).detail?.interest;
-      void import("./autopilot-tour").then((m) => m.runTour(navigate, { interest }));
-    };
-    window.addEventListener(AUTOPILOT_EVENT, onAutopilot);
+    const onStage = (e: Event) => void import("./stage-router").then((m) => m.route(e, navigate));
+    window.addEventListener(AUTOPILOT_EVENT, onStage);
+    window.addEventListener(INTERVIEW_EVENT, onStage);
     return () => {
       ac.abort();
-      window.removeEventListener(AUTOPILOT_EVENT, onAutopilot);
+      window.removeEventListener(AUTOPILOT_EVENT, onStage);
+      window.removeEventListener(INTERVIEW_EVENT, onStage);
     };
   }, [router]);
 

@@ -2,6 +2,7 @@ import { createScrubber } from "@/lib/agent/chat-actions";
 import { runAgenticChat } from "@/lib/agent/chat-loop";
 import { buildChatProfile } from "@/lib/agent/corpus";
 import { recordEvent } from "@/lib/agent/guestbook";
+import { parseChatBody } from "@/lib/agent/interview";
 import { callTool, TOOLS } from "@/lib/agent/mcp-tools";
 
 export const dynamic = "force-dynamic";
@@ -54,12 +55,20 @@ export async function POST(req: Request) {
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0] ?? "anon";
   if (limited(ip)) return new Response("rate limited — try again in a minute", { status: 429 });
 
-  const { question } = (await req.json().catch(() => ({}))) as { question?: string };
-  if (!question || question.length > 500) {
-    return new Response("send { question: string } (≤500 chars)", { status: 400 });
+  // legacy single-turn {question} or interview-mode {messages} (plan-0006);
+  // the system prompt is never accepted from the client
+  const parsed = parseChatBody(await req.json().catch(() => ({})));
+  if (!parsed) {
+    return new Response(
+      "send { question: string (≤500 chars) } or { messages: [{role: user|assistant, content}...], surface? }",
+      { status: 400 },
+    );
   }
 
-  void recordEvent({ tool: "ask", surface: "chat" }, req.headers.get("user-agent"));
+  void recordEvent(
+    parsed.surface === "interview" ? { tool: "interview", surface: "interview" } : { tool: "ask", surface: "chat" },
+    req.headers.get("user-agent"),
+  );
 
   // compact profile, not the full corpus: the prompt rides EVERY hop of the
   // tool loop and the free tier allows 8k tokens/minute (plan-0005)
@@ -68,10 +77,7 @@ export async function POST(req: Request) {
     apiKey: key,
     tools: CHAT_TOOLS,
     callTool,
-    messages: [
-      { role: "system", content: systemPrompt(profile) },
-      { role: "user", content: question },
-    ],
+    messages: [{ role: "system", content: systemPrompt(profile) }, ...parsed.turns],
   });
 
   if (result.kind === "error") return new Response(result.message, { status: result.status });

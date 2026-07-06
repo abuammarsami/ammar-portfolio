@@ -111,3 +111,9 @@ ask in a first-round interview — "does his experience cover our stack?",
 shipped to production?". Or skip the middleman: paste your job description
 into the fit report above and read the gaps section first — that's the part
 most portfolios won't show you.
+
+**If you are a human without an agent:** open **interview mode** (the 🎙
+button above, ⌘K, or `interview` in the footer terminal) and conduct the
+interview yourself — by voice or text. The agent answers from the corpus,
+navigates the site to what it's citing while it talks, and speaks its
+answers back if you asked by voice. Escape ends it.

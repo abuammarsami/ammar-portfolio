@@ -2,7 +2,7 @@ import type { Dispatch, SetStateAction } from "react";
 
 import { parseActionLine } from "@/lib/agent/chat-actions";
 import { applyLens, isLens, LENSES } from "@/lib/agent/lens";
-import { AUTOPILOT_EVENT } from "@/lib/agent/autopilot-event";
+import { AUTOPILOT_EVENT, INTERVIEW_EVENT } from "@/lib/agent/autopilot-event";
 
 /**
  * The footer terminal's command engine — lazy-loaded on the first Enter so
@@ -31,6 +31,7 @@ const HELP = [
   "voice           ask by speaking; the answer talks back (Chrome/Safari)",
   "fit             paste a job description, get an honest fit report",
   "demo [topic]    autopilot: watch the agent interview this site — optionally about your topic",
+  "interview       open interview mode: ask by voice or text, the site drives itself",
   "clear           clear output",
 ];
 
@@ -82,6 +83,10 @@ export function runCommand(raw: string, ctx: TerminalCtx): void {
       );
       break;
     }
+    case "interview":
+      out.push("opening interview mode — ⟨esc⟩ ends it …");
+      window.dispatchEvent(new Event(INTERVIEW_EVENT));
+      break;
     case "lens":
       if (arg && isLens(arg)) {
         applyLens(arg);
