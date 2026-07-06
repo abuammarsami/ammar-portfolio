@@ -29,7 +29,7 @@ describe("webmcp tool descriptors", () => {
   const tools = createWebmcpTools(deps());
 
   it("are valid per the WebMCP contract (name charset, non-empty descriptions, object schemas)", () => {
-    expect(tools.length).toBeLessThanOrEqual(8);
+    expect(tools.length).toBeLessThanOrEqual(9);
     const names = tools.map((t) => t.name);
     expect(new Set(names).size).toBe(names.length);
     for (const t of tools) {
@@ -39,7 +39,7 @@ describe("webmcp tool descriptors", () => {
     }
   });
 
-  it("exposes the full surface: query, resume, paper, navigation, download, demo, lens, contact", () => {
+  it("exposes the full surface: query, resume, paper, navigation, download, demo, lens, contact, circuit", () => {
     expect(tools.map((t) => t.name)).toEqual([
       "query_portfolio",
       "get_resume_summary",
@@ -49,7 +49,16 @@ describe("webmcp tool descriptors", () => {
       "run_quantum_demo",
       "set_lens",
       "contact",
+      "compose_circuit",
     ]);
+  });
+
+  it("compose_circuit runs the simulator and hints navigation when the composer is closed", async () => {
+    const tool = tools.find((t) => t.name === "compose_circuit")!;
+    const out = await tool.execute({ circuit: "h0_cx" });
+    expect(out).toContain('"00": 0.5');
+    expect(out).toContain("navigate_to");
+    expect(await tool.execute({ circuit: "junk!" })).toContain("invalid circuit");
   });
 });
 

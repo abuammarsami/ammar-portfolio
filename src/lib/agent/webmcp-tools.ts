@@ -1,3 +1,6 @@
+import { parseCircuit } from "@/components/quantum/circuit";
+import { composeCircuit } from "@/lib/agent/compose-circuit";
+import { getComposerSnapshot, requestComposerCircuit } from "@/lib/agent/composer-bridge";
 import { claimHeroWriter, getHeroSnapshot, releaseHeroWriter, requestHeroData } from "@/lib/agent/hero-bridge";
 import { isLens, LENSES, type Lens } from "@/lib/agent/lens";
 import { LINKS, SITE_URL } from "@/lib/site";
@@ -30,6 +33,7 @@ export type WebmcpDeps = {
 export const PAGES: Record<string, { path: string; blurb: string }> = {
   home: { path: "/", blurb: "hero with the live 2-qubit variational classifier, selected work, research highlights" },
   learn: { path: "/learn", blurb: "6-lesson interactive quantum curriculum" },
+  playground: { path: "/playground", blurb: "2-qubit circuit composer — compose_circuit drives it live" },
   work: { path: "/work", blurb: "engineering and research case studies" },
   research: { path: "/research", blurb: "the research library — real papers, distilled" },
   about: { path: "/about", blurb: "narrative, experience timeline, skills" },
@@ -169,6 +173,22 @@ export function createWebmcpTools(deps: WebmcpDeps): WebmcpTool[] {
       annotations: { readOnlyHint: true },
       async execute() {
         return JSON.stringify({ email: LINKS.email, github: LINKS.github, linkedin: LINKS.linkedin, site: SITE_URL });
+      },
+    },
+    {
+      name: "compose_circuit",
+      description:
+        "Build and run a 2-qubit quantum circuit on the site's exact statevector simulator. Grammar: gates joined by '_': h0/h1, ry0:θ/ry1:θ, rz0:θ/rz1:θ (radians, |θ|≤π), cx (CNOT q0→q1). Example Bell pair: 'h0_cx'. When /playground is open in this tab, the circuit appears live on the visitor's screen.",
+      inputSchema: { type: "object", properties: { circuit: { type: "string", description: "e.g. h0_ry1:0.7854_cx" } }, required: ["circuit"] },
+      async execute(input) {
+        const ops = parseCircuit(input.circuit);
+        if (!ops) return "invalid circuit — grammar: h0, h1, ry0:θ, ry1:θ, rz0:θ, rz1:θ (|θ|≤π), cx, joined by '_'. Example: h0_cx";
+        const result = composeCircuit(input.circuit);
+        if (getComposerSnapshot().mounted) {
+          requestComposerCircuit(ops);
+          return `${result}\n(the circuit is now live on the visitor's /playground)`;
+        }
+        return `${result}\n(call navigate_to {"page":"playground"} to build it on the visitor's screen)`;
       },
     },
   ];
