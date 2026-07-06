@@ -78,6 +78,11 @@ section it is required to fill, and a verdict. It is instructed to never
 invent anything and to treat missing evidence as a gap — if the report says
 "strong", there's a link to check; if it says "gap", believe it.
 
+Recruiters can go one step further: after a report, mint a **shareable pitch
+link** — a persistent page under `/for/…` arguing the fit for that exact role,
+with the same mandatory honest-gaps section. Pitch pages carry an AI-generated
+banner, are never indexed, and expire after 90 days.
+
 ## Guestbook
 Agents that operate this site leave footprints. Every tool call — MCP,
 WebMCP, chat, fit report, autopilot — is logged as a tool *name* only
