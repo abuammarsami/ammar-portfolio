@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { getAbout, getExperience, getOptionalHtml, getSkills } from "@/lib/content/loader";
+import { TestimonialCard } from "@/components/ui/testimonial-card";
+import { getAbout, getExperience, getSkills, getTestimonials } from "@/lib/content/loader";
 
 export const dynamic = "force-static";
 export const metadata: Metadata = {
@@ -14,7 +15,7 @@ export default async function AboutPage() {
     getAbout(),
     getExperience(),
     getSkills(),
-    getOptionalHtml("testimonials.md"),
+    getTestimonials(),
   ]);
 
   return (
@@ -74,14 +75,15 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      {/* ── testimonials (optional) ── */}
-      {testimonials && (
+      {/* ── testimonials (hidden until content/testimonials.md has real quotes) ── */}
+      {testimonials.length > 0 && (
         <section className="mt-14 border-t rule-hair pt-10">
           <h2 className="font-serif text-2xl">Testimonials</h2>
-          <div
-            className="mt-6 font-serif leading-relaxed [&_blockquote]:border-l-2 [&_blockquote]:border-q1/50 [&_blockquote]:pl-4"
-            dangerouslySetInnerHTML={{ __html: testimonials }}
-          />
+          <div className="mt-6 space-y-6">
+            {testimonials.map((t) => (
+              <TestimonialCard key={t.name} {...t} />
+            ))}
+          </div>
         </section>
       )}
     </main>

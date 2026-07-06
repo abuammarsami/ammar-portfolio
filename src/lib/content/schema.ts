@@ -101,6 +101,14 @@ export type HirePage = {
   services: Service[];
 };
 
+/** One quote from content/testimonials.md — parsed, never fabricated. */
+export type Testimonial = {
+  quoteHtml: string;
+  name: string;
+  title: string | null;
+  company: string | null;
+};
+
 export type ExperienceRole = {
   heading: string; // "Company — Title"
   meta: string; // "dates · location"
