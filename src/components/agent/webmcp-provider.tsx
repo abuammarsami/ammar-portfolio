@@ -20,7 +20,10 @@ export function WebmcpProvider() {
     void import("./webmcp-mount").then((m) => {
       if (!ac.signal.aborted) return m.mount(navigate, ac.signal);
     });
-    const onAutopilot = () => void import("./autopilot-tour").then((m) => m.runTour(navigate));
+    const onAutopilot = (e: Event) => {
+      const interest = (e as CustomEvent<{ interest?: string }>).detail?.interest;
+      void import("./autopilot-tour").then((m) => m.runTour(navigate, { interest }));
+    };
     window.addEventListener(AUTOPILOT_EVENT, onAutopilot);
     return () => {
       ac.abort();

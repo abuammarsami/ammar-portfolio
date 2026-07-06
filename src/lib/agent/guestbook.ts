@@ -33,7 +33,7 @@ export const GUESTBOOK_TOOLS = new Set([
   // WebMCP (webmcp-tools.ts)
   "query_portfolio", "get_resume_summary", "navigate_to", "download_resume", "run_quantum_demo", "set_lens",
   // chat loop pseudo-tool + surface-level acts
-  "navigate", "ask", "fit_report", "autopilot", "pitch_link",
+  "navigate", "ask", "fit_report", "autopilot", "pitch_link", "tour_plan",
 ]);
 
 const KEY = "guestbook";

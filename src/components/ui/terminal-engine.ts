@@ -30,7 +30,7 @@ const HELP = [
   "ask <question>  ask my AI agent — it can search my work and take you there",
   "voice           ask by speaking; the answer talks back (Chrome/Safari)",
   "fit             paste a job description, get an honest fit report",
-  "demo            autopilot: watch the agent interview this site",
+  "demo [topic]    autopilot: watch the agent interview this site — optionally about your topic",
   "clear           clear output",
 ];
 
@@ -70,10 +70,18 @@ export function runCommand(raw: string, ctx: TerminalCtx): void {
     case "voice":
       void import("./voice-controller").then((m) => m.startVoice(ctx));
       break;
-    case "demo":
-      out.push("engaging autopilot — ⟨esc⟩ or scroll to stop …");
-      window.dispatchEvent(new Event(AUTOPILOT_EVENT));
+    case "demo": {
+      const topic = raw.trim().slice(4).trim();
+      out.push(
+        topic.length >= 4
+          ? `engaging autopilot — planning a tour about “${topic}” · ⟨esc⟩ or scroll to stop …`
+          : "engaging autopilot — ⟨esc⟩ or scroll to stop …",
+      );
+      window.dispatchEvent(
+        new CustomEvent(AUTOPILOT_EVENT, { detail: topic.length >= 4 ? { interest: topic.slice(0, 200) } : undefined }),
+      );
       break;
+    }
     case "lens":
       if (arg && isLens(arg)) {
         applyLens(arg);

@@ -1,6 +1,7 @@
 import { getHeroSnapshot, requestHeroData } from "@/lib/agent/hero-bridge";
 import { applyLens, currentLens, type Lens } from "@/lib/agent/lens";
-import { TOUR } from "@/lib/agent/tour-script";
+import { validateTourPlan } from "@/lib/agent/tour-plan";
+import { TOUR, type TourStep } from "@/lib/agent/tour-script";
 import { createWebmcpTools } from "@/lib/agent/webmcp-tools";
 
 import { browserDeps } from "./webmcp-mount";
@@ -15,6 +16,11 @@ import { browserDeps } from "./webmcp-mount";
 
 let running = false;
 
+/** Interview mode and the autopilot share the stage — one driver at a time. */
+export function isTourRunning(): boolean {
+  return running;
+}
+
 const Z = "2147483000"; // above everything, incl. the palette (z-50)
 
 function el(tag: string, css: string): HTMLElement {
@@ -23,7 +29,7 @@ function el(tag: string, css: string): HTMLElement {
   return node;
 }
 
-export async function runTour(navigate: (path: string) => void): Promise<void> {
+export async function runTour(navigate: (path: string) => void, opts: { interest?: string } = {}): Promise<void> {
   if (running) return;
   running = true;
 
@@ -120,7 +126,28 @@ export async function runTour(navigate: (path: string) => void): Promise<void> {
       );
     };
 
-    for (const step of TOUR) {
+    // dynamic mode (plan-0006): ask the server for a personalized plan, but
+    // trust nothing — the returned steps are revalidated here against the
+    // same closed grammar. Any failure means the static tour, never no tour.
+    let steps: TourStep[] = TOUR;
+    if (opts.interest && !cancelled) {
+      caption.textContent = `planning a tour about “${opts.interest}” …`;
+      try {
+        const res = await fetch("/api/tour", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ interest: opts.interest }),
+        });
+        if (res.ok) {
+          const data = (await res.json()) as { steps?: unknown };
+          steps = validateTourPlan(data.steps) ?? TOUR;
+        }
+      } catch {
+        /* static tour */
+      }
+    }
+
+    for (const step of steps) {
       if (cancelled) break;
       caption.textContent = step.caption;
       result.textContent = "";
