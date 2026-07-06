@@ -10,6 +10,8 @@ const BUDGETS = [
   { route: "/work", html: ".next/server/app/work.html", limit: 200_000 },
   { route: "/research", html: ".next/server/app/research.html", limit: 200_000 },
   { route: "/agents", html: ".next/server/app/agents.html", limit: 200_000 },
+  { route: "/hire", html: ".next/server/app/hire.html", limit: 200_000 },
+  { route: "/cv", html: ".next/server/app/cv.html", limit: 200_000 },
   {
     route: "/research/quantum-machine-learning-thesis",
     html: ".next/server/app/research/quantum-machine-learning-thesis.html",

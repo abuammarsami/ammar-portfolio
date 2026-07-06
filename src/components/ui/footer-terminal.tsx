@@ -39,78 +39,47 @@ export function FooterTerminal() {
     void import("./terminal-engine").then((m) => m.runCommand(raw, makeCtx()));
   }
 
+  // the static footer shell (contact links) is server HTML in layout.tsx —
+  // this island is only the live prompt row + its output lines
   return (
-    <footer className="border-t rule-hair no-print">
-      <div
-        className="mx-auto max-w-4xl cursor-text space-y-1.5 px-6 py-8 font-mono text-sm"
-        onClick={() => inputRef.current?.focus()}
-      >
-        <p className="text-muted">
-          {PROMPT} <span className="text-ink">contact --list</span>
+    <div className="cursor-text" onClick={() => inputRef.current?.focus()}>
+      {lines.map((l, i) => (
+        <p key={i} className={l.startsWith(PROMPT) ? "pt-2 text-ink" : "text-muted"}>
+          {l}
         </p>
-        <p>
-          <a href="mailto:abuammarsami@gmail.com" className="text-q0 hover:underline">
-            abuammarsami@gmail.com
-          </a>
-        </p>
-        <p>
-          <a
-            href="https://github.com/abuammarsami"
-            className="text-q1 hover:underline"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            github.com/abuammarsami
-          </a>
-        </p>
-        <p>
-          <a
-            href="https://linkedin.com/in/abu-ammar/"
-            className="text-q0 hover:underline"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            linkedin.com/in/abu-ammar
-          </a>
-        </p>
-        {lines.map((l, i) => (
-          <p key={i} className={l.startsWith(PROMPT) ? "pt-2 text-ink" : "text-muted"}>
-            {l}
-          </p>
-        ))}
-        <p className="flex items-center gap-2 pt-2 text-muted">
-          <span>{PROMPT}</span>
-          <input
-            ref={inputRef}
-            type="text"
-            aria-label="Terminal input — type help for commands"
-            placeholder="type `help`"
-            spellCheck={false}
-            autoComplete="off"
-            className="w-40 flex-1 border-none bg-transparent font-mono text-sm text-ink outline-none placeholder:text-muted/50"
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                run(e.currentTarget.value);
-                e.currentTarget.value = "";
-              }
+      ))}
+      <p className="flex items-center gap-2 pt-2 text-muted">
+        <span>{PROMPT}</span>
+        <input
+          ref={inputRef}
+          type="text"
+          aria-label="Terminal input"
+          placeholder="type `help`"
+          spellCheck={false}
+          autoComplete="off"
+          className="w-40 flex-1 border-none bg-transparent font-mono text-sm text-ink outline-none placeholder:text-muted/50"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              run(e.currentTarget.value);
+              e.currentTarget.value = "";
+            }
+          }}
+        />
+        {voiceSupported && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              void import("./voice-controller").then((m) => m.startVoice(makeCtx()));
             }}
-          />
-          {voiceSupported && (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                void import("./voice-controller").then((m) => m.startVoice(makeCtx()));
-              }}
-              aria-label="Ask by voice — the answer is spoken back"
-              title="ask by voice"
-              className="font-mono text-sm text-muted transition-colors hover:text-q0"
-            >
-              ⌾ voice
-            </button>
-          )}
-        </p>
-      </div>
-    </footer>
+            aria-label="Ask by voice"
+            title="ask by voice"
+            className="font-mono text-sm text-muted transition-colors hover:text-q0"
+          >
+            ⌾ voice
+          </button>
+        )}
+      </p>
+    </div>
   );
 }

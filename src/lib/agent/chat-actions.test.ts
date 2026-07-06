@@ -4,7 +4,7 @@ import { ACTION_PREFIX, createScrubber, frameAction, isInternalPath, parseAction
 
 describe("isInternalPath", () => {
   it("accepts top pages", () => {
-    for (const p of ["/", "/learn", "/work", "/research", "/about", "/agents", "/writing"]) {
+    for (const p of ["/", "/learn", "/work", "/research", "/about", "/agents", "/writing", "/hire", "/cv"]) {
       expect(isInternalPath(p)).toBe(true);
     }
   });

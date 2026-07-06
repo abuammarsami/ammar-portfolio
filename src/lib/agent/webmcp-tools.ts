@@ -34,6 +34,8 @@ export const PAGES: Record<string, { path: string; blurb: string }> = {
   research: { path: "/research", blurb: "the research library — real papers, distilled" },
   about: { path: "/about", blurb: "narrative, experience timeline, skills" },
   agents: { path: "/agents", blurb: "the machine interface: MCP, WebMCP, feeds, fit report" },
+  hire: { path: "/hire", blurb: "paid services: QML tutoring, .NET/Azure consulting, office hours" },
+  cv: { path: "/cv", blurb: "typeset curriculum vitae, print-ready, lens-aware" },
   writing: { path: "/writing", blurb: "writing and research index" },
 };
 

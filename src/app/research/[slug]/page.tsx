@@ -27,6 +27,15 @@ export async function generateMetadata({
   return {
     title: paper.title,
     description: `${paper.venue}, ${paper.year} — distilled: abstract, method, honest results, and retrospective.`,
+    // Google Scholar indexing (plan-0006): repeated citation_author tags via
+    // the array form; citation_pdf_url only for papers with a curated PDF
+    other: {
+      citation_title: paper.title,
+      citation_author: paper.authors,
+      citation_publication_date: String(paper.year),
+      ...(paper.kind === "thesis" ? { citation_dissertation_institution: "North South University" } : {}),
+      ...(paper.pdf ? { citation_pdf_url: `${SITE_URL}/papers/${paper.slug}.pdf` } : {}),
+    },
   };
 }
 
@@ -91,6 +100,11 @@ export default async function PaperPage({ params }: { params: Promise<{ slug: st
           ) : (
             <a href={`mailto:${LINKS.email}?subject=Manuscript request: ${encodeURIComponent(paper.title)}`} className="text-muted hover:text-q0">
               [manuscript on request]
+            </a>
+          )}
+          {paper.bibtex && (
+            <a href={`/research/${paper.slug}/citation.bib`} className="text-q0 hover:underline">
+              [.bib ↓]
             </a>
           )}
           {paper.related.project && (

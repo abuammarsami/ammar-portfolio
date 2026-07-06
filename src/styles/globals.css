@@ -261,6 +261,12 @@ html[data-vt="measure"]::view-transition-new(root) {
   display: none !important;
 }
 
+/* /cv professor ordering (plan-0006): the base lens rules only hide marked
+   variants under OTHER lenses — this is the inverse, "everyone but professor" */
+[data-lens="professor"] .lens-not-professor {
+  display: none !important;
+}
+
 @media print {
   .no-print,
   nav,
@@ -274,5 +280,19 @@ html[data-vt="measure"]::view-transition-new(root) {
   }
   body::after {
     display: none;
+  }
+  /* typeset CV (plan-0006) */
+  @page {
+    margin: 18mm 16mm;
+  }
+  .cv-entry {
+    break-inside: avoid;
+  }
+  .cv-block h2 {
+    break-after: avoid;
+  }
+  .cv-page {
+    max-width: none;
+    padding: 0;
   }
 }

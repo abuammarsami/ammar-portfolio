@@ -22,7 +22,7 @@ export type TerminalCtx = {
 
 const HELP = [
   "help            this list",
-  "cv              download resume.pdf",
+  "cv              open the typeset CV (/cv) — `cv pdf` downloads resume.pdf",
   "email           copy my email address",
   "theme           toggle dark/light",
   "goto <page>     learn · work · research · agents · about · writing",
@@ -46,8 +46,13 @@ export function runCommand(raw: string, ctx: TerminalCtx): void {
       out.push(...HELP);
       break;
     case "cv":
-      out.push("fetching resume.pdf …");
-      window.location.assign("/resume.pdf");
+      if (arg === "pdf") {
+        out.push("fetching resume.pdf …");
+        window.location.assign("/resume.pdf");
+      } else {
+        out.push("opening the typeset CV — `cv pdf` for the one-pager …");
+        ctx.navigate("/cv");
+      }
       break;
     case "email":
       void navigator.clipboard.writeText("abuammarsami@gmail.com");
@@ -57,11 +62,11 @@ export function runCommand(raw: string, ctx: TerminalCtx): void {
       out.push(`theme → ${ctx.toggleTheme()}`);
       break;
     case "goto":
-      if (arg && ["learn", "work", "research", "agents", "about", "writing"].includes(arg)) {
+      if (arg && ["learn", "work", "research", "agents", "about", "writing", "hire", "cv"].includes(arg)) {
         out.push(`navigating to /${arg} …`);
         ctx.navigate(`/${arg}`);
       } else {
-        out.push("usage: goto work | research | agents | about | writing");
+        out.push("usage: goto work | research | agents | hire | cv | about | writing");
       }
       break;
     case "fit":
