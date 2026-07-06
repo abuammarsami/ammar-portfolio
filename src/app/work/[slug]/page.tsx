@@ -5,6 +5,7 @@ import { BibtexBlock } from "@/components/paper/bibtex-block";
 import { SectionHeading } from "@/components/paper/section-heading";
 import { QuanvolutionDemo } from "@/components/quantum/quanvolution-demo";
 import { ExplainThis } from "@/components/ui/explain-this";
+import { ProjectFigure } from "@/components/ui/project-figure";
 import { getExplainers } from "@/lib/content/loader";
 import { TagChip } from "@/components/ui/tag-chip";
 import { Vt } from "@/components/ui/vt";
@@ -107,6 +108,11 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
           )}
         </figure>
       )}
+
+      {/* ── static figures from the Media section (ADR-0012) ── */}
+      {project.figures.map((f) => (
+        <ProjectFigure key={f.src} {...f} />
+      ))}
 
       {/* ── keywords / stack ── */}
       <p className="mt-10 border-t rule-hair pt-4 font-mono text-xs leading-relaxed text-muted">

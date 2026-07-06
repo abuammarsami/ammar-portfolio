@@ -30,4 +30,5 @@ accuracy ≈ **87.1%** — production-quality multi-task results in a deployable
 
 **Links:** [GitHub](https://github.com/abuammarsami/Age-Gender-and-Race-Estimation-with-Multi-Output-CNN-Architecture)
 
-**Media:** _TODO: architecture figure (trunk + 3 heads) — becomes the neural-figure on this page_
+**Media:**
+![Fig. 1 — shared convolutional trunk splitting into three heads: age regression, gender and race classification](/figures/multi-output-cnn-architecture.svg)

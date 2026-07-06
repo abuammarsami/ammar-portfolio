@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 310" width="720" height="310" role="img" aria-labelledby="qct-title">
+  <title id="qct-title">Quanvolutional circuit: a 2×2 image patch is angle-encoded into four qubits via RY rotations, passed through a random variational layer, and measured in Pauli-Z to produce four feature channels</title>
+  <defs>
+    <marker id="qct-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted, #8a8f9c)" />
+    </marker>
+  </defs>
+  <g style="font-family: var(--font-mono, 'IBM Plex Mono', ui-monospace, monospace)" fill="var(--color-ink, #e9e7e0)" font-size="13">
+
+    <!-- 2×2 input patch -->
+    <g stroke="var(--color-muted, #8a8f9c)" stroke-width="2" fill="var(--color-surface, #12151d)">
+      <rect x="30" y="118" width="26" height="26" />
+      <rect x="56" y="118" width="26" height="26" />
+      <rect x="30" y="144" width="26" height="26" />
+      <rect x="56" y="144" width="26" height="26" />
+    </g>
+    <text x="36" y="136" font-size="11" fill="var(--color-muted, #8a8f9c)">x₁</text>
+    <text x="62" y="136" font-size="11" fill="var(--color-muted, #8a8f9c)">x₂</text>
+    <text x="36" y="162" font-size="11" fill="var(--color-muted, #8a8f9c)">x₃</text>
+    <text x="62" y="162" font-size="11" fill="var(--color-muted, #8a8f9c)">x₄</text>
+    <text x="56" y="196" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">2×2 patch</text>
+
+    <!-- qubit wires -->
+    <g stroke="var(--color-muted, #8a8f9c)" stroke-width="2">
+      <line x1="128" y1="60" x2="560" y2="60" />
+      <line x1="128" y1="120" x2="560" y2="120" />
+      <line x1="128" y1="180" x2="560" y2="180" />
+      <line x1="128" y1="240" x2="560" y2="240" />
+    </g>
+    <text x="122" y="65" text-anchor="end" font-size="12">|0⟩</text>
+    <text x="122" y="125" text-anchor="end" font-size="12">|0⟩</text>
+    <text x="122" y="185" text-anchor="end" font-size="12">|0⟩</text>
+    <text x="122" y="245" text-anchor="end" font-size="12">|0⟩</text>
+
+    <!-- RY encoding gates -->
+    <g stroke="var(--color-q0, #5fc9bf)" stroke-width="2" fill="var(--color-surface, #12151d)">
+      <rect x="160" y="42" width="82" height="36" rx="2" />
+      <rect x="160" y="102" width="82" height="36" rx="2" />
+      <rect x="160" y="162" width="82" height="36" rx="2" />
+      <rect x="160" y="222" width="82" height="36" rx="2" />
+    </g>
+    <text x="201" y="65" text-anchor="middle" font-size="12">RY(x₁)</text>
+    <text x="201" y="125" text-anchor="middle" font-size="12">RY(x₂)</text>
+    <text x="201" y="185" text-anchor="middle" font-size="12">RY(x₃)</text>
+    <text x="201" y="245" text-anchor="middle" font-size="12">RY(x₄)</text>
+    <text x="201" y="290" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">angle encoding</text>
+
+    <!-- random variational layer -->
+    <rect x="292" y="36" width="120" height="228" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-q1, #9d8cff)" stroke-width="2" />
+    <text x="352" y="145" text-anchor="middle" font-size="15">U(θ)</text>
+    <text x="352" y="166" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">random</text>
+    <text x="352" y="182" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">layer</text>
+    <text x="352" y="290" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">variational circuit</text>
+
+    <!-- Pauli-Z measurements -->
+    <g stroke="var(--color-muted, #8a8f9c)" stroke-width="2" fill="var(--color-surface, #12151d)">
+      <rect x="462" y="42" width="60" height="36" rx="2" />
+      <rect x="462" y="102" width="60" height="36" rx="2" />
+      <rect x="462" y="162" width="60" height="36" rx="2" />
+      <rect x="462" y="222" width="60" height="36" rx="2" />
+    </g>
+    <text x="492" y="65" text-anchor="middle" font-size="12">⟨Z⟩</text>
+    <text x="492" y="125" text-anchor="middle" font-size="12">⟨Z⟩</text>
+    <text x="492" y="185" text-anchor="middle" font-size="12">⟨Z⟩</text>
+    <text x="492" y="245" text-anchor="middle" font-size="12">⟨Z⟩</text>
+
+    <!-- outputs → feature channels -->
+    <g stroke="var(--color-muted, #8a8f9c)" stroke-width="2" fill="none" marker-end="url(#qct-ah)">
+      <line x1="560" y1="60" x2="600" y2="60" />
+      <line x1="560" y1="120" x2="600" y2="120" />
+      <line x1="560" y1="180" x2="600" y2="180" />
+      <line x1="560" y1="240" x2="600" y2="240" />
+    </g>
+    <text x="612" y="65" font-size="12" fill="var(--color-q0, #5fc9bf)">c₁</text>
+    <text x="612" y="125" font-size="12" fill="var(--color-q0, #5fc9bf)">c₂</text>
+    <text x="612" y="185" font-size="12" fill="var(--color-q0, #5fc9bf)">c₃</text>
+    <text x="612" y="245" font-size="12" fill="var(--color-q0, #5fc9bf)">c₄</text>
+    <text x="648" y="140" font-size="11" fill="var(--color-muted, #8a8f9c)" transform="rotate(90 648 140)" text-anchor="middle">feature channels</text>
+  </g>
+</svg>

@@ -59,6 +59,13 @@ export const AGENTS_SECTIONS = [
 
 export type AgentsSection = { heading: (typeof AGENTS_SECTIONS)[number]; bodyHtml: string };
 
+/** One self-hosted figure from a project's **Media:** section (ADR-0012). */
+export type ProjectFigure = {
+  /** Site-relative path, always under /figures/ and always .svg. */
+  src: string;
+  caption: string;
+};
+
 export type Project = ProjectFrontmatter & {
   slug: string;
   summary: string;
@@ -67,7 +74,7 @@ export type Project = ProjectFrontmatter & {
   impactHtml: string;
   techStack: string;
   linksNote: string | null;
-  media: string | null;
+  figures: ProjectFigure[];
 };
 
 export type About = {

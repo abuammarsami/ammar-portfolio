@@ -21,6 +21,7 @@ import {
   type Lesson,
   type Paper,
   type Project,
+  type ProjectFigure,
   type Service,
   type SkillGroup,
 } from "./schema";
@@ -89,6 +90,38 @@ function stripComments(md: string): string {
 
 // ---------------------------------------------------------------- projects
 
+/**
+ * Parse a project's **Media:** section into typed figures (ADR-0012):
+ * one markdown image per line, `![caption](/figures/name.svg)`. Figures are
+ * self-hosted SVGs inlined at build time, so anything outside /figures/*.svg
+ * (or a file that doesn't exist in public/) fails the production build.
+ */
+export function parseProjectFigures(section: string | undefined, file: string): ProjectFigure[] {
+  if (!section) return [];
+  const figures: ProjectFigure[] = [];
+  for (const line of section.split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    const m = trimmed.match(/^!\[([^\]]+)\]\(([^)\s]+)\)$/);
+    if (!m) {
+      missing(file, `a markdown-image Media line (got "${trimmed.slice(0, 60)}")`);
+      continue;
+    }
+    const caption = m[1]!;
+    const src = m[2]!;
+    if (!/^\/figures\/[a-z0-9-]+\.svg$/.test(src)) {
+      missing(file, `a /figures/*.svg Media src (got "${src}")`);
+      continue;
+    }
+    if (!fs.existsSync(path.join(process.cwd(), "public", src))) {
+      missing(file, `an existing figure file (public${src} not found)`);
+      continue;
+    }
+    figures.push({ src, caption: caption.trim() });
+  }
+  return figures;
+}
+
 export async function getProjects(): Promise<Project[]> {
   const dir = path.join(CONTENT_DIR, "projects");
   if (!fs.existsSync(dir)) return [];
@@ -124,7 +157,7 @@ export async function getProjects(): Promise<Project[]> {
       impactHtml: await markdownToHtml(sections.get("Impact") ?? ""),
       techStack: sections.get("Tech stack") ?? "",
       linksNote: sections.get("Links") || null,
-      media: sections.get("Media") || null,
+      figures: parseProjectFigures(sections.get("Media"), rel),
     });
   }
 

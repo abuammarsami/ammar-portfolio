@@ -35,4 +35,5 @@ Azure Developer CLI (azd), GitHub Actions
 
 **Links:** (private/work project — ask me for a walkthrough)
 
-**Media:** _TODO: architecture figure (Aspire service graph)_
+**Media:**
+![Fig. 1 — Aspire service graph: kiosk screenshots → Blob Storage → Queue fan-out → Vision AI workers → event alerts](/figures/kioskvisionai-aspire-graph.svg)

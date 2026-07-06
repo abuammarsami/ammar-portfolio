@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 420" width="880" height="420" role="img" aria-labelledby="kva-title">
+  <title id="kva-title">Aspire service graph: kiosk screenshots flow into Azure Blob Storage, queues fan out analysis to Vision AI workers, which fire event notifications</title>
+  <defs>
+    <marker id="kva-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted, #8a8f9c)" />
+    </marker>
+  </defs>
+  <g style="font-family: var(--font-mono, 'IBM Plex Mono', ui-monospace, monospace)" fill="var(--color-ink, #e9e7e0)" font-size="13">
+
+    <!-- .NET Aspire orchestration boundary -->
+    <rect x="160" y="42" width="700" height="342" rx="4" fill="none" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" stroke-dasharray="6 5" opacity="0.55" />
+    <text x="176" y="68" font-size="12" fill="var(--color-muted, #8a8f9c)">.NET Aspire — orchestration · observability · service discovery</text>
+
+    <!-- kiosk fleet (edge devices, outside the Aspire app) -->
+    <g stroke="var(--color-muted, #8a8f9c)" stroke-width="2" fill="var(--color-surface, #12151d)">
+      <rect x="30" y="128" width="92" height="40" rx="2" />
+      <rect x="30" y="188" width="92" height="40" rx="2" />
+      <rect x="30" y="248" width="92" height="40" rx="2" />
+    </g>
+    <text x="76" y="153" text-anchor="middle" font-size="12">kiosk</text>
+    <text x="76" y="213" text-anchor="middle" font-size="12">kiosk</text>
+    <text x="76" y="273" text-anchor="middle" font-size="12">kiosk</text>
+    <text x="76" y="316" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">donation kiosk fleet</text>
+
+    <!-- kiosks → blob -->
+    <g stroke="var(--color-muted, #8a8f9c)" stroke-width="2" fill="none" marker-end="url(#kva-ah)">
+      <path d="M 122 148 C 150 148, 150 196, 176 200" />
+      <path d="M 122 208 L 176 210" />
+      <path d="M 122 268 C 150 268, 150 224, 176 220" />
+    </g>
+    <text x="149" y="185" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">png</text>
+
+    <!-- Azure Blob Storage -->
+    <rect x="180" y="180" width="132" height="60" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" />
+    <text x="246" y="206" text-anchor="middle">Azure Blob</text>
+    <text x="246" y="224" text-anchor="middle">Storage</text>
+
+    <!-- blob → queue -->
+    <line x1="312" y1="210" x2="376" y2="210" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" marker-end="url(#kva-ah)" />
+
+    <!-- Azure Queue -->
+    <rect x="380" y="180" width="120" height="60" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-q1, #9d8cff)" stroke-width="2" />
+    <text x="440" y="206" text-anchor="middle">Azure</text>
+    <text x="440" y="224" text-anchor="middle">Queues</text>
+
+    <!-- queue fans out to workers -->
+    <g stroke="var(--color-muted, #8a8f9c)" stroke-width="2" fill="none" marker-end="url(#kva-ah)">
+      <path d="M 500 196 C 530 180, 530 122, 556 114" />
+      <path d="M 500 210 L 556 210" />
+      <path d="M 500 224 C 530 240, 530 298, 556 306" />
+    </g>
+
+    <!-- Vision AI workers -->
+    <g stroke="var(--color-q0, #5fc9bf)" stroke-width="2" fill="var(--color-surface, #12151d)">
+      <rect x="560" y="90" width="148" height="48" rx="2" />
+      <rect x="560" y="186" width="148" height="48" rx="2" />
+      <rect x="560" y="282" width="148" height="48" rx="2" />
+    </g>
+    <text x="634" y="110" text-anchor="middle" font-size="12">Vision AI</text>
+    <text x="634" y="127" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">anomaly check</text>
+    <text x="634" y="206" text-anchor="middle" font-size="12">Vision AI</text>
+    <text x="634" y="223" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">anomaly check</text>
+    <text x="634" y="302" text-anchor="middle" font-size="12">Vision AI</text>
+    <text x="634" y="319" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">anomaly check</text>
+
+    <!-- workers converge → notifications -->
+    <g stroke="var(--color-muted, #8a8f9c)" stroke-width="2" fill="none" marker-end="url(#kva-ah)">
+      <path d="M 708 114 C 736 122, 736 180, 762 196" />
+      <path d="M 708 210 L 762 210" />
+      <path d="M 708 306 C 736 298, 736 240, 762 224" />
+    </g>
+
+    <!-- event notifications -->
+    <rect x="766" y="180" width="84" height="60" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-q1, #9d8cff)" stroke-width="2" />
+    <text x="808" y="206" text-anchor="middle" font-size="12">event</text>
+    <text x="808" y="223" text-anchor="middle" font-size="12">alerts</text>
+
+    <!-- delivery note -->
+    <text x="520" y="404" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">provisioned with azd · deployed by generated GitHub Actions</text>
+  </g>
+</svg>
