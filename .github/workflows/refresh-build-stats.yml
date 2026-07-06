@@ -1,0 +1,53 @@
+# Keeps /colophon's committed receipts honest (plan-0006): after each push to
+# main, re-measure the route budgets and commit build-stats.json back only when
+# the measurements actually changed. Three loop guards: paths-ignore on the
+# stats file, [skip ci] in the bot commit, and the routes-diff check itself.
+name: Refresh build stats
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "src/lib/colophon/build-stats.json"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-build-stats
+  cancel-in-progress: true
+
+jobs:
+  stats:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run stats
+      - name: Commit refreshed stats when route measurements changed
+        run: |
+          node -e '
+            const fs = require("node:fs");
+            const { execSync } = require("node:child_process");
+            const file = "src/lib/colophon/build-stats.json";
+            const cur = JSON.parse(fs.readFileSync(file, "utf8"));
+            let prev = null;
+            try { prev = JSON.parse(execSync(`git show HEAD:${file}`).toString()); } catch {}
+            const changed = !prev || JSON.stringify(prev.routes) !== JSON.stringify(cur.routes);
+            process.exit(changed ? 0 : 42);
+          ' && CHANGED=yes || CHANGED=no
+          if [ "$CHANGED" = "yes" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add src/lib/colophon/build-stats.json
+            git commit -m "chore: refresh build stats @ ${GITHUB_SHA::7} [skip ci]"
+            git push
+          else
+            # measurements identical — drop the commit/date-only rewrite
+            git checkout -- src/lib/colophon/build-stats.json
+            echo "route measurements unchanged; nothing to commit"
+          fi
