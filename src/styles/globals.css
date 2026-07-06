@@ -211,12 +211,23 @@ body {
   font-family: var(--font-serif);
 }
 
-/* big serif stat numerals */
+/* big serif stat numerals — tabular so counts align as they change */
 .stat-value {
   font-family: var(--font-serif);
   font-size: clamp(2.2rem, 4.5vw, 3.4rem);
   line-height: 1;
   letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* typeset niceties: balanced serif headlines; quotes hang their opening
+   punctuation into the margin (Safari-only progressive enhancement) */
+h1,
+h2 {
+  text-wrap: balance;
+}
+blockquote {
+  hanging-punctuation: first;
 }
 
 /* View Transitions (plan-0005 P5) — progressive enhancement.
