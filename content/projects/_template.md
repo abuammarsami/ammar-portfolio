@@ -24,4 +24,8 @@ status: draft # draft = hidden from production listings; active = live
 
 **Links:** <GitHub / live demo / case study>
 
-**Media:** <optional: paths to screenshots, e.g. ../media/kioskvisionai-1.png>
+**Media:**
+<!-- optional (ADR-0012): one markdown image per line, self-hosted SVGs only.
+     ![Fig. 1 — caption shown under the figure](/figures/project-name-figure.svg)
+     The build fails on anything outside /figures/*.svg or a missing file. -->
+

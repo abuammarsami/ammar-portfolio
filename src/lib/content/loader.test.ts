@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getAbout, getColophonPage, getExperience, getHirePage, getProjects, getSkills, splitHeadingSections, splitLabelSections } from "./loader";
+import { getAbout, getColophonPage, getExperience, getHirePage, getProjects, getSkills, parseProjectFigures, splitHeadingSections, splitLabelSections } from "./loader";
 import { projectFrontmatterSchema } from "./schema";
 
 describe("splitLabelSections", () => {
@@ -38,6 +38,37 @@ beta`;
   });
 });
 
+describe("parseProjectFigures", () => {
+  it("parses one markdown image per line into typed figures", () => {
+    const section = [
+      "![Fig. 1 — Aspire service graph](/figures/kioskvisionai-aspire-graph.svg)",
+      "![Fig. 2 — architecture](/figures/multi-output-cnn-architecture.svg)",
+    ].join("\n");
+    const figs = parseProjectFigures(section, "projects/x.md");
+    expect(figs).toEqual([
+      { src: "/figures/kioskvisionai-aspire-graph.svg", caption: "Fig. 1 — Aspire service graph" },
+      { src: "/figures/multi-output-cnn-architecture.svg", caption: "Fig. 2 — architecture" },
+    ]);
+  });
+
+  it("returns [] for an absent or empty Media section", () => {
+    expect(parseProjectFigures(undefined, "projects/x.md")).toEqual([]);
+    expect(parseProjectFigures("", "projects/x.md")).toEqual([]);
+    expect(parseProjectFigures("  \n ", "projects/x.md")).toEqual([]);
+  });
+
+  it("drops non-image lines and non-/figures/*.svg sources (dev-lenient)", () => {
+    expect(parseProjectFigures("_TODO: a figure_", "projects/x.md")).toEqual([]);
+    expect(parseProjectFigures("![cap](https://evil.example/x.svg)", "projects/x.md")).toEqual([]);
+    expect(parseProjectFigures("![cap](/figures/../../secret.svg)", "projects/x.md")).toEqual([]);
+    expect(parseProjectFigures("![cap](/figures/shot.png)", "projects/x.md")).toEqual([]);
+  });
+
+  it("drops figures whose file does not exist in public/", () => {
+    expect(parseProjectFigures("![cap](/figures/does-not-exist.svg)", "projects/x.md")).toEqual([]);
+  });
+});
+
 describe("projectFrontmatterSchema", () => {
   const valid = {
     title: "X",
@@ -68,6 +99,11 @@ describe("real content/ files", () => {
       expect(p.problemHtml).toContain("<p>");
       expect(["engineering", "research"]).toContain(p.category);
     }
+    // figure pipeline (ADR-0012): the three illustrated projects carry validated figures
+    const bySlug = new Map(projects.map((p) => [p.slug, p]));
+    expect(bySlug.get("kioskvisionai")?.figures).toHaveLength(1);
+    expect(bySlug.get("quantum-machine-learning-thesis")?.figures).toHaveLength(2);
+    expect(bySlug.get("multi-output-cnn")?.figures).toHaveLength(1);
     // newest first
     const dates = projects.map((p) => p.date);
     expect([...dates].sort().reverse()).toEqual(dates);

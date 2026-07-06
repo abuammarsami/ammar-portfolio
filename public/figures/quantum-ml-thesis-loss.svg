@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 360" width="720" height="360" role="img" aria-labelledby="qml-loss-title">
+  <title id="qml-loss-title">Training-loss sketch: the quanvolutional network converges to optimum loss in fewer epochs than the equivalized classical CNN; final test accuracies were 92% quanvolutional versus 96% classical</title>
+  <g style="font-family: var(--font-mono, 'IBM Plex Mono', ui-monospace, monospace)" fill="var(--color-ink, #e9e7e0)" font-size="12">
+
+    <!-- axes -->
+    <g stroke="var(--color-muted, #8a8f9c)" stroke-width="2">
+      <line x1="80" y1="40" x2="80" y2="290" />
+      <line x1="80" y1="290" x2="660" y2="290" />
+    </g>
+    <text x="42" y="165" transform="rotate(-90 42 165)" text-anchor="middle" fill="var(--color-muted, #8a8f9c)">loss</text>
+    <text x="370" y="322" text-anchor="middle" fill="var(--color-muted, #8a8f9c)">epochs</text>
+
+    <!-- faint gridlines -->
+    <g stroke="var(--color-muted, #8a8f9c)" stroke-width="1" opacity="0.2">
+      <line x1="80" y1="120" x2="660" y2="120" />
+      <line x1="80" y1="205" x2="660" y2="205" />
+    </g>
+
+    <!-- classical CNN: gradual convergence -->
+    <path d="M 80 66 C 200 120, 300 210, 430 258 S 590 280, 656 282" fill="none" stroke="var(--color-q1, #9d8cff)" stroke-width="2.5" />
+
+    <!-- quanvolutional: steeper early drop, earlier plateau -->
+    <path d="M 80 70 C 130 220, 170 262, 250 276 S 420 283, 656 284" fill="none" stroke="var(--color-q0, #5fc9bf)" stroke-width="2.5" />
+
+    <!-- convergence marker -->
+    <line x1="250" y1="276" x2="250" y2="290" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.5" stroke-dasharray="3 3" />
+    <text x="250" y="268" text-anchor="middle" font-size="11" fill="var(--color-q0, #5fc9bf)">reaches optimum sooner</text>
+
+    <!-- legend -->
+    <g font-size="12">
+      <line x1="420" y1="70" x2="452" y2="70" stroke="var(--color-q0, #5fc9bf)" stroke-width="2.5" />
+      <text x="460" y="74">quanvolutional — 92% test acc.</text>
+      <line x1="420" y1="94" x2="452" y2="94" stroke="var(--color-q1, #9d8cff)" stroke-width="2.5" />
+      <text x="460" y="98">classical CNN — 96% test acc.</text>
+    </g>
+
+    <!-- honesty note -->
+    <text x="370" y="348" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">curve shapes illustrative; accuracies measured in the thesis — full plots in the repo notebooks</text>
+  </g>
+</svg>

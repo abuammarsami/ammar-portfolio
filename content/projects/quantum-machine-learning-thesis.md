@@ -39,4 +39,6 @@ The full thesis is distilled at [/research/quantum-machine-learning-thesis](/res
 
 **Links:** [GitHub](https://github.com/abuammarsami/CSE499.06-QML-) · [thesis PDF](/papers/quantum-machine-learning-thesis.pdf)
 
-**Media:** _TODO: circuit diagrams + loss curves from the repo notebooks_
+**Media:**
+![Fig. 2 — the quanvolutional circuit: 2×2 patches angle-encoded via RY into 4 qubits, a random variational layer, Pauli-Z readout as feature channels](/figures/quantum-ml-thesis-circuit.svg)
+![Fig. 3 — convergence sketch: quanvolution reached optimum loss in fewer epochs; final test accuracy 92% vs the 96% classical baseline](/figures/quantum-ml-thesis-loss.svg)

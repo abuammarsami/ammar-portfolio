@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" width="800" height="360" role="img" aria-labelledby="moc-title">
+  <title id="moc-title">Multi-output CNN architecture: a face image feeds a shared convolutional trunk which splits into three heads — age regression, gender classification, and race classification</title>
+  <defs>
+    <marker id="moc-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted, #8a8f9c)" />
+    </marker>
+  </defs>
+  <g style="font-family: var(--font-mono, 'IBM Plex Mono', ui-monospace, monospace)" fill="var(--color-ink, #e9e7e0)" font-size="13">
+
+    <!-- input image -->
+    <rect x="30" y="140" width="80" height="80" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" />
+    <g stroke="var(--color-muted, #8a8f9c)" stroke-width="1" opacity="0.4">
+      <line x1="56" y1="140" x2="56" y2="220" />
+      <line x1="83" y1="140" x2="83" y2="220" />
+      <line x1="30" y1="166" x2="110" y2="166" />
+      <line x1="30" y1="193" x2="110" y2="193" />
+    </g>
+    <text x="70" y="246" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">face image</text>
+    <text x="70" y="262" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">(UTKFace)</text>
+
+    <!-- input → trunk -->
+    <line x1="110" y1="180" x2="152" y2="180" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" marker-end="url(#moc-ah)" />
+
+    <!-- shared trunk: three conv blocks -->
+    <g stroke="var(--color-q0, #5fc9bf)" stroke-width="2" fill="var(--color-surface, #12151d)">
+      <rect x="156" y="126" width="64" height="108" rx="2" />
+      <rect x="244" y="126" width="64" height="108" rx="2" />
+      <rect x="332" y="126" width="64" height="108" rx="2" />
+    </g>
+    <g stroke="var(--color-muted, #8a8f9c)" stroke-width="2">
+      <line x1="220" y1="180" x2="244" y2="180" />
+      <line x1="308" y1="180" x2="332" y2="180" />
+    </g>
+    <text x="188" y="185" text-anchor="middle" font-size="12">conv</text>
+    <text x="276" y="185" text-anchor="middle" font-size="12">conv</text>
+    <text x="364" y="185" text-anchor="middle" font-size="12">conv</text>
+    <text x="276" y="262" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">shared trunk — separable conv · batch norm · dropout</text>
+
+    <!-- trunk → split point -->
+    <line x1="396" y1="180" x2="446" y2="180" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" />
+    <circle cx="450" cy="180" r="4" fill="var(--color-muted, #8a8f9c)" />
+
+    <!-- fan out to three heads -->
+    <g stroke="var(--color-muted, #8a8f9c)" stroke-width="2" fill="none" marker-end="url(#moc-ah)">
+      <path d="M 450 176 C 480 160, 480 82, 508 74" />
+      <path d="M 454 180 L 508 180" />
+      <path d="M 450 184 C 480 200, 480 278, 508 286" />
+    </g>
+
+    <!-- output heads -->
+    <g stroke="var(--color-q1, #9d8cff)" stroke-width="2" fill="var(--color-surface, #12151d)">
+      <rect x="512" y="50" width="150" height="48" rx="2" />
+      <rect x="512" y="156" width="150" height="48" rx="2" />
+      <rect x="512" y="262" width="150" height="48" rx="2" />
+    </g>
+    <text x="587" y="70" text-anchor="middle" font-size="12">age</text>
+    <text x="587" y="87" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">regression</text>
+    <text x="587" y="176" text-anchor="middle" font-size="12">gender</text>
+    <text x="587" y="193" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">classification</text>
+    <text x="587" y="282" text-anchor="middle" font-size="12">race</text>
+    <text x="587" y="299" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">classification</text>
+
+    <!-- measured results -->
+    <g font-size="11" fill="var(--color-muted, #8a8f9c)">
+      <text x="676" y="78">MAE ≈ 6.8 yr</text>
+      <text x="676" y="184">acc ≈ 94.2%</text>
+      <text x="676" y="290">acc ≈ 87.1%</text>
+    </g>
+  </g>
+</svg>
