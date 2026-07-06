@@ -18,7 +18,7 @@ import {
   type State,
 } from "@/components/quantum/statevector";
 import { Bloch3D } from "@/components/quantum/three/bloch-3d";
-import { ProbBars } from "./bloch-svg";
+import { ProbBars } from "@/components/quantum/bloch-svg";
 
 const sliderCls =
   "w-full accent-[var(--color-q0)] cursor-pointer";

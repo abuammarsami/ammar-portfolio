@@ -62,11 +62,11 @@ export function runCommand(raw: string, ctx: TerminalCtx): void {
       out.push(`theme → ${ctx.toggleTheme()}`);
       break;
     case "goto":
-      if (arg && ["learn", "work", "research", "agents", "about", "writing", "hire", "cv"].includes(arg)) {
+      if (arg && ["learn", "work", "research", "agents", "about", "writing", "hire", "cv", "playground"].includes(arg)) {
         out.push(`navigating to /${arg} …`);
         ctx.navigate(`/${arg}`);
       } else {
-        out.push("usage: goto work | research | agents | hire | cv | about | writing");
+        out.push("usage: goto work | research | playground | agents | hire | cv | about | writing");
       }
       break;
     case "fit":

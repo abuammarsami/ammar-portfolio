@@ -15,7 +15,7 @@ export const ACTION_PREFIX = "@@action ";
 
 export type ChatAction = { v: 1; type: "navigate"; path: string };
 
-const TOP_PAGES = ["/", "/learn", "/work", "/research", "/about", "/agents", "/writing", "/hire", "/cv"];
+const TOP_PAGES = ["/", "/learn", "/work", "/research", "/about", "/agents", "/writing", "/hire", "/cv", "/playground"];
 
 /** Whitelist check — top pages, /work|/research detail slugs, optional #fragment. */
 export function isInternalPath(path: unknown): path is string {

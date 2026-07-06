@@ -41,6 +41,7 @@ export function PaletteUi({ onClose }: { onClose: () => void }) {
 
   const commands: Command[] = [
     { id: "learn", label: "goto learn", hint: "qubit → QML, interactive", run: () => router.push("/learn") },
+    { id: "playground", label: "goto playground", hint: "build a real 2-qubit circuit", run: () => router.push("/playground") },
     { id: "work", label: "goto work", hint: "engineering case studies", run: () => router.push("/work") },
     { id: "research", label: "goto research", hint: "arXiv-style listing", run: () => router.push("/research") },
     { id: "agents", label: "goto agents", hint: "the machine interface", run: () => router.push("/agents") },

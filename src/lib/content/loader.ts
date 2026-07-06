@@ -424,7 +424,7 @@ export function getStats(): Stat[] {
 // ---------------------------------------------------------------- optional files
 
 /** writing.md / testimonials.md — optional; empty (or template-only) → null. */
-export async function getOptionalHtml(file: "writing.md" | "testimonials.md"): Promise<string | null> {
+export async function getOptionalHtml(file: "writing.md" | "testimonials.md" | "playground.md"): Promise<string | null> {
   const parsed = read(file);
   if (!parsed) return null;
   const body = stripComments(parsed.body)

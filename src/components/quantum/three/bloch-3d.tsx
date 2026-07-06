@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useSyncExternalStore } from "react";
-import { BlochSvg } from "@/components/learn/bloch-svg";
+import { BlochSvg } from "@/components/quantum/bloch-svg";
 import type { BlochTarget } from "./bloch-stage";
 
 // The only import path that pulls three.js — route-scoped per ADR-0006.

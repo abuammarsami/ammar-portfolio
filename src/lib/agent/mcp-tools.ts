@@ -1,3 +1,4 @@
+import { composeCircuit } from "@/lib/agent/compose-circuit";
 import { buildCorpus } from "@/lib/agent/corpus";
 import { getLessons, getPaper, getPapers, getProjects, visiblePapers, visibleProjects } from "@/lib/content/loader";
 import { LINKS, SITE_URL } from "@/lib/site";
@@ -14,6 +15,7 @@ export const TOOLS = [
   { name: "get_paper", description: "One paper, distilled: abstract, plain-words summary, method, honest results, retrospective, BibTeX.", inputSchema: { type: "object", properties: { slug: { type: "string", description: "Paper slug from search_publications, e.g. quantum-machine-learning-thesis" } }, required: ["slug"] } },
   { name: "get_lessons", description: "The /learn interactive quantum curriculum outline.", inputSchema: { type: "object", properties: {} } },
   { name: "contact", description: "How to contact Md. Abu Ammar.", inputSchema: { type: "object", properties: {} } },
+  { name: "compose_circuit", description: "Run a 2-qubit quantum circuit on the site's exact statevector simulator. Grammar: gates joined by '_': h0/h1 (Hadamard), ry0:θ/ry1:θ, rz0:θ/rz1:θ (rotations, θ in radians, |θ|≤π), cx (CNOT q0→q1). Example Bell pair: 'h0_cx'. Returns outcome probabilities, per-qubit Bloch vectors, and a shareable /playground URL.", inputSchema: { type: "object", properties: { circuit: { type: "string", description: "e.g. h0_ry1:0.7854_cx" } }, required: ["circuit"] } },
 ] as const;
 
 export async function callTool(name: string, args: Record<string, unknown>): Promise<string> {
@@ -75,6 +77,8 @@ export async function callTool(name: string, args: Record<string, unknown>): Pro
     }
     case "contact":
       return JSON.stringify({ email: LINKS.email, github: LINKS.github, linkedin: LINKS.linkedin, site: SITE_URL });
+    case "compose_circuit":
+      return composeCircuit(args.circuit);
     default:
       throw new Error(`unknown tool: ${name}`);
   }
