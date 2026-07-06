@@ -24,6 +24,7 @@ import {
   type ProjectFigure,
   type Service,
   type SkillGroup,
+  type Testimonial,
 } from "./schema";
 
 const CONTENT_DIR = path.join(process.cwd(), "content");
@@ -479,10 +480,65 @@ export function getStats(): Stat[] {
   return stats;
 }
 
+// ---------------------------------------------------------------- testimonials
+
+/**
+ * Parse testimonials.md blockquotes into typed quotes. One blockquote per
+ * testimonial; its last line is the attribution `— Name, Title, Company`
+ * (title/company optional). Angle-bracket template stubs read as empty, so
+ * the /about section stays invisible until real quotes exist — quotes are
+ * pasted by their authors, never fabricated.
+ */
+export async function parseTestimonials(rawBody: string): Promise<Testimonial[]> {
+  const body = stripComments(rawBody)
+    .replace(/^# .+$/m, "")
+    .trim();
+  if (!body || /^[->\s]*<.+>/.test(body)) return [];
+
+  const testimonials: Testimonial[] = [];
+  const blocks = body.split(/\n\s*\n/).filter((b) => b.trim().startsWith(">"));
+  for (const block of blocks) {
+    const lines = block
+      .split("\n")
+      .map((l) => l.replace(/^\s*>\s?/, "").trim())
+      .filter(Boolean);
+    const attr = lines.at(-1);
+    if (!attr?.startsWith("—")) {
+      missing("testimonials.md", "an attribution last line (— Name, Title, Company) in each blockquote");
+      continue;
+    }
+    const quote = lines.slice(0, -1).join(" ").trim();
+    const parts = attr
+      .replace(/^—\s*/, "")
+      .split(",")
+      .map((p) => p.trim())
+      .filter(Boolean);
+    const name = parts[0];
+    if (!quote || !name) {
+      missing("testimonials.md", "a non-empty quote and attributed name in each blockquote");
+      continue;
+    }
+    testimonials.push({
+      quoteHtml: await markdownToHtml(quote),
+      name,
+      title: parts[1] ?? null,
+      company: parts.slice(2).join(", ") || null,
+    });
+  }
+  return testimonials;
+}
+
+/** content/testimonials.md → typed quotes for /about; [] while the file is a stub. */
+export async function getTestimonials(): Promise<Testimonial[]> {
+  const parsed = read("testimonials.md");
+  if (!parsed) return [];
+  return parseTestimonials(parsed.body);
+}
+
 // ---------------------------------------------------------------- optional files
 
-/** writing.md / testimonials.md — optional; empty (or template-only) → null. */
-export async function getOptionalHtml(file: "writing.md" | "testimonials.md" | "playground.md"): Promise<string | null> {
+/** writing.md / playground.md — optional; empty (or template-only) → null. */
+export async function getOptionalHtml(file: "writing.md" | "playground.md"): Promise<string | null> {
   const parsed = read(file);
   if (!parsed) return null;
   const body = stripComments(parsed.body)

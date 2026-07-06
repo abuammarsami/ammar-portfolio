@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getAbout, getColophonPage, getExperience, getHirePage, getProjects, getSkills, parseProjectFigures, splitHeadingSections, splitLabelSections } from "./loader";
+import { getAbout, getColophonPage, getExperience, getHirePage, getProjects, getSkills, getTestimonials, parseProjectFigures, parseTestimonials, splitHeadingSections, splitLabelSections } from "./loader";
 import { projectFrontmatterSchema } from "./schema";
 
 describe("splitLabelSections", () => {
@@ -66,6 +66,37 @@ describe("parseProjectFigures", () => {
 
   it("drops figures whose file does not exist in public/", () => {
     expect(parseProjectFigures("![cap](/figures/does-not-exist.svg)", "projects/x.md")).toEqual([]);
+  });
+});
+
+describe("parseTestimonials", () => {
+  it("parses blockquote + attribution pairs into typed quotes", async () => {
+    const md = `# Testimonials
+
+> Shipped the integration two weeks early and documented *everything*.
+> — Jane Doe, CTO, Acme Corp
+
+> A rigorous, curious researcher.
+> — Prof. X`;
+    const t = await parseTestimonials(md);
+    expect(t).toHaveLength(2);
+    expect(t[0]).toMatchObject({ name: "Jane Doe", title: "CTO", company: "Acme Corp" });
+    expect(t[0]!.quoteHtml).toContain("<em>everything</em>");
+    expect(t[1]).toMatchObject({ name: "Prof. X", title: null, company: null });
+  });
+
+  it("treats the angle-bracket template stub as empty", async () => {
+    const stub = `# Testimonials\n\n> <quote>\n> — <name>, <title>, <company>`;
+    expect(await parseTestimonials(stub)).toEqual([]);
+    expect(await parseTestimonials("")).toEqual([]);
+  });
+
+  it("drops blockquotes without an attribution line (dev-lenient)", async () => {
+    expect(await parseTestimonials("> just a quote, no attribution")).toEqual([]);
+  });
+
+  it("returns [] for the real (still-stub) content file", async () => {
+    expect(await getTestimonials()).toEqual([]);
   });
 });
 
