@@ -51,6 +51,7 @@ export function PaletteUi({ onClose }: { onClose: () => void }) {
     { id: "autopilot", label: "autopilot demo", hint: "watch the agent interview this site", run: () => window.dispatchEvent(new Event(AUTOPILOT_EVENT)) },
     { id: "interview", label: "interview mode", hint: "ask by voice or text; the site drives itself", run: () => window.dispatchEvent(new Event(INTERVIEW_EVENT)) },
     { id: "about", label: "goto about", hint: "narrative · experience · skills", run: () => router.push("/about") },
+    { id: "colophon", label: "goto colophon", hint: "how this site is built — the receipts", run: () => router.push("/colophon") },
     { id: "home", label: "goto home", hint: "the quantum hero", run: () => router.push("/") },
     ...LENSES.map((lens) => ({
       id: `lens-${lens}`,

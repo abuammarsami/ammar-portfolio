@@ -116,6 +116,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   linkedin.com/in/abu-ammar
                 </a>
               </p>
+              <p>
+                <a href="/colophon" className="text-muted hover:text-q0 hover:underline">
+                  colophon — how this site is built
+                </a>
+              </p>
               <FooterTerminal />
             </div>
           </footer>

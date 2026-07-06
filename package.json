@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "budgets": "node scripts/check-budgets.mjs"
+    "budgets": "node scripts/check-budgets.mjs",
+    "stats": "npm run build && node scripts/check-budgets.mjs --emit"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",

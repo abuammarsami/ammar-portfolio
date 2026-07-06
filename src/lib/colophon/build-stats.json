@@ -1,0 +1,66 @@
+{
+  "commit": "44e1e1d",
+  "date": "2026-07-06",
+  "routes": [
+    {
+      "route": "/",
+      "gzBytes": 199728,
+      "limitBytes": 200000,
+      "chunks": 12
+    },
+    {
+      "route": "/learn",
+      "gzBytes": 203203,
+      "limitBytes": 350000,
+      "chunks": 12
+    },
+    {
+      "route": "/work",
+      "gzBytes": 194155,
+      "limitBytes": 200000,
+      "chunks": 11
+    },
+    {
+      "route": "/research",
+      "gzBytes": 196197,
+      "limitBytes": 200000,
+      "chunks": 12
+    },
+    {
+      "route": "/agents",
+      "gzBytes": 197221,
+      "limitBytes": 200000,
+      "chunks": 12
+    },
+    {
+      "route": "/hire",
+      "gzBytes": 194155,
+      "limitBytes": 200000,
+      "chunks": 11
+    },
+    {
+      "route": "/playground",
+      "gzBytes": 194617,
+      "limitBytes": 200000,
+      "chunks": 12
+    },
+    {
+      "route": "/cv",
+      "gzBytes": 194466,
+      "limitBytes": 200000,
+      "chunks": 12
+    },
+    {
+      "route": "/colophon",
+      "gzBytes": 195088,
+      "limitBytes": 200000,
+      "chunks": 12
+    },
+    {
+      "route": "/research/quantum-machine-learning-thesis",
+      "gzBytes": 194660,
+      "limitBytes": 200000,
+      "chunks": 12
+    }
+  ]
+}

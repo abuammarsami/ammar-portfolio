@@ -16,8 +16,13 @@ import { recognitionCtor, speak } from "@/components/ui/voice-controller";
  * pays only for the event constant + one listener in the provider.
  */
 
+// claimStage allows same-holder re-claim, so re-entry needs its own guard —
+// without it a second INTERVIEW_EVENT would stack a second bar + listeners
+let open = false;
+
 export function openInterview(navigate: (path: string) => void): void {
-  if (!claimStage("interview")) return; // the autopilot has the stage
+  if (open || !claimStage("interview")) return; // one bar; autopilot may hold the stage
+  open = true;
   const host = document.createElement("div");
   document.body.append(host);
   const root = createRoot(host);
@@ -26,6 +31,7 @@ export function openInterview(navigate: (path: string) => void): void {
     root.unmount();
     host.remove();
     releaseStage("interview");
+    open = false;
   };
   root.render(<InterviewBar navigate={navigate} onClose={close} />);
 }
@@ -43,22 +49,30 @@ function InterviewBar({ navigate, onClose }: { navigate: (path: string) => void;
   stateRef.current = { turns, phase };
   const micSupported = typeof window !== "undefined" && Boolean(recognitionCtor());
 
+  const openerRef = useRef<HTMLElement | null>(null);
+
+  // every exit path — Escape AND the ✕ button — ends here, so keyboard
+  // users get their focus back either way
+  const end = () => {
+    abortRef.current?.abort();
+    onClose();
+    openerRef.current?.focus?.();
+  };
+  const endRef = useRef(end);
+  endRef.current = end;
+
   useEffect(() => {
-    const opener = document.activeElement as HTMLElement | null;
+    openerRef.current = document.activeElement as HTMLElement | null;
     inputRef.current?.focus();
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        abortRef.current?.abort();
-        onClose();
-        opener?.focus?.();
-      }
+      if (e.key === "Escape") endRef.current();
     };
     window.addEventListener("keydown", onKey);
     return () => {
       window.removeEventListener("keydown", onKey);
       abortRef.current?.abort();
     };
-  }, [onClose]);
+  }, []);
 
   const ask = async (raw: string, viaVoice: boolean) => {
     const q = raw.trim().slice(0, INTERVIEW_USER_MAX);
@@ -153,13 +167,13 @@ function InterviewBar({ navigate, onClose }: { navigate: (path: string) => void;
             <span className="text-q0">interview mode</span> — ask about his work; I answer grounded and drive the site
             while I talk
           </p>
-          <button onClick={onClose} className="hover:text-ink">
+          <button onClick={end} className="hover:text-ink">
             ⟨esc⟩ end ✕
           </button>
         </div>
 
         {(asked || note) && (
-          <div className="mt-3 max-h-48 overflow-y-auto font-serif text-sm leading-relaxed">
+          <div aria-live="polite" aria-atomic="false" className="mt-3 max-h-48 overflow-y-auto font-serif text-sm leading-relaxed">
             {asked && <p className="font-mono text-xs text-q1">» {asked}</p>}
             {note && <p className="mt-1 font-mono text-xs text-muted">{note}</p>}
             {answer && <p className="mt-2 whitespace-pre-line">{answer}</p>}

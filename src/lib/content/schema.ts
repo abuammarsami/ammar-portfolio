@@ -39,6 +39,11 @@ export const ABOUT_SECTIONS = ["Hero tagline", "Hero subheading", "About me narr
 /** Optional per-lens hero subheadings (plan-0005); absent variants fall back to the base. */
 export const ABOUT_LENS_SECTIONS = ["Hero subheading (professor)", "Hero subheading (engineer)"] as const;
 
+/** Required headings of colophon.md — the /colophon receipts page (plan-0006). */
+export const COLOPHON_SECTIONS = ["Intro", "Principles", "Template"] as const;
+
+export type ColophonSection = { heading: (typeof COLOPHON_SECTIONS)[number]; bodyHtml: string };
+
 /** Required headings of agents.md — the /agents machine-interface page (ADR-0009). */
 export const AGENTS_SECTIONS = [
   "Tagline",

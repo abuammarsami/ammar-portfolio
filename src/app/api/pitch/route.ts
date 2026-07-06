@@ -22,6 +22,7 @@ export const maxDuration = 60;
 const hits = new Map<string, { n: number; t: number }>();
 function limited(ip: string): boolean {
   const now = Date.now();
+  if (hits.size > 500) for (const [k, v] of hits) if (now - v.t > 600_000) hits.delete(k); // bound the map
   const h = hits.get(ip);
   if (!h || now - h.t > 600_000) {
     hits.set(ip, { n: 1, t: now });
@@ -31,18 +32,19 @@ function limited(ip: string): boolean {
   return h.n > 3;
 }
 
-/** The real abuse control: a Redis-backed global daily mint cap. */
+const quotaKey = () => `pitch:quota:${new Date().toISOString().slice(0, 10)}`;
+
+/**
+ * The real abuse control: a Redis-backed global daily MINT cap. Read here,
+ * incremented only after a page is actually stored — failed Groq calls or
+ * invalid model output must not let an attacker burn the day's quota with
+ * requests that mint nothing (review finding, plan-0006).
+ */
 async function overDailyCap(): Promise<boolean | null> {
   const cap = Number(process.env.PITCH_DAILY_CAP) || PITCH_DEFAULT_DAILY_CAP;
-  const day = new Date().toISOString().slice(0, 10);
-  const key = `pitch:quota:${day}`;
-  const res = await redisPipeline([
-    ["INCR", key],
-    ["EXPIRE", key, 90_000],
-  ]);
+  const res = await redisPipeline([["GET", quotaKey()]]);
   if (!res) return null; // storage unreachable — pitch links need storage
-  const n = (res[0] as { result?: number } | undefined)?.result ?? Number.MAX_SAFE_INTEGER;
-  return n > cap;
+  return Number((res[0] as { result?: string | null } | undefined)?.result ?? 0) >= cap;
 }
 
 /**
@@ -110,7 +112,8 @@ export async function POST(req: Request) {
   const stored: StoredPitch = { v: 1, company, createdAt: Date.now(), report };
   let slug = "";
   for (let attempt = 0; attempt < 2; attempt++) {
-    const candidate = pitchSlug(company, crypto.randomUUID().replace(/-/g, "").slice(0, 6));
+    // 16 hex chars = 64 bits — actually unguessable, as ADR-0011 claims
+    const candidate = pitchSlug(company, crypto.randomUUID().replace(/-/g, "").slice(0, 16));
     const res = await redisPipeline([
       ["SET", `${PITCH_KEY_PREFIX}${candidate}`, JSON.stringify(stored), "EX", PITCH_TTL_SECONDS, "NX"],
     ]);
@@ -121,8 +124,10 @@ export async function POST(req: Request) {
   }
   if (!slug) return new Response("storage hiccup — try again shortly", { status: 502 });
 
-  // owner-facing audit trail: every minted slug, so pages can be found and killed
+  // count the MINT against the daily quota + owner-facing audit trail
   void redisPipeline([
+    ["INCR", quotaKey()],
+    ["EXPIRE", quotaKey(), 90_000],
     ["LPUSH", PITCH_INDEX_KEY, slug],
     ["LTRIM", PITCH_INDEX_KEY, 0, 499],
   ]);

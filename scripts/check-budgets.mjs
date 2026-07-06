@@ -13,6 +13,7 @@ const BUDGETS = [
   { route: "/hire", html: ".next/server/app/hire.html", limit: 200_000 },
   { route: "/playground", html: ".next/server/app/playground.html", limit: 200_000 },
   { route: "/cv", html: ".next/server/app/cv.html", limit: 200_000 },
+  { route: "/colophon", html: ".next/server/app/colophon.html", limit: 200_000 },
   {
     route: "/research/quantum-machine-learning-thesis",
     html: ".next/server/app/research/quantum-machine-learning-thesis.html",
@@ -21,6 +22,7 @@ const BUDGETS = [
 ];
 
 let failed = false;
+const measured = [];
 for (const { route, html, limit } of BUDGETS) {
   if (!fs.existsSync(html)) {
     console.error(`budget: missing ${html} — run next build first`);
@@ -35,8 +37,21 @@ for (const { route, html, limit } of BUDGETS) {
     if (fs.existsSync(p)) total += zlib.gzipSync(fs.readFileSync(p)).length;
   }
   const ok = total <= limit;
+  measured.push({ route, gzBytes: total, limitBytes: limit, chunks: chunks.length });
   console.log(`${ok ? "✓" : "✗"} ${route}: ${(total / 1000).toFixed(0)} kB gz (limit ${(limit / 1000).toFixed(0)} kB, ${chunks.length} chunks)`);
   if (!ok) failed = true;
+}
+
+// --emit: persist the measurements for /colophon (plan-0006). Committed on
+// purpose — the page renders "measured at commit X on date Y", never
+// claiming to be live. Refresh with `npm run stats`.
+if (process.argv.includes("--emit") && !failed) {
+  const { execSync } = await import("node:child_process");
+  const commit = execSync("git rev-parse --short HEAD").toString().trim();
+  const out = { commit, date: new Date().toISOString().slice(0, 10), routes: measured };
+  fs.mkdirSync("src/lib/colophon", { recursive: true });
+  fs.writeFileSync("src/lib/colophon/build-stats.json", JSON.stringify(out, null, 2) + "\n");
+  console.log(`emitted src/lib/colophon/build-stats.json @ ${commit}`);
 }
 if (failed) {
   console.error("Budget check FAILED");
