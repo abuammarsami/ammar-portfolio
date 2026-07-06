@@ -11,7 +11,7 @@
  * client label server-side and the raw string discarded.
  */
 
-export const GUESTBOOK_SURFACES = ["mcp", "webmcp", "fit", "chat", "autopilot"] as const;
+export const GUESTBOOK_SURFACES = ["mcp", "webmcp", "fit", "chat", "autopilot", "interview"] as const;
 export type GuestbookSurface = (typeof GUESTBOOK_SURFACES)[number];
 
 export type GuestbookEvent = {
@@ -33,7 +33,7 @@ export const GUESTBOOK_TOOLS = new Set([
   // WebMCP (webmcp-tools.ts)
   "query_portfolio", "get_resume_summary", "navigate_to", "download_resume", "run_quantum_demo", "set_lens",
   // chat loop pseudo-tool + surface-level acts
-  "navigate", "ask", "fit_report", "autopilot", "pitch_link", "tour_plan",
+  "navigate", "ask", "fit_report", "autopilot", "pitch_link", "tour_plan", "interview",
 ]);
 
 const KEY = "guestbook";

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { AUTOPILOT_EVENT } from "@/lib/agent/autopilot-event";
+import { AUTOPILOT_EVENT, INTERVIEW_EVENT } from "@/lib/agent/autopilot-event";
 
 /**
  * Starts the autopilot tour (plan-0005). The tour itself is a lazy module
@@ -27,13 +27,22 @@ export function AutopilotButton() {
 
   return (
     <div className="mt-4">
-      <button
-        type="button"
-        onClick={start}
-        className="rounded-sm border border-q0/60 px-5 py-2.5 font-mono text-sm text-q0 hover:bg-q0/10"
-      >
-        ▶ watch the agent interview this site
-      </button>
+      <div className="flex flex-wrap gap-3">
+        <button
+          type="button"
+          onClick={start}
+          className="rounded-sm border border-q0/60 px-5 py-2.5 font-mono text-sm text-q0 hover:bg-q0/10"
+        >
+          ▶ watch the agent interview this site
+        </button>
+        <button
+          type="button"
+          onClick={() => window.dispatchEvent(new Event(INTERVIEW_EVENT))}
+          className="rounded-sm border border-q1/60 px-5 py-2.5 font-mono text-sm text-q1 hover:bg-q1/10"
+        >
+          🎙 or interview it yourself
+        </button>
+      </div>
       <div className="mt-2 flex items-center gap-2 font-mono text-xs">
         <label htmlFor="tour-interest" className="text-muted">
           or tell it what to show you:

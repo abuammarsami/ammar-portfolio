@@ -1,5 +1,6 @@
 import { getHeroSnapshot, requestHeroData } from "@/lib/agent/hero-bridge";
 import { applyLens, currentLens, type Lens } from "@/lib/agent/lens";
+import { claimStage, releaseStage } from "@/lib/agent/stage-lock";
 import { validateTourPlan } from "@/lib/agent/tour-plan";
 import { TOUR, type TourStep } from "@/lib/agent/tour-script";
 import { createWebmcpTools } from "@/lib/agent/webmcp-tools";
@@ -30,7 +31,7 @@ function el(tag: string, css: string): HTMLElement {
 }
 
 export async function runTour(navigate: (path: string) => void, opts: { interest?: string } = {}): Promise<void> {
-  if (running) return;
+  if (running || !claimStage("autopilot")) return; // never fight interview mode for the stage
   running = true;
 
   // everything the finally block tears down — assigned inside the try so a
@@ -190,5 +191,6 @@ export async function runTour(navigate: (path: string) => void, opts: { interest
     cursor?.remove();
     bar?.remove();
     running = false;
+    releaseStage("autopilot");
   }
 }
