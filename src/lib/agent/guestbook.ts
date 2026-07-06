@@ -33,7 +33,7 @@ export const GUESTBOOK_TOOLS = new Set([
   // WebMCP (webmcp-tools.ts)
   "query_portfolio", "get_resume_summary", "navigate_to", "download_resume", "run_quantum_demo", "set_lens",
   // chat loop pseudo-tool + surface-level acts
-  "navigate", "ask", "fit_report", "autopilot",
+  "navigate", "ask", "fit_report", "autopilot", "pitch_link",
 ]);
 
 const KEY = "guestbook";
@@ -64,7 +64,12 @@ function upstash(): { url: string; token: string } | null {
   return url && token ? { url, token } : null;
 }
 
-async function pipeline(commands: (string | number)[][], fetchFn: typeof fetch = fetch): Promise<unknown[] | null> {
+/**
+ * One Upstash REST pipeline call. Shared by every feature that persists
+ * (guestbook, pitch links, waitlist) so raw-REST stays in exactly one place.
+ * Returns null when unconfigured or on any HTTP failure.
+ */
+export async function redisPipeline(commands: (string | number)[][], fetchFn: typeof fetch = fetch): Promise<unknown[] | null> {
   const cfg = upstash();
   if (!cfg) return null;
   const res = await fetchFn(`${cfg.url}/pipeline`, {
@@ -89,7 +94,7 @@ export async function recordEvent(
   try {
     if (!isValidEvent(e.tool, e.surface)) return;
     const evt: GuestbookEvent = { tool: e.tool, surface: e.surface, client: coarseClient(ua), t: Date.now() };
-    await pipeline(
+    await redisPipeline(
       [
         ["LPUSH", KEY, JSON.stringify(evt)],
         ["LTRIM", KEY, 0, MAX_EVENTS - 1],
@@ -104,7 +109,7 @@ export async function recordEvent(
 /** Last n events, newest first. Empty when unconfigured or unreachable. */
 export async function readEvents(n = 50, fetchFn: typeof fetch = fetch): Promise<GuestbookEvent[]> {
   try {
-    const res = await pipeline([["LRANGE", KEY, 0, Math.max(0, n - 1)]], fetchFn);
+    const res = await redisPipeline([["LRANGE", KEY, 0, Math.max(0, n - 1)]], fetchFn);
     const raw = (res?.[0] as { result?: string[] } | undefined)?.result ?? [];
     const events: GuestbookEvent[] = [];
     for (const item of raw) {
