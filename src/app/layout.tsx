@@ -37,6 +37,8 @@ export const metadata: Metadata = {
     template: "%s · Md. Abu Ammar",
   },
   description: SITE_DESCRIPTION,
+  // per-route canonical, resolved against metadataBase (launch checklist)
+  alternates: { canonical: "./" },
   openGraph: {
     siteName: SITE_NAME,
     type: "website",

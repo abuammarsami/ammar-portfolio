@@ -11,6 +11,7 @@ import { TagChip } from "@/components/ui/tag-chip";
 import { Vt } from "@/components/ui/vt";
 import { getProject, getProjects, visibleProjects } from "@/lib/content/loader";
 import type { Project } from "@/lib/content/schema";
+import { SITE_URL } from "@/lib/site";
 
 export const dynamic = "force-static";
 export const dynamicParams = false;
@@ -51,8 +52,23 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
   if (!project) notFound();
   const explainers = await getExplainers();
 
+  // SoftwareSourceCode when the code is public, CreativeWork otherwise
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": project.links.github ? "SoftwareSourceCode" : "CreativeWork",
+    name: project.title,
+    description: project.summary,
+    author: { "@type": "Person", name: "Md. Abu Ammar" },
+    dateCreated: project.date,
+    keywords: project.tags.join(", "),
+    url: `${SITE_URL}/work/${project.slug}`,
+    ...(project.links.github ? { codeRepository: project.links.github } : {}),
+  };
+
   return (
     <main className="mx-auto max-w-3xl px-6 pb-16">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+
       {/* ── abstract header ── */}
       <header className="mt-12">
         <p className="font-mono text-xs text-muted">
