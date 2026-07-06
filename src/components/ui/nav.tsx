@@ -29,12 +29,13 @@ export function Nav() {
               {l.label}
             </Link>
           ))}
-          <Link
+          {/* plain <a>: next/link would RSC-prefetch the PDF and 404 in console */}
+          <a
             href="/resume.pdf"
             className="font-mono text-sm text-muted transition-colors hover:text-q1"
           >
             cv↓
-          </Link>
+          </a>
           <kbd
             className="hidden rounded-sm border rule-hair px-1.5 py-0.5 font-mono text-xs text-muted md:inline"
             title="Command palette"
