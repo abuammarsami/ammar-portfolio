@@ -13,6 +13,7 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const hits = new Map<string, { n: number; t: number }>();
 function limited(ip: string): boolean {
   const now = Date.now();
+  if (hits.size > 500) for (const [k, v] of hits) if (now - v.t > 600_000) hits.delete(k); // bound the map
   const h = hits.get(ip);
   if (!h || now - h.t > 600_000) {
     hits.set(ip, { n: 1, t: now });

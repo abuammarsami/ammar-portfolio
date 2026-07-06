@@ -54,13 +54,15 @@ implemented in `src/lib/agent/pitch.ts` (pure, unit-tested) and
    `force-dynamic` so deletion is instant. Every page opens with an honesty
    banner naming the generation date and stating the company did not request
    or endorse it.
-6. **Unguessable, auditable slugs.** Slug = clamped company + 6-hex random
-   suffix; `NX` prevents overwrites. Every minted slug is appended to
+6. **Unguessable, auditable slugs.** Slug = clamped company + 16-hex (64-bit)
+   random suffix; `NX` prevents overwrites. Every minted slug is appended to
    `pitch:index` (LTRIM-capped) so the owner can audit and kill pages
    (`DEL pitch:<slug>` in the Upstash console) without guessing keys.
 7. **Redis-backed daily mint cap.** In-memory per-IP limits (3/10 min) are
    per-instance and cold-start-soft on Vercel, so the real control is a global
-   `INCR pitch:quota:<date>` cap (`PITCH_DAILY_CAP`, default 20/day). No
+   `pitch:quota:<date>` counter (`PITCH_DAILY_CAP`, default 20/day) — read
+   before minting, **incremented only after a page is actually stored**, so
+   failed upstream calls or invalid model output cannot burn the quota. No
    Redis → no pitch links (503), never an unlimited fallback.
 
 ## Consequences

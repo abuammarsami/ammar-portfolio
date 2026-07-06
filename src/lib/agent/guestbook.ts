@@ -72,14 +72,20 @@ function upstash(): { url: string; token: string } | null {
 export async function redisPipeline(commands: (string | number)[][], fetchFn: typeof fetch = fetch): Promise<unknown[] | null> {
   const cfg = upstash();
   if (!cfg) return null;
-  const res = await fetchFn(`${cfg.url}/pipeline`, {
-    method: "POST",
-    headers: { authorization: `Bearer ${cfg.token}`, "content-type": "application/json" },
-    body: JSON.stringify(commands),
-    cache: "no-store",
-  });
-  if (!res.ok) return null;
-  return (await res.json()) as unknown[];
+  // fetch itself can REJECT (DNS/connection failure), not just return !ok —
+  // honor the null contract either way so callers degrade instead of 500ing
+  try {
+    const res = await fetchFn(`${cfg.url}/pipeline`, {
+      method: "POST",
+      headers: { authorization: `Bearer ${cfg.token}`, "content-type": "application/json" },
+      body: JSON.stringify(commands),
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    return (await res.json()) as unknown[];
+  } catch {
+    return null;
+  }
 }
 
 /**

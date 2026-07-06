@@ -242,12 +242,19 @@ html[data-vt="measure"]::view-transition-new(root) {
   }
 }
 
-/* reduced motion: every view transition becomes an instant swap */
+/* reduced motion: every view transition becomes an instant swap, and the
+   small streaming/readout tweens (pulse cursors, prob-bar widths) go still */
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*),
   ::view-transition-old(*),
   ::view-transition-new(*) {
     animation-duration: 0s !important;
+  }
+  .animate-pulse {
+    animation: none;
+  }
+  .transition-\[width\] {
+    transition: none;
   }
 }
 
