@@ -1,64 +1,64 @@
 {
-  "commit": "44e1e1d",
+  "commit": "6831faf",
   "date": "2026-07-06",
   "routes": [
     {
       "route": "/",
-      "gzBytes": 199728,
+      "gzBytes": 199951,
       "limitBytes": 200000,
       "chunks": 12
     },
     {
       "route": "/learn",
-      "gzBytes": 203203,
+      "gzBytes": 203423,
       "limitBytes": 350000,
       "chunks": 12
     },
     {
       "route": "/work",
-      "gzBytes": 194155,
+      "gzBytes": 194337,
       "limitBytes": 200000,
       "chunks": 11
     },
     {
       "route": "/research",
-      "gzBytes": 196197,
+      "gzBytes": 196383,
       "limitBytes": 200000,
       "chunks": 12
     },
     {
       "route": "/agents",
-      "gzBytes": 197221,
+      "gzBytes": 197399,
       "limitBytes": 200000,
       "chunks": 12
     },
     {
       "route": "/hire",
-      "gzBytes": 194155,
+      "gzBytes": 194337,
       "limitBytes": 200000,
       "chunks": 11
     },
     {
       "route": "/playground",
-      "gzBytes": 194617,
+      "gzBytes": 194799,
       "limitBytes": 200000,
       "chunks": 12
     },
     {
       "route": "/cv",
-      "gzBytes": 194466,
+      "gzBytes": 194649,
       "limitBytes": 200000,
       "chunks": 12
     },
     {
       "route": "/colophon",
-      "gzBytes": 195088,
+      "gzBytes": 195267,
       "limitBytes": 200000,
       "chunks": 12
     },
     {
       "route": "/research/quantum-machine-learning-thesis",
-      "gzBytes": 194660,
+      "gzBytes": 194840,
       "limitBytes": 200000,
       "chunks": 12
     }
