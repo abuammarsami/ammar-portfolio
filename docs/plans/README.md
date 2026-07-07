@@ -18,6 +18,7 @@ Feature/initiative designs live here from `draft` through `implemented`.
 | Plan | Status | Owner | Last reviewed |
 |---|---|---|---|
 | [plan-0004-agent-operable-site](plan-0004-agent-operable-site.md) | active — P0 | @abuammar | 2026-07-05 |
+| [plan-0007-next-generation-ideas](plan-0007-next-generation-ideas.md) | draft — idea backlog | @abuammar | 2026-07-06 |
 
 ## Implemented (historical)
 
