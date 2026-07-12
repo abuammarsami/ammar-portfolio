@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 480" width="900" height="480" role="img" aria-labelledby="bgj-arch-title">
+  <title id="bgj-arch-title">Architecture: the API writes business state and an outbox row in one SQL transaction; a dedicated worker service claims outbox rows with READPAST and runs the jobs, with its own Hangfire servers, dispatcher, dashboard, and OpenTelemetry export</title>
+  <defs>
+    <marker id="bgj-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted, #8a8f9c)" />
+    </marker>
+  </defs>
+  <style>
+    @keyframes a1-flow {
+      0%   { offset-distance: 0%;   opacity: 0; }
+      8%   { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { offset-distance: 100%; opacity: 0; }
+    }
+    .a1-dot {
+      offset-path: path("M 129 222 L 350 180 L 442 180 L 442 228 L 660 228 L 769 128");
+      offset-rotate: 0deg;
+      fill: var(--color-q0, #5fc9bf);
+      filter: drop-shadow(0 0 4px var(--color-q0, #5fc9bf));
+      animation: a1-flow 6s linear infinite;
+    }
+    .a1-dot--2 { animation-delay: 2s; }
+    .a1-dot--3 { animation-delay: 4s; }
+    @media (prefers-reduced-motion: reduce) {
+      .a1-dot { animation: none; opacity: 0; }
+    }
+  </style>
+  <g style="font-family: var(--font-mono, 'IBM Plex Mono', ui-monospace, monospace)" fill="var(--color-ink, #e9e7e0)" font-size="13">
+
+    <!-- ── Partners.Api boundary ── -->
+    <rect x="24" y="160" width="210" height="170" rx="4" fill="none" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" stroke-dasharray="6 5" opacity="0.55" />
+    <text x="34" y="182" font-size="12" fill="var(--color-muted, #8a8f9c)">Partners.Api · IIS</text>
+    <rect x="34" y="196" width="190" height="52" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" />
+    <text x="129" y="217" text-anchor="middle" font-size="12">MediatR handler → SP</text>
+    <text x="129" y="234" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">state + outbox · one txn</text>
+    <rect x="34" y="262" width="190" height="50" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-q1, #9d8cff)" stroke-width="2" />
+    <text x="129" y="283" text-anchor="middle" font-size="12">Hangfire server</text>
+    <text x="129" y="300" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">[1-critical] only</text>
+
+    <!-- ── SQL Server boundary ── -->
+    <rect x="340" y="120" width="204" height="252" rx="4" fill="none" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" stroke-dasharray="6 5" opacity="0.55" />
+    <text x="350" y="142" font-size="12" fill="var(--color-muted, #8a8f9c)">SQL Server · existing DB</text>
+    <rect x="350" y="154" width="184" height="46" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" />
+    <text x="442" y="181" text-anchor="middle" font-size="12">dbo.JobOutbox</text>
+    <rect x="350" y="212" width="184" height="46" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" />
+    <text x="442" y="233" text-anchor="middle" font-size="12">[HangFire] schema</text>
+    <text x="442" y="250" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">job storage · own login</text>
+    <rect x="350" y="270" width="184" height="46" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" />
+    <text x="442" y="297" text-anchor="middle" font-size="12">dbo.JobDeadLetter</text>
+    <text x="442" y="340" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">four least-privilege logins</text>
+
+    <!-- ── Partners.Worker boundary ── -->
+    <rect x="650" y="70" width="240" height="364" rx="4" fill="none" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" stroke-dasharray="6 5" opacity="0.55" />
+    <text x="660" y="92" font-size="11" fill="var(--color-muted, #8a8f9c)">Partners.Worker · Windows Service</text>
+    <rect x="662" y="102" width="214" height="50" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" />
+    <text x="769" y="123" text-anchor="middle" font-size="12">Server #1 — IO pool</text>
+    <text x="769" y="140" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">[1-critical, 2-default] · ~20</text>
+    <rect x="662" y="160" width="214" height="50" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" />
+    <text x="769" y="181" text-anchor="middle" font-size="12">Server #2 — CPU pool</text>
+    <text x="769" y="198" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">[3-bulk] · ~cores</text>
+    <rect x="662" y="218" width="214" height="50" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" />
+    <text x="769" y="239" text-anchor="middle" font-size="12">OutboxDispatcher</text>
+    <text x="769" y="256" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">1-min · skip-if-running</text>
+    <rect x="662" y="276" width="214" height="46" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" />
+    <text x="769" y="297" text-anchor="middle" font-size="12">Dashboard /jobs</text>
+    <text x="769" y="314" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">cookie · read-only</text>
+    <rect x="662" y="330" width="214" height="50" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-q1, #9d8cff)" stroke-width="2" />
+    <text x="769" y="351" text-anchor="middle" font-size="12">OTel → Prometheus</text>
+    <text x="769" y="368" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">Grafana · heartbeat</text>
+
+    <!-- ── flows ── -->
+    <!-- API state+outbox → JobOutbox -->
+    <line x1="224" y1="220" x2="348" y2="180" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" marker-end="url(#bgj-ah)" />
+    <text x="286" y="196" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">state + outbox</text>
+    <text x="286" y="208" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">one transaction</text>
+
+    <!-- API 1-critical server → [HangFire] (dashed, secondary) -->
+    <line x1="224" y1="288" x2="348" y2="238" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.7" marker-end="url(#bgj-ah)" />
+    <text x="286" y="272" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">1-critical</text>
+
+    <!-- SQL ↔ Worker: claim + fetch -->
+    <line x1="536" y1="228" x2="660" y2="228" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" marker-start="url(#bgj-ah)" marker-end="url(#bgj-ah)" />
+    <text x="598" y="216" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">claim · fetch · ack</text>
+    <text x="598" y="245" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">READPAST + lease</text>
+
+    <!-- footer insight -->
+    <text x="450" y="418" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">write access to [HangFire] = RCE on the worker — the outbox row is the only path from the API's business lane into jobs</text>
+    <text x="450" y="452" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">queues sort alphanumerically: 1-critical &lt; 2-default &lt; 3-bulk</text>
+
+    <!-- a job flowing API → outbox → worker (self-contained CSS motion-path; removed under reduced-motion) -->
+    <circle class="a1-dot" r="4" />
+    <circle class="a1-dot a1-dot--2" r="4" />
+    <circle class="a1-dot a1-dot--3" r="4" />
+  </g>
+</svg>

@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 610" width="960" height="610" role="img" aria-labelledby="bgj-worker-title">
+  <title id="bgj-worker-title">Inside the Partners.Worker Windows Service: two Hangfire BackgroundJobServers split IO-bound and CPU-bound work across three priority queues, alongside the OutboxDispatcher, the read-only dashboard, and OpenTelemetry export, with a nested shutdown-drain ladder from job grace out to the Windows SCM kill timeout</title>
+  <defs>
+    <marker id="a8-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted, #8a8f9c)" />
+    </marker>
+    <marker id="a8-aht" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-q0, #5fc9bf)" />
+    </marker>
+  </defs>
+  <style>
+    @keyframes a8-pull {
+      0%   { offset-distance: 0%;   opacity: 0; }
+      12%  { opacity: 1; }
+      82%  { opacity: 1; }
+      100% { offset-distance: 100%; opacity: 0; }
+    }
+    @keyframes a8-glow { 0%,100% { opacity: 0.3; } 50% { opacity: 0.8; } }
+    .a8-dot { offset-rotate: 0deg; fill: var(--color-q0, #5fc9bf); filter: drop-shadow(0 0 4px var(--color-q0, #5fc9bf)); }
+    .a8-c1 { offset-path: path("M 220 116 L 318 116"); animation: a8-pull 5s linear infinite; }
+    .a8-c2 { offset-path: path("M 220 186 L 318 140"); animation: a8-pull 5s linear infinite; animation-delay: 1.6s; }
+    .a8-c3 { offset-path: path("M 220 256 L 318 204"); animation: a8-pull 5s linear infinite; animation-delay: 3.2s; }
+    .a8-halo { animation: a8-glow 4.5s ease-in-out infinite; }
+    @media (prefers-reduced-motion: reduce) {
+      .a8-dot { animation: none; opacity: 0; }
+      .a8-halo { animation: none; opacity: 0.5; }
+    }
+  </style>
+  <g style="font-family: var(--font-mono, 'IBM Plex Mono', ui-monospace, monospace)" fill="var(--color-ink, #e9e7e0)" font-size="13">
+
+    <!-- ── QUEUES (left) ── -->
+    <text x="130" y="72" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">1-critical &lt; 2-default &lt; 3-bulk</text>
+    <rect x="40" y="90" width="180" height="52" rx="3" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" />
+    <text x="130" y="112" text-anchor="middle" font-size="12">1-critical</text>
+    <text x="130" y="130" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">txn email</text>
+
+    <rect x="40" y="160" width="180" height="52" rx="3" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" />
+    <text x="130" y="182" text-anchor="middle" font-size="12">2-default</text>
+    <text x="130" y="200" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">PDFs · single-image</text>
+
+    <rect x="40" y="230" width="180" height="52" rx="3" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" />
+    <text x="130" y="252" text-anchor="middle" font-size="12">3-bulk</text>
+    <text x="130" y="270" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">image batches</text>
+
+    <!-- queue → server feeds -->
+    <line x1="220" y1="116" x2="316" y2="116" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" marker-end="url(#a8-aht)" />
+    <line x1="220" y1="186" x2="316" y2="140" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" marker-end="url(#a8-ah)" />
+    <line x1="220" y1="256" x2="316" y2="204" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" marker-end="url(#a8-ah)" />
+
+    <!-- ── WORKER boundary ── -->
+    <rect x="280" y="50" width="650" height="360" rx="4" fill="none" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" stroke-dasharray="6 5" opacity="0.6" />
+    <text x="292" y="72" font-size="11" fill="var(--color-muted, #8a8f9c)">Partners.Worker · Windows Service</text>
+
+    <!-- server #1 IO -->
+    <rect x="320" y="88" width="270" height="64" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" />
+    <text x="455" y="114" text-anchor="middle" font-size="12">BackgroundJobServer #1</text>
+    <text x="455" y="134" text-anchor="middle" font-size="10" fill="var(--color-muted, #8a8f9c)">IO pool · [1-critical,2-default] · ~20</text>
+
+    <!-- server #2 CPU -->
+    <rect x="320" y="172" width="270" height="64" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" />
+    <text x="455" y="198" text-anchor="middle" font-size="12">BackgroundJobServer #2</text>
+    <text x="455" y="218" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">CPU pool · [3-bulk] · ~cores</text>
+
+    <!-- dispatcher -->
+    <rect x="620" y="88" width="280" height="64" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" />
+    <text x="760" y="114" text-anchor="middle" font-size="12">OutboxDispatcher</text>
+    <text x="760" y="134" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">1-min · skip-if-running</text>
+
+    <!-- dashboard -->
+    <rect x="620" y="172" width="280" height="64" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" />
+    <text x="760" y="198" text-anchor="middle" font-size="12">Dashboard /jobs</text>
+    <text x="760" y="218" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">cookie · read-only</text>
+
+    <!-- OTel -->
+    <rect x="320" y="256" width="580" height="60" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-q1, #9d8cff)" stroke-width="2" />
+    <text x="610" y="282" text-anchor="middle" font-size="12">OTel → Prometheus / Grafana</text>
+    <text x="610" y="302" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">metrics · traces · heartbeat</text>
+
+    <!-- ── DRAIN LADDER (nested) ── -->
+    <text x="480" y="424" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">graceful drain ladder — each rung strictly larger than the one inside it</text>
+
+    <rect x="210" y="438" width="540" height="122" rx="4" fill="none" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" />
+    <text x="222" y="456" font-size="10.5" fill="var(--color-muted, #8a8f9c)">Windows SCM kill timeout (outermost)</text>
+
+    <rect x="255" y="462" width="450" height="90" rx="4" fill="none" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" />
+    <text x="267" y="480" font-size="10.5" fill="var(--color-muted, #8a8f9c)">HostOptions.ShutdownTimeout · 135s</text>
+
+    <rect x="300" y="486" width="360" height="60" rx="4" fill="none" stroke="var(--color-q1, #9d8cff)" stroke-width="2" />
+    <text x="312" y="504" font-size="10.5" fill="var(--color-muted, #8a8f9c)">Hangfire server ShutdownTimeout · 120s</text>
+
+    <rect class="a8-halo" x="345" y="512" width="270" height="30" rx="4" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" />
+    <text x="480" y="531" text-anchor="middle" font-size="10.5">in-flight job grace</text>
+
+    <!-- animated job dots -->
+    <circle class="a8-dot a8-c1" r="4.5" />
+    <circle class="a8-dot a8-c2" r="4.5" />
+    <circle class="a8-dot a8-c3" r="4.5" />
+
+    <!-- caption -->
+    <text x="480" y="582" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">Fig. — inside the worker: two Hangfire servers split IO vs CPU across three priority queues, plus the</text>
+    <text x="480" y="598" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">dispatcher, dashboard, telemetry, and a nested shutdown-drain ladder.</text>
+  </g>
+</svg>

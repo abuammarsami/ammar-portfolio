@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 580" width="960" height="580" role="img" aria-labelledby="bgj-lanes-title">
+  <title id="bgj-lanes-title">Four SQL least-privilege logins each get their own lane into one database with a [HangFire] job-storage schema and a dbo app schema; the API's business login is denied [HangFire] entirely, so the dbo.JobOutboxEnqueue stored procedure is its only door into the job system</title>
+  <defs>
+    <marker id="a7-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted, #8a8f9c)" />
+    </marker>
+    <marker id="a7-aht" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-q0, #5fc9bf)" />
+    </marker>
+  </defs>
+  <style>
+    @keyframes a7-flow {
+      0%   { offset-distance: 0%;   opacity: 0; }
+      10%  { opacity: 1; }
+      88%  { opacity: 1; }
+      100% { offset-distance: 100%; opacity: 0; }
+    }
+    @keyframes a7-deny {
+      0%, 40% { offset-distance: 0%; opacity: 0; }
+      50%     { opacity: 1; }
+      70%     { offset-distance: 100%; opacity: 1; }
+      74%, 100% { offset-distance: 100%; opacity: 0; }
+    }
+    @keyframes a7-xflash { 0%, 44%, 100% { opacity: 0; } 52%, 68% { opacity: 1; } }
+    @keyframes a7-glow { 0%,100% { opacity: 0.3; } 50% { opacity: 0.85; } }
+    .a7-tok {
+      offset-path: path("M 250 224 L 490 300 L 640 300 L 640 206");
+      offset-rotate: 0deg;
+      fill: var(--color-q0, #5fc9bf);
+      filter: drop-shadow(0 0 5px var(--color-q0, #5fc9bf));
+      animation: a7-flow 6.5s ease-in-out infinite;
+    }
+    .a7-tok--2 { animation-delay: 3.25s; }
+    .a7-deny {
+      offset-path: path("M 250 196 L 360 168");
+      offset-rotate: 0deg;
+      fill: var(--color-muted, #8a8f9c);
+      animation: a7-deny 6.5s linear infinite;
+    }
+    .a7-x { animation: a7-xflash 6.5s linear infinite; }
+    .a7-halo { animation: a7-glow 4.5s ease-in-out infinite; }
+    @media (prefers-reduced-motion: reduce) {
+      .a7-tok, .a7-deny { animation: none; opacity: 0; }
+      .a7-x { animation: none; opacity: 1; }
+      .a7-halo { animation: none; opacity: 0.5; }
+    }
+  </style>
+  <g style="font-family: var(--font-mono, 'IBM Plex Mono', ui-monospace, monospace)" fill="var(--color-ink, #e9e7e0)" font-size="13">
+
+    <!-- ── LOGIN LANES (left) ── -->
+    <rect x="40" y="70" width="210" height="72" rx="3" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" />
+    <text x="145" y="98" text-anchor="middle" font-size="12">partners_worker</text>
+    <text x="145" y="116" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">CRUD [HangFire] + EXEC SPs</text>
+    <text x="145" y="132" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">DENY base tables</text>
+
+    <rect x="40" y="170" width="210" height="80" rx="3" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" />
+    <text x="145" y="196" text-anchor="middle" font-size="12">partners_api</text>
+    <text x="145" y="214" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">business lane</text>
+    <text x="145" y="234" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">EXEC SPs · DENY [HangFire]</text>
+
+    <rect x="40" y="290" width="210" height="72" rx="3" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" />
+    <text x="145" y="318" text-anchor="middle" font-size="12">partners_api_jobs</text>
+    <text x="145" y="336" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">[HangFire] CRUD · no dbo</text>
+    <text x="145" y="352" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">1-critical server</text>
+
+    <rect x="40" y="410" width="210" height="72" rx="3" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" />
+    <text x="145" y="438" text-anchor="middle" font-size="12">deploy / DBA</text>
+    <text x="145" y="456" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">DDL · pipeline-only</text>
+    <text x="145" y="472" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">no runtime login</text>
+
+    <!-- ── DATABASE boundary ── -->
+    <rect x="430" y="60" width="380" height="422" rx="4" fill="none" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" stroke-dasharray="6 5" opacity="0.6" />
+    <text x="442" y="82" font-size="11" fill="var(--color-muted, #8a8f9c)">SQL Server · one database</text>
+
+    <!-- [HangFire] schema -->
+    <rect x="470" y="110" width="300" height="92" rx="3" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" />
+    <rect class="a7-halo" x="470" y="110" width="300" height="92" rx="3" fill="none" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" opacity="0.4" />
+    <text x="620" y="142" text-anchor="middle" font-size="12">[HangFire] schema</text>
+    <text x="620" y="164" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">job storage · reflection-invoked</text>
+    <text x="620" y="184" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">type + method + args</text>
+
+    <!-- dbo schema -->
+    <rect x="470" y="230" width="300" height="222" rx="3" fill="none" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" />
+    <text x="620" y="252" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">dbo · app stored procedures</text>
+
+    <rect x="490" y="266" width="260" height="54" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" />
+    <text x="620" y="290" text-anchor="middle" font-size="12">dbo.JobOutboxEnqueue</text>
+    <text x="620" y="308" text-anchor="middle" font-size="10.5" fill="var(--color-q0, #5fc9bf)">the ONLY door from api</text>
+
+    <rect x="490" y="332" width="260" height="46" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" />
+    <text x="620" y="360" text-anchor="middle" font-size="12">dbo.JobOutbox</text>
+
+    <rect x="490" y="390" width="260" height="46" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" />
+    <text x="620" y="418" text-anchor="middle" font-size="12">dbo.JobDeadLetter</text>
+
+    <!-- ── ARROWS ── -->
+    <!-- worker → [HangFire] -->
+    <line x1="250" y1="96" x2="468" y2="140" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" marker-end="url(#a7-ah)" />
+    <text x="330" y="104" font-size="10.5" fill="var(--color-muted, #8a8f9c)">CRUD</text>
+    <!-- worker → dbo SPs -->
+    <line x1="250" y1="124" x2="488" y2="292" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.7" marker-end="url(#a7-ah)" />
+
+    <!-- api → JobOutboxEnqueue (ALLOWED, teal) -->
+    <line x1="250" y1="224" x2="488" y2="296" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" marker-end="url(#a7-aht)" />
+    <text x="356" y="256" font-size="10.5" fill="var(--color-q0, #5fc9bf)">EXECUTE — allowed</text>
+
+    <!-- api → [HangFire] (DENIED, dashed + X) -->
+    <line x1="250" y1="196" x2="466" y2="150" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" stroke-dasharray="5 5" opacity="0.75" marker-end="url(#a7-ah)" />
+    <text x="300" y="168" font-size="10.5" fill="var(--color-muted, #8a8f9c)">DENY</text>
+    <g class="a7-x" stroke="var(--color-error, #d32f2f)" stroke-width="2.5" stroke-linecap="round">
+      <line x1="352" y1="168" x2="368" y2="184" />
+      <line x1="368" y1="168" x2="352" y2="184" />
+    </g>
+
+    <!-- api_jobs → [HangFire] -->
+    <line x1="250" y1="322" x2="500" y2="204" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" marker-end="url(#a7-ah)" />
+    <text x="356" y="318" font-size="10.5" fill="var(--color-muted, #8a8f9c)">CRUD · no dbo</text>
+
+    <!-- deploy → DB -->
+    <line x1="250" y1="446" x2="468" y2="430" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.7" marker-end="url(#a7-ah)" />
+    <text x="330" y="440" font-size="10.5" fill="var(--color-muted, #8a8f9c)">DDL</text>
+
+    <!-- animated tokens -->
+    <circle class="a7-deny" r="4" />
+    <circle class="a7-tok" r="4.5" />
+    <circle class="a7-tok a7-tok--2" r="4.5" />
+
+    <!-- anchor label -->
+    <text x="480" y="516" text-anchor="middle" font-size="12" fill="var(--color-muted, #8a8f9c)">write access to [HangFire] = remote code execution on the worker</text>
+
+    <!-- caption -->
+    <text x="480" y="548" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">Fig. — least privilege: four SQL logins, each with its own lane; the API's business login is denied job</text>
+    <text x="480" y="564" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">storage, so the outbox row is its only door into jobs.</text>
+  </g>
+</svg>

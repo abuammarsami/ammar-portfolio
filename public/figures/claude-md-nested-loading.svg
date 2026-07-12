@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 400" width="880" height="400" role="img" aria-labelledby="c4-title c4-desc">
+  <title id="c4-title">Only the subtrees you touch get loaded</title>
+  <desc id="c4-desc">A root CLAUDE.md sits at the top, always loaded and lit teal. Below it a row of six nested module rule files — Domain 33, Application 67, Infrastructure 58, Api 43, tests 60, database 48 lines — sits mostly dark. A task pill cycles through three tasks: "add a validator" lights the Application module, "add a repository" lights Infrastructure, and "write a test" lights the tests module. In every phase only the root plus the one relevant subtree are in context; the rest stay dim.</desc>
+  <defs>
+    <marker id="c4-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted, #8a8f9c)" />
+    </marker>
+  </defs>
+  <style>
+    @keyframes c4-p1 { 0% { opacity: 0; } 1% { opacity: 1; } 31% { opacity: 1; } 33% { opacity: 0; } 100% { opacity: 0; } }
+    @keyframes c4-p2 { 0% { opacity: 0; } 33% { opacity: 0; } 34% { opacity: 1; } 64% { opacity: 1; } 66% { opacity: 0; } 100% { opacity: 0; } }
+    @keyframes c4-p3 { 0% { opacity: 0; } 66% { opacity: 0; } 67% { opacity: 1; } 97% { opacity: 1; } 99% { opacity: 0; } 100% { opacity: 0; } }
+    @keyframes c4-glow { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.75; } }
+    .c4-p1 { animation: c4-p1 12s ease-in-out infinite; }
+    .c4-p2 { animation: c4-p2 12s ease-in-out infinite; }
+    .c4-p3 { animation: c4-p3 12s ease-in-out infinite; }
+    .c4-halo { animation: c4-glow 3.4s ease-in-out infinite; }
+    @media (prefers-reduced-motion: reduce) {
+      .c4-p1 { animation: none; opacity: 1; }
+      .c4-p2 { animation: none; opacity: 0; }
+      .c4-p3 { animation: none; opacity: 0; }
+      .c4-halo { animation: none; opacity: 0.5; }
+    }
+  </style>
+  <g style="font-family: var(--font-mono, 'IBM Plex Mono', ui-monospace, monospace)" fill="var(--color-ink, #e9e7e0)" font-size="13">
+
+    <!-- eyebrow -->
+    <text x="440" y="28" text-anchor="middle" font-size="11" letter-spacing="1.5" fill="var(--color-q1, #9d8cff)">WHAT ACTUALLY LOADS PER TASK</text>
+
+    <!-- ── TASK PILL (one of three visible per phase) ── -->
+    <rect x="300" y="44" width="280" height="30" rx="15" fill="var(--color-surface, #12151d)" stroke="var(--color-q1, #9d8cff)" stroke-width="1.4" />
+    <text class="c4-p1" x="440" y="64" text-anchor="middle" font-size="12" opacity="0">Task &#9656; add a validator</text>
+    <text class="c4-p2" x="440" y="64" text-anchor="middle" font-size="12" opacity="0">Task &#9656; add a repository</text>
+    <text class="c4-p3" x="440" y="64" text-anchor="middle" font-size="12" opacity="0">Task &#9656; write a test</text>
+
+    <!-- ── ROOT (always loaded) ── -->
+    <rect x="320" y="90" width="240" height="60" rx="4" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" />
+    <rect class="c4-halo" x="320" y="90" width="240" height="60" rx="4" fill="none" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" opacity="0.4" />
+    <text x="440" y="118" text-anchor="middle" font-size="13">CLAUDE.md &#183; root</text>
+    <text x="440" y="138" text-anchor="middle" font-size="10.5" fill="var(--color-q0, #5fc9bf)">always loaded</text>
+
+    <!-- ── connectors: root → bus → modules ── -->
+    <line x1="440" y1="150" x2="440" y2="196" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.6" />
+    <line x1="80" y1="196" x2="800" y2="196" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.6" />
+    <line x1="80"  y1="196" x2="80"  y2="225" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.6" />
+    <line x1="224" y1="196" x2="224" y2="225" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.6" />
+    <line x1="368" y1="196" x2="368" y2="225" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.6" />
+    <line x1="512" y1="196" x2="512" y2="225" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.6" />
+    <line x1="656" y1="196" x2="656" y2="225" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.6" />
+    <line x1="800" y1="196" x2="800" y2="225" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.6" />
+
+    <!-- ── MODULE NODES (dim base + teal overlay when their task is active) ── -->
+    <!-- Domain (never lit in this cycle) -->
+    <rect x="15" y="225" width="130" height="58" rx="3" fill="var(--color-surface, #12151d)" fill-opacity="0.5" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.4" opacity="0.6" />
+    <text x="80" y="251" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">Domain</text>
+    <text x="80" y="269" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">33 lines</text>
+
+    <!-- Application → phase 1 -->
+    <rect x="159" y="225" width="130" height="58" rx="3" fill="var(--color-surface, #12151d)" fill-opacity="0.5" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.4" opacity="0.6" />
+    <text x="224" y="251" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">Application</text>
+    <text x="224" y="269" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">67 lines</text>
+    <g class="c4-p1" opacity="0">
+      <rect x="159" y="225" width="130" height="58" rx="3" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.16" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" />
+      <text x="224" y="251" text-anchor="middle" font-size="11" fill="var(--color-q0, #5fc9bf)">Application</text>
+      <text x="224" y="269" text-anchor="middle" font-size="10.5" fill="var(--color-q0, #5fc9bf)">67 lines</text>
+    </g>
+
+    <!-- Infrastructure → phase 2 -->
+    <rect x="303" y="225" width="130" height="58" rx="3" fill="var(--color-surface, #12151d)" fill-opacity="0.5" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.4" opacity="0.6" />
+    <text x="368" y="251" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">Infrastructure</text>
+    <text x="368" y="269" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">58 lines</text>
+    <g class="c4-p2" opacity="0">
+      <rect x="303" y="225" width="130" height="58" rx="3" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.16" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" />
+      <text x="368" y="251" text-anchor="middle" font-size="11" fill="var(--color-q0, #5fc9bf)">Infrastructure</text>
+      <text x="368" y="269" text-anchor="middle" font-size="10.5" fill="var(--color-q0, #5fc9bf)">58 lines</text>
+    </g>
+
+    <!-- Api (never lit in this cycle) -->
+    <rect x="447" y="225" width="130" height="58" rx="3" fill="var(--color-surface, #12151d)" fill-opacity="0.5" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.4" opacity="0.6" />
+    <text x="512" y="251" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">Api</text>
+    <text x="512" y="269" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">43 lines</text>
+
+    <!-- tests → phase 3 -->
+    <rect x="591" y="225" width="130" height="58" rx="3" fill="var(--color-surface, #12151d)" fill-opacity="0.5" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.4" opacity="0.6" />
+    <text x="656" y="251" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">tests</text>
+    <text x="656" y="269" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">60 lines</text>
+    <g class="c4-p3" opacity="0">
+      <rect x="591" y="225" width="130" height="58" rx="3" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.16" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" />
+      <text x="656" y="251" text-anchor="middle" font-size="11" fill="var(--color-q0, #5fc9bf)">tests</text>
+      <text x="656" y="269" text-anchor="middle" font-size="10.5" fill="var(--color-q0, #5fc9bf)">60 lines</text>
+    </g>
+
+    <!-- database (never lit in this cycle) -->
+    <rect x="735" y="225" width="130" height="58" rx="3" fill="var(--color-surface, #12151d)" fill-opacity="0.5" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.4" opacity="0.6" />
+    <text x="800" y="251" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">database</text>
+    <text x="800" y="269" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">48 lines</text>
+
+    <!-- sub-caption -->
+    <text x="440" y="316" text-anchor="middle" font-size="11.5" fill="var(--color-q0, #5fc9bf)">loaded set = root + the subtrees you touch</text>
+
+    <!-- caption -->
+    <text x="440" y="352" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">Fig. — the root is always in context; each nested rule file joins only for a task that</text>
+    <text x="440" y="368" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">touches its subtree. Most modules stay dark most of the time — that is the whole point.</text>
+  </g>
+</svg>

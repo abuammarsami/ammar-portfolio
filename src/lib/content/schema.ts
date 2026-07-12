@@ -20,6 +20,8 @@ export const projectFrontmatterSchema = z.object({
     })
     .default({ github: null, live: null }),
   status: contentStatus,
+  /** Bespoke narrative layout for flagship case studies (ADR-0013); default = the standard abstract layout. */
+  layout: z.enum(["default", "case-study"]).default("default"),
 });
 
 export type ProjectFrontmatter = z.infer<typeof projectFrontmatterSchema>;
@@ -77,6 +79,39 @@ export type Project = ProjectFrontmatter & {
   figures: ProjectFigure[];
 };
 
+// ---------------------------------------------------------------- case study (ADR-0013)
+
+/** A big numeral on a case study (`- value | label`), reused for hero stats and outcomes. */
+export type CaseStudyStat = { value: string; label: string };
+
+/** A titled card (### heading, optional emphasized *meta* first line, then body). */
+export type CaseStudyCard = { title: string; meta: string | null; bodyHtml: string };
+
+/** One row of the "wrapper" capability grid (`- name | body`). */
+export type CaseStudyCapability = { name: string; body: string };
+
+/**
+ * content/case-studies/<slug>.md → the bespoke narrative layout (ADR-0013).
+ * Each field maps to a `## Heading` section; missing sections render nothing.
+ */
+export type CaseStudy = {
+  slug: string;
+  tagline: string;
+  role: string;
+  inOneMinuteHtml: string;
+  stats: CaseStudyStat[];
+  problemHtml: string;
+  incidents: CaseStudyCard[];
+  bigIdeaHtml: string;
+  capabilities: CaseStudyCapability[];
+  howItWorksHtml: string;
+  walkthrough: CaseStudyCard[];
+  decisions: CaseStudyCard[];
+  warStoryHtml: string;
+  impactHtml: string;
+  goingDeeperHtml: string;
+};
+
 export type About = {
   status: z.infer<typeof contentStatus>;
   tagline: string;
@@ -118,6 +153,46 @@ export type ExperienceRole = {
 export type SkillGroup = {
   group: string;
   bodyHtml: string;
+};
+
+// ---------------------------------------------------------------- deep dives (ADR-0014)
+
+/** One chapter of a technical deep-dive series (content/deep-dives/<slug>.md). */
+export const deepDiveFrontmatterSchema = z.object({
+  title: z.string().min(1),
+  /** Omit for a standalone flagship piece (renders on its own, no series TOC). */
+  series: z.string().min(1).optional(),
+  /** Position within a series; ignored for standalone pieces. */
+  order: z.number().int().min(1).default(1),
+  summary: z.string().min(1),
+  readingMinutes: z.number().int().positive(),
+  /** YYYY-MM */
+  date: z.string().regex(/^\d{4}-\d{2}$/, "date must be YYYY-MM"),
+  tags: z.array(z.string()).default([]),
+  /** Standalone pieces only: surface at the top of the index. */
+  featured: z.boolean().default(false),
+  status: contentStatus,
+});
+export type DeepDiveFrontmatter = z.infer<typeof deepDiveFrontmatterSchema>;
+
+export type DeepDive = DeepDiveFrontmatter & {
+  slug: string;
+  bodyHtml: string;
+};
+
+/** Series metadata file: content/deep-dives/_<slug>.md (skipped by the chapter loader). */
+export const deepDiveSeriesFrontmatterSchema = z.object({
+  slug: z.string().min(1),
+  title: z.string().min(1),
+  tagline: z.string().min(1),
+  featured: z.boolean().default(false),
+  /** Titles of episodes that are planned but not yet written — rendered as dimmed "planned" rows. */
+  upcoming: z.array(z.string()).default([]),
+  status: contentStatus,
+});
+export type DeepDiveSeries = z.infer<typeof deepDiveSeriesFrontmatterSchema> & {
+  introHtml: string;
+  chapters: DeepDive[];
 };
 
 export const paperFrontmatterSchema = z.object({

@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 380" width="900" height="380" role="img" aria-labelledby="c8-title c8-desc">
+  <title id="c8-title">The loop — nothing is learned twice</title>
+  <desc id="c8-desc">A closed five-stage cycle. Prime (read the docs) flows to Design first, then Build in slices, then Ship docs in the same change set, then Capture (bug becomes a dated audit). A return arrow carries captured knowledge from Capture back to Prime. A teal token travels the loop, lighting each stage as it passes, and the return arrow emphasises that what you learn on this task is what the next task reads first.</desc>
+  <defs>
+    <marker id="c8-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted, #8a8f9c)" />
+    </marker>
+    <marker id="c8-ah-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-q0, #5fc9bf)" />
+    </marker>
+  </defs>
+  <style>
+    @keyframes c8-orbit { from { offset-distance: 0%; } to { offset-distance: 100%; } }
+    @keyframes c8-lite { 0% { opacity: 0; } 2% { opacity: 1; } 13% { opacity: 1; } 18% { opacity: 0; } 100% { opacity: 0; } }
+    @keyframes c8-ret  { 0%, 40% { opacity: 0.25; } 46% { opacity: 0.95; } 92% { opacity: 0.95; } 100% { opacity: 0.25; } }
+    .c8-dot {
+      offset-path: path("M106,183 L746,183 C812,183 812,300 746,300 L106,300 C40,300 40,183 106,183 Z");
+      offset-rotate: 0deg;
+      animation: c8-orbit 9s linear infinite;
+    }
+    .c8-lite { animation: c8-lite 9s ease-in-out infinite; }
+    .c8-d1 { animation-delay: 0.9s; }
+    .c8-d2 { animation-delay: 1.85s; }
+    .c8-d3 { animation-delay: 2.75s; }
+    .c8-d4 { animation-delay: 3.7s; }
+    .c8-ret { animation: c8-ret 9s ease-in-out infinite; }
+    @media (prefers-reduced-motion: reduce) {
+      .c8-dot { animation: none; opacity: 0; }
+      .c8-lite { animation: none; opacity: 0; }
+      .c8-ret { animation: none; opacity: 0.7; }
+    }
+  </style>
+  <g style="font-family: var(--font-mono, 'IBM Plex Mono', ui-monospace, monospace)" fill="var(--color-ink, #e9e7e0)" font-size="13">
+
+    <!-- eyebrow -->
+    <text x="450" y="30" text-anchor="middle" font-size="11" letter-spacing="1.5" fill="var(--color-q1, #9d8cff)">THE LOOP &#183; NOTHING IS LEARNED TWICE</text>
+
+    <!-- forward arrows between stages -->
+    <line x1="176" y1="183" x2="194" y2="183" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.7" marker-end="url(#c8-ah)" />
+    <line x1="336" y1="183" x2="354" y2="183" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.7" marker-end="url(#c8-ah)" />
+    <line x1="496" y1="183" x2="514" y2="183" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.7" marker-end="url(#c8-ah)" />
+    <line x1="656" y1="183" x2="674" y2="183" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.7" marker-end="url(#c8-ah)" />
+
+    <!-- ── STAGE 1 · Prime ── -->
+    <rect x="36" y="140" width="140" height="86" rx="5" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" />
+    <rect class="c8-lite" x="36" y="140" width="140" height="86" rx="5" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.14" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" opacity="0" />
+    <text x="106" y="178" text-anchor="middle" font-size="12">Prime</text>
+    <text x="106" y="197" text-anchor="middle" font-size="9.5" fill="var(--color-muted, #8a8f9c)">read the docs</text>
+
+    <!-- ── STAGE 2 · Design first ── -->
+    <rect x="196" y="140" width="140" height="86" rx="5" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" />
+    <rect class="c8-lite c8-d1" x="196" y="140" width="140" height="86" rx="5" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.14" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" opacity="0" />
+    <text x="266" y="178" text-anchor="middle" font-size="12">Design first</text>
+    <text x="266" y="197" text-anchor="middle" font-size="9.5" fill="var(--color-muted, #8a8f9c)">shape before code</text>
+
+    <!-- ── STAGE 3 · Build in slices ── -->
+    <rect x="356" y="140" width="140" height="86" rx="5" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" />
+    <rect class="c8-lite c8-d2" x="356" y="140" width="140" height="86" rx="5" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.14" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" opacity="0" />
+    <text x="426" y="178" text-anchor="middle" font-size="12">Build in slices</text>
+    <text x="426" y="197" text-anchor="middle" font-size="9.5" fill="var(--color-muted, #8a8f9c)">vertical, testable</text>
+
+    <!-- ── STAGE 4 · Ship docs ── -->
+    <rect x="516" y="140" width="140" height="86" rx="5" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" />
+    <rect class="c8-lite c8-d3" x="516" y="140" width="140" height="86" rx="5" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.14" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" opacity="0" />
+    <text x="586" y="178" text-anchor="middle" font-size="12">Ship docs</text>
+    <text x="586" y="197" text-anchor="middle" font-size="9.5" fill="var(--color-muted, #8a8f9c)">same change set</text>
+
+    <!-- ── STAGE 5 · Capture ── -->
+    <rect x="676" y="140" width="140" height="86" rx="5" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" />
+    <rect class="c8-lite c8-d4" x="676" y="140" width="140" height="86" rx="5" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.14" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" opacity="0" />
+    <text x="746" y="178" text-anchor="middle" font-size="12">Capture</text>
+    <text x="746" y="197" text-anchor="middle" font-size="9.5" fill="var(--color-muted, #8a8f9c)">bug &#8594; dated audit</text>
+
+    <!-- ── return arrow · Capture → Prime ── -->
+    <path class="c8-ret" d="M746,226 L746,300" fill="none" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.8" />
+    <path class="c8-ret" d="M746,300 L106,300" fill="none" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.8" />
+    <path class="c8-ret" d="M106,300 L106,228" fill="none" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.8"
+          marker-end="url(#c8-ah-teal)" />
+    <text x="426" y="292" text-anchor="middle" font-size="10.5" fill="var(--color-q0, #5fc9bf)">captured knowledge feeds the next prime</text>
+
+    <!-- ── travelling token ── -->
+    <circle class="c8-dot" r="6.5" fill="var(--color-q0, #5fc9bf)" />
+
+    <!-- caption -->
+    <text x="450" y="344" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">Fig. — what you learn on this task is what the next task reads first. The loop closes, so nothing is learned twice.</text>
+  </g>
+</svg>

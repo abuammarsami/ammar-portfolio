@@ -6,10 +6,11 @@ import { SectionHeading } from "@/components/paper/section-heading";
 import { QuanvolutionDemo } from "@/components/quantum/quanvolution-demo";
 import { ExplainThis } from "@/components/ui/explain-this";
 import { ProjectFigure } from "@/components/ui/project-figure";
+import { CaseStudyView } from "@/components/case-study/case-study-view";
 import { getExplainers } from "@/lib/content/loader";
 import { TagChip } from "@/components/ui/tag-chip";
 import { Vt } from "@/components/ui/vt";
-import { getProject, getProjects, visibleProjects } from "@/lib/content/loader";
+import { getCaseStudy, getProject, getProjects, visibleProjects } from "@/lib/content/loader";
 import type { Project } from "@/lib/content/schema";
 import { SITE_URL } from "@/lib/site";
 
@@ -50,7 +51,6 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
   const { slug } = await params;
   const project = await getProject(slug);
   if (!project) notFound();
-  const explainers = await getExplainers();
 
   // SoftwareSourceCode when the code is public, CreativeWork otherwise
   const jsonLd = {
@@ -64,6 +64,14 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
     url: `${SITE_URL}/work/${project.slug}`,
     ...(project.links.github ? { codeRepository: project.links.github } : {}),
   };
+
+  // flagship case studies (ADR-0013) render a bespoke narrative layout instead of the abstract template
+  if (project.layout === "case-study") {
+    const caseStudy = await getCaseStudy(slug);
+    if (caseStudy) return <CaseStudyView project={project} caseStudy={caseStudy} jsonLd={jsonLd} />;
+  }
+
+  const explainers = await getExplainers();
 
   return (
     <main className="mx-auto max-w-3xl px-6 pb-16">

@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" width="900" height="520" role="img" aria-labelledby="bgj-image-title">
+  <title id="bgj-image-title">Async image-upload sequence: the mobile app POSTs to /api/v2/ads/images; the API stages the original privately, direct-enqueues a watermark job to the 3-bulk queue, and returns 202 with a pendingImageId marked processing; the app polls the status endpoint every retryAfterSeconds while the worker watermarks and writes CDN variants under deterministic keys and marks the row ready, so a later poll returns ready with a cdnUrl</title>
+  <defs>
+    <marker id="bgj5-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted, #8a8f9c)" />
+    </marker>
+  </defs>
+  <style>
+    @keyframes a5-1  { 0%,3%{opacity:0;stroke-dashoffset:340}  7%{opacity:1;stroke-dashoffset:0} 100%{opacity:1;stroke-dashoffset:0} }
+    @keyframes a5-2  { 0%,10%{opacity:0;stroke-dashoffset:340} 14%{opacity:1;stroke-dashoffset:0} 100%{opacity:1;stroke-dashoffset:0} }
+    @keyframes a5-3  { 0%,17%{opacity:0;stroke-dashoffset:340} 21%{opacity:1;stroke-dashoffset:0} 100%{opacity:1;stroke-dashoffset:0} }
+    @keyframes a5-4  { 0%,24%{opacity:0;stroke-dashoffset:340} 28%{opacity:1;stroke-dashoffset:0} 100%{opacity:1;stroke-dashoffset:0} }
+    @keyframes a5-5  { 0%,33%{opacity:0;stroke-dashoffset:340} 37%{opacity:1;stroke-dashoffset:0} 100%{opacity:1;stroke-dashoffset:0} }
+    @keyframes a5-6  { 0%,40%{opacity:0;stroke-dashoffset:340} 44%{opacity:1;stroke-dashoffset:0} 100%{opacity:1;stroke-dashoffset:0} }
+    @keyframes a5-7  { 0%,48%{opacity:0;stroke-dashoffset:340} 52%{opacity:1;stroke-dashoffset:0} 100%{opacity:1;stroke-dashoffset:0} }
+    @keyframes a5-8  { 0%,55%{opacity:0;stroke-dashoffset:340} 59%{opacity:1;stroke-dashoffset:0} 100%{opacity:1;stroke-dashoffset:0} }
+    @keyframes a5-9  { 0%,65%{opacity:0;stroke-dashoffset:340} 69%{opacity:1;stroke-dashoffset:0} 100%{opacity:1;stroke-dashoffset:0} }
+    @keyframes a5-10 { 0%,73%{opacity:0;stroke-dashoffset:340} 77%{opacity:1;stroke-dashoffset:0} 100%{opacity:1;stroke-dashoffset:0} }
+    @keyframes a5-ready { 0%,73%{filter:none} 80%{filter:drop-shadow(0 0 6px var(--color-q0,#5fc9bf))} 100%{filter:drop-shadow(0 0 2px var(--color-q0,#5fc9bf))} }
+    @keyframes a5-play { 0%{transform:translateY(0);opacity:0} 4%{opacity:1} 92%{opacity:1} 100%{transform:translateY(346px);opacity:0} }
+    .a5-1{animation:a5-1 9s linear infinite}   .a5-2{animation:a5-2 9s linear infinite}
+    .a5-3{animation:a5-3 9s linear infinite}   .a5-4{animation:a5-4 9s linear infinite}
+    .a5-5{animation:a5-5 9s linear infinite}   .a5-6{animation:a5-6 9s linear infinite}
+    .a5-7{animation:a5-7 9s linear infinite}   .a5-8{animation:a5-8 9s linear infinite}
+    .a5-9{animation:a5-9 9s linear infinite}   .a5-10{animation:a5-10 9s linear infinite}
+    .a5-ready{animation:a5-10 9s linear infinite, a5-ready 9s ease-in-out infinite}
+    .a5-play{fill:var(--color-q0,#5fc9bf);filter:drop-shadow(0 0 4px var(--color-q0,#5fc9bf));animation:a5-play 9s linear infinite}
+    @media (prefers-reduced-motion: reduce) {
+      .a5-1,.a5-2,.a5-3,.a5-4,.a5-5,.a5-6,.a5-7,.a5-8,.a5-9,.a5-10,.a5-ready { animation: none; opacity: 1; stroke-dashoffset: 0; filter: none; }
+      .a5-play { animation: none; opacity: 0; }
+    }
+  </style>
+  <g style="font-family: var(--font-mono, 'IBM Plex Mono', ui-monospace, monospace)" fill="var(--color-ink, #e9e7e0)" font-size="13">
+
+    <!-- lane heads -->
+    <rect x="52" y="28" width="116" height="46" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" />
+    <text x="110" y="50" text-anchor="middle" font-size="12">Mobile app</text>
+    <text x="110" y="66" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">202 + poll</text>
+
+    <rect x="274" y="28" width="132" height="46" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" />
+    <text x="340" y="50" text-anchor="middle" font-size="12">Partners.Api</text>
+    <text x="340" y="66" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">/api/v2</text>
+
+    <rect x="520" y="28" width="140" height="46" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-q1, #9d8cff)" stroke-width="2" />
+    <text x="590" y="50" text-anchor="middle" font-size="12">3-bulk worker</text>
+    <text x="590" y="66" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">3-bulk queue</text>
+
+    <rect x="740" y="28" width="140" height="46" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" />
+    <text x="810" y="50" text-anchor="middle" font-size="12">CDN / storage</text>
+    <text x="810" y="66" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">BunnyCDN</text>
+
+    <!-- lifelines -->
+    <g stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" stroke-dasharray="4 5" opacity="0.6">
+      <line x1="110" y1="74" x2="110" y2="504" />
+      <line x1="340" y1="74" x2="340" y2="504" />
+      <line x1="590" y1="74" x2="590" y2="504" />
+      <line x1="810" y1="74" x2="810" y2="504" />
+    </g>
+
+    <!-- playhead travelling down the API lifeline -->
+    <circle class="a5-play" cx="340" cy="82" r="4" />
+
+    <!-- m1 · POST -->
+    <text class="a5-1" x="225" y="96" text-anchor="middle" font-size="10.5">POST /api/v2/ads/images</text>
+    <line class="a5-1" x1="110" y1="104" x2="338" y2="104" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" stroke-dasharray="340" marker-end="url(#bgj5-ah)" />
+
+    <!-- m2 · stage original -->
+    <text class="a5-2" x="575" y="128" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">stage original privately · dbo.PendingImageUpload</text>
+    <line class="a5-2" x1="342" y1="136" x2="808" y2="136" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" stroke-dasharray="340" marker-end="url(#bgj5-ah)" />
+
+    <!-- m3 · enqueue -->
+    <text class="a5-3" x="465" y="156" text-anchor="middle" font-size="10.5">Enqueue watermark → 3-bulk (direct)</text>
+    <line class="a5-3" x1="342" y1="164" x2="588" y2="164" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" stroke-dasharray="340" marker-end="url(#bgj5-ah)" />
+
+    <!-- m4 · 202 -->
+    <text class="a5-4" x="225" y="188" text-anchor="middle" font-size="10.5">202 { status: processing }</text>
+    <line class="a5-4" x1="338" y1="196" x2="112" y2="196" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" stroke-dasharray="340" marker-end="url(#bgj5-ah)" />
+    <text class="a5-4" x="225" y="212" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">pendingImageId · retryAfterSeconds: 2</text>
+
+    <!-- poll loop fragment -->
+    <rect x="72" y="224" width="806" height="210" rx="3" fill="none" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.3" stroke-dasharray="6 5" opacity="0.6" />
+    <path d="M 72 224 h 66 v 14 l -10 10 h -56 z" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.3" opacity="0.9" />
+    <text x="80" y="239" font-size="10.5" fill="var(--color-muted, #8a8f9c)">loop</text>
+    <text x="150" y="239" font-size="10.5" fill="var(--color-muted, #8a8f9c)">every retryAfterSeconds · poll only while a tile is processing</text>
+
+    <!-- m5 · GET status (processing) -->
+    <text class="a5-5" x="225" y="262" text-anchor="middle" font-size="10.5">GET /api/v2/ads/images/status</text>
+    <line class="a5-5" x1="110" y1="270" x2="338" y2="270" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" stroke-dasharray="340" marker-end="url(#bgj5-ah)" />
+
+    <!-- m6 · 200 processing -->
+    <text class="a5-6" x="225" y="292" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">200 { status: processing }</text>
+    <line class="a5-6" x1="338" y1="300" x2="112" y2="300" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" stroke-dasharray="340" marker-end="url(#bgj5-ah)" />
+
+    <!-- m7 · worker watermarks + variants -->
+    <text class="a5-7" x="700" y="326" text-anchor="middle" font-size="10.5">watermark + write variants · deterministic keys</text>
+    <line class="a5-7" x1="592" y1="334" x2="808" y2="334" stroke="var(--color-q1, #9d8cff)" stroke-width="2" stroke-dasharray="340" marker-end="url(#bgj5-ah)" />
+
+    <!-- m8 · mark ready -->
+    <text class="a5-8" x="700" y="356" text-anchor="middle" font-size="10.5">MarkReady (status = 1)</text>
+    <line class="a5-8" x1="592" y1="364" x2="808" y2="364" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" stroke-dasharray="340" marker-end="url(#bgj5-ah)" />
+
+    <!-- m9 · GET status (poll again) -->
+    <text class="a5-9" x="225" y="386" text-anchor="middle" font-size="10.5">GET /…/status (poll again)</text>
+    <line class="a5-9" x1="110" y1="394" x2="338" y2="394" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" stroke-dasharray="340" marker-end="url(#bgj5-ah)" />
+
+    <!-- m10 · 200 ready -->
+    <text class="a5-ready" x="225" y="416" text-anchor="middle" font-size="10.5" fill="var(--color-q0, #5fc9bf)">200 { status: ready, cdnUrl }</text>
+    <line class="a5-ready" x1="338" y1="424" x2="112" y2="424" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" stroke-dasharray="340" marker-end="url(#bgj5-ah)" />
+
+    <!-- footer -->
+    <text x="475" y="456" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">publish is allowed while processing — blocked only on failed</text>
+
+    <!-- caption -->
+    <text x="450" y="484" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">Fig. — async image upload: POST returns 202 immediately, the watermark runs on the bulk queue,</text>
+    <text x="450" y="502" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">and the app polls a status endpoint until each tile is ready.</text>
+  </g>
+</svg>

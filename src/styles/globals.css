@@ -48,6 +48,14 @@ body {
   border-color: color-mix(in srgb, var(--color-muted) 25%, transparent);
 }
 
+/* hide scrollbars on an overflow container (used by the nav link row on mobile) */
+.scrollbar-none {
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
 /*
  * Entangled-pair interaction motif (ADR-0003):
  * inside an .entangled container, hover shifts .entangled-a elements to q0
@@ -172,6 +180,129 @@ body::after {
     transform: none;
     transition: none;
   }
+}
+
+/* Case-study figure motion is now self-contained inside each SVG's <style>
+   (ADR-0013) so the diagrams stay live both inlined and as standalone images. */
+
+/* ───────────────────────── code blocks (Shiki, ADR-0014) ──────────────────── */
+/* Build-time syntax highlighting → themed HTML, zero client JS. Base colors are
+   the light theme; [data-theme="dark"] swaps to Shiki's --shiki-dark vars. */
+.shiki {
+  padding: 0.95rem 1.1rem;
+  border-radius: 3px;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  tab-size: 2;
+  border: 1px solid color-mix(in srgb, var(--color-muted) 22%, transparent);
+}
+.shiki code {
+  font-family: inherit;
+  background: none;
+  display: inline-grid; /* rows so long lines scroll rather than wrap */
+}
+[data-theme="dark"] .shiki {
+  background-color: var(--shiki-dark-bg) !important;
+  color: var(--shiki-dark) !important;
+}
+[data-theme="dark"] .shiki span {
+  color: var(--shiki-dark) !important;
+}
+
+/* ───────────────────────── deep-dive prose (ADR-0014) ─────────────────────── */
+/* Book-quality long-form reading for chapter bodies rendered from markdown. */
+.deepdive-prose {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  line-height: 1.72;
+  color: color-mix(in srgb, var(--color-ink) 92%, transparent);
+}
+.deepdive-prose > p { margin-top: 1.15rem; }
+.deepdive-prose > p:first-child { margin-top: 0; }
+.deepdive-prose h2 {
+  font-family: var(--font-serif);
+  font-size: 1.7rem;
+  line-height: 1.2;
+  margin-top: 2.8rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid color-mix(in srgb, var(--color-muted) 20%, transparent);
+}
+.deepdive-prose h3 {
+  font-family: var(--font-serif);
+  font-size: 1.28rem;
+  margin-top: 2rem;
+}
+.deepdive-prose strong { font-weight: 600; color: var(--color-ink); }
+.deepdive-prose em { font-style: italic; }
+.deepdive-prose a {
+  color: var(--color-q0);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--color-q0) 45%, transparent);
+  text-underline-offset: 2px;
+}
+.deepdive-prose ul,
+.deepdive-prose ol { margin-top: 1.1rem; padding-left: 1.4rem; }
+.deepdive-prose ul { list-style: disc; }
+.deepdive-prose ol { list-style: decimal; }
+.deepdive-prose li { margin-top: 0.5rem; padding-left: 0.2rem; }
+.deepdive-prose li::marker { color: var(--color-muted); }
+.deepdive-prose blockquote {
+  margin-top: 1.3rem;
+  padding: 0.2rem 0 0.2rem 1.1rem;
+  border-left: 2px solid color-mix(in srgb, var(--color-q0) 55%, transparent);
+  color: var(--color-muted);
+}
+.deepdive-prose blockquote p { margin-top: 0.5rem; }
+.deepdive-prose blockquote p:first-child { margin-top: 0; }
+/* inline code (not Shiki blocks) */
+.deepdive-prose :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--color-muted) 16%, transparent);
+  color: color-mix(in srgb, var(--color-q0) 88%, var(--color-ink));
+}
+.deepdive-prose pre.shiki { margin-top: 1.3rem; }
+.deepdive-prose hr {
+  margin: 2.2rem 0;
+  border: 0;
+  border-top: 1px solid color-mix(in srgb, var(--color-muted) 22%, transparent);
+}
+.deepdive-prose table {
+  margin-top: 1.3rem;
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  display: block;
+  overflow-x: auto;
+}
+.deepdive-prose th,
+.deepdive-prose td {
+  border: 1px solid color-mix(in srgb, var(--color-muted) 22%, transparent);
+  padding: 0.5rem 0.7rem;
+  text-align: left;
+  vertical-align: top;
+}
+.deepdive-prose th { color: var(--color-q1); font-weight: 600; }
+/* inlined SVG figures (rehypeInlineSvg) */
+.deepdive-prose .md-figure { margin: 1.8rem 0; }
+.deepdive-prose .md-figure-svg {
+  border: 1px solid color-mix(in srgb, var(--color-muted) 22%, transparent);
+  border-radius: 3px;
+  background: var(--color-surface);
+  padding: 1rem;
+}
+.deepdive-prose .md-figure-svg svg { width: 100%; height: auto; display: block; }
+.deepdive-prose .md-figure figcaption {
+  margin-top: 0.55rem;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-muted);
 }
 
 /* ───────────────────────── details ────────────────────────────────────────── */
