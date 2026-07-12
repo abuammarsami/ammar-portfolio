@@ -4,8 +4,20 @@ status: active
 
 # Experience
 
+## Partners Online (Bangladesh & UK) — Operation Manager, Web & App Development
+*March 2026 – Present · Dhaka, Bangladesh (Remote · part-time) · No Borders IT / Partners Online BD & UK Ltd*
+
+- Lead Web & App Development for **Partners.com.bd** — Bangladesh's marketplace + business-social
+  platform, expanding into the UK — owning backend architecture, database, cloud infrastructure,
+  deployment, scalability, and security across BD and UK operations.
+- Design and build the product's rebuild end to end: a .NET (Clean Architecture) API, three
+  Flutter apps (General, Executive, City), and a legacy MVC → API migration.
+- Shipped a transactional background-job system (dedicated Hangfire worker, SQL outbox,
+  dead-letter queue, idempotency) and a document-driven agent workflow (open-sourced as the
+  `d3` Claude Code skill) that keeps the codebase AI-navigable.
+
 ## Masjid Solutions — Software Engineer
-*December 2023 – Present · Indianapolis, Indiana, USA (Remote)*
+*December 2023 – May 2026 · Indianapolis, Indiana, USA (Remote)*
 
 - Engineered backend systems with .NET (MVC & Core), SQL Server, Dapper, LINQ, and Entity
   Framework powering Islamic schools, memberships, events, and donation management.
