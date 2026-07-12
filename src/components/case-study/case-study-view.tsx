@@ -153,7 +153,7 @@ export function CaseStudyView({
           {cs.capabilities.length > 0 && (
             <Reveal stagger className="entangled mt-8 grid gap-x-8 gap-y-5 sm:grid-cols-2">
               {cs.capabilities.map((cap, i) => (
-                <div key={cap.name} className="flex gap-3 border-t rule-hair pt-4">
+                <div key={`${cap.name}-${i}`} className="flex gap-3 border-t rule-hair pt-4">
                   <span className="mt-0.5 font-mono text-xs text-muted tabular-nums">{String(i + 1).padStart(2, "0")}</span>
                   <div>
                     <p className={`font-mono text-sm ${i % 2 ? "entangled-b" : "entangled-a"}`}>{cap.name}</p>
