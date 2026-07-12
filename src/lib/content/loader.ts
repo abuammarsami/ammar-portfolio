@@ -19,6 +19,14 @@ import {
   type ExperienceRole,
   type HirePage,
   type Lesson,
+  type CaseStudy,
+  type CaseStudyCapability,
+  type CaseStudyCard,
+  type CaseStudyStat,
+  type DeepDive,
+  type DeepDiveSeries,
+  deepDiveFrontmatterSchema,
+  deepDiveSeriesFrontmatterSchema,
   type Paper,
   type Project,
   type ProjectFigure,
@@ -174,6 +182,147 @@ export async function getProject(slug: string): Promise<Project | null> {
 /** Draft projects are hidden from production listings but still routable in dev. */
 export function visibleProjects(projects: Project[]): Project[] {
   return STRICT ? projects.filter((p) => p.status === "active") : projects;
+}
+
+// ---------------------------------------------------------------- case studies (ADR-0013)
+
+/** Split a `## Section` block into `### Card` records, each with an optional emphasized *meta* first line. */
+async function splitCards(block: string): Promise<CaseStudyCard[]> {
+  const re = /^### +(.+)$/gm;
+  const matches = [...block.matchAll(re)];
+  const cards: CaseStudyCard[] = [];
+  for (let i = 0; i < matches.length; i++) {
+    const m = matches[i]!;
+    const start = m.index! + m[0].length;
+    const end = i + 1 < matches.length ? matches[i + 1]!.index! : block.length;
+    let body = block.slice(start, end).trim();
+    const metaMatch = body.match(/^\*([^*]+)\*/);
+    const meta = metaMatch ? metaMatch[1]!.trim() : null;
+    if (metaMatch) body = body.slice(metaMatch[0].length).trim();
+    cards.push({ title: m[1]!.trim(), meta, bodyHtml: await markdownToHtml(body) });
+  }
+  return cards;
+}
+
+/** Parse `- value | label` numeral lines (hero stats, outcomes). */
+/** Parse `- <left> | <right>` list rows into [left, right] pairs. */
+function parsePipeRows(block: string | undefined): [string, string][] {
+  if (!block) return [];
+  const out: [string, string][] = [];
+  for (const line of block.split("\n")) {
+    const m = line.match(/^- +(.+?) +\| +(.+)$/);
+    if (m) out.push([m[1]!.trim(), m[2]!.trim()]);
+  }
+  return out;
+}
+
+function parseStatLines(block: string | undefined): CaseStudyStat[] {
+  return parsePipeRows(block).map(([value, label]) => ({ value, label }));
+}
+
+/** Parse `- name | body` capability rows for the "wrapper" grid. */
+function parseCapabilities(block: string | undefined): CaseStudyCapability[] {
+  return parsePipeRows(block).map(([name, body]) => ({ name, body }));
+}
+
+/** content/case-studies/<slug>.md → the bespoke narrative layout (ADR-0013). Null when absent. */
+export async function getCaseStudy(slug: string): Promise<CaseStudy | null> {
+  const parsed = read(path.join("case-studies", `${slug}.md`));
+  if (!parsed) return null;
+  const s = splitHeadingSections(stripComments(parsed.body));
+  return {
+    slug,
+    tagline: (s.get("Tagline") ?? "").trim(),
+    role: (s.get("Role") ?? "").trim(),
+    inOneMinuteHtml: await markdownToHtml(s.get("In one minute") ?? ""),
+    stats: parseStatLines(s.get("Stats")),
+    problemHtml: await markdownToHtml(s.get("The problem") ?? ""),
+    incidents: await splitCards(s.get("Incidents") ?? ""),
+    bigIdeaHtml: await markdownToHtml(s.get("The big idea") ?? ""),
+    capabilities: parseCapabilities(s.get("The wrapper")),
+    howItWorksHtml: await markdownToHtml(s.get("How it works") ?? ""),
+    walkthrough: await splitCards(s.get("Follow a job") ?? ""),
+    decisions: await splitCards(s.get("Architect decisions") ?? ""),
+    warStoryHtml: await markdownToHtml(s.get("The war story") ?? ""),
+    impactHtml: await markdownToHtml(s.get("Impact") ?? ""),
+    goingDeeperHtml: await markdownToHtml(s.get("Going deeper") ?? ""),
+  };
+}
+
+// ---------------------------------------------------------------- deep dives (ADR-0014)
+
+/** All deep-dive chapters (content/deep-dives/*.md, excluding _series files), sorted by series then order. */
+export async function getDeepDives(): Promise<DeepDive[]> {
+  const dir = path.join(CONTENT_DIR, "deep-dives");
+  if (!fs.existsSync(dir)) return [];
+  const files = fs.readdirSync(dir).filter((f) => f.endsWith(".md") && !f.startsWith("_"));
+
+  const chapters: DeepDive[] = [];
+  for (const file of files) {
+    const rel = path.join("deep-dives", file);
+    const parsed = read(rel);
+    if (!parsed) continue;
+    const fm = deepDiveFrontmatterSchema.safeParse(parsed.data);
+    if (!fm.success) {
+      missing(rel, `valid frontmatter (${fm.error.issues.map((i) => i.path.join(".") + ": " + i.message).join("; ")})`);
+      continue;
+    }
+    chapters.push({
+      ...fm.data,
+      slug: file.replace(/\.md$/, ""),
+      bodyHtml: await markdownToHtml(stripComments(parsed.body)),
+    });
+  }
+  return chapters.sort((a, b) =>
+    a.series === b.series ? a.order - b.order : (a.series ?? "").localeCompare(b.series ?? ""),
+  );
+}
+
+/** Standalone deep-dives (no `series`), featured first, then newest by date. */
+export function standaloneDeepDives(chapters: DeepDive[]): DeepDive[] {
+  return chapters
+    .filter((c) => !c.series)
+    .sort((a, b) => Number(b.featured) - Number(a.featured) || b.date.localeCompare(a.date));
+}
+
+export async function getDeepDive(slug: string): Promise<DeepDive | null> {
+  const all = await getDeepDives();
+  return all.find((d) => d.slug === slug) ?? null;
+}
+
+/** Draft chapters stay dev-only. */
+export function visibleDeepDives(chapters: DeepDive[]): DeepDive[] {
+  return STRICT ? chapters.filter((c) => c.status === "active") : chapters;
+}
+
+/** A deep-dive series (its _<slug>.md meta + intro) plus its visible chapters in order. */
+export async function getDeepDiveSeries(slug: string): Promise<DeepDiveSeries | null> {
+  const parsed = read(path.join("deep-dives", `_${slug}.md`));
+  if (!parsed) return null;
+  const fm = deepDiveSeriesFrontmatterSchema.safeParse(parsed.data);
+  if (!fm.success) {
+    missing(`deep-dives/_${slug}.md`, `valid frontmatter (${fm.error.issues.map((i) => i.message).join("; ")})`);
+    return null;
+  }
+  const chapters = visibleDeepDives(await getDeepDives()).filter((d) => d.series === slug);
+  // The filename-derived slug is canonical; ignore any divergent frontmatter `slug`.
+  return { ...fm.data, slug, introHtml: await markdownToHtml(stripComments(parsed.body)), chapters };
+}
+
+/** Every deep-dive series (one _<slug>.md per series). */
+export async function getDeepDiveSerieses(): Promise<DeepDiveSeries[]> {
+  const dir = path.join(CONTENT_DIR, "deep-dives");
+  if (!fs.existsSync(dir)) return [];
+  const slugs = fs
+    .readdirSync(dir)
+    .filter((f) => f.startsWith("_") && f.endsWith(".md"))
+    .map((f) => f.slice(1).replace(/\.md$/, ""));
+  const serieses: DeepDiveSeries[] = [];
+  for (const slug of slugs) {
+    const s = await getDeepDiveSeries(slug);
+    if (s && (!STRICT || s.status === "active")) serieses.push(s);
+  }
+  return serieses.sort((a, b) => Number(b.featured) - Number(a.featured) || a.title.localeCompare(b.title));
 }
 
 // ---------------------------------------------------------------- papers
@@ -537,8 +686,8 @@ export async function getTestimonials(): Promise<Testimonial[]> {
 
 // ---------------------------------------------------------------- optional files
 
-/** writing.md / playground.md — optional; empty (or template-only) → null. */
-export async function getOptionalHtml(file: "writing.md" | "playground.md"): Promise<string | null> {
+/** writing.md / playground.md / d3.md — optional; empty (or template-only) → null. */
+export async function getOptionalHtml(file: "writing.md" | "playground.md" | "d3.md"): Promise<string | null> {
   const parsed = read(file);
   if (!parsed) return null;
   const body = stripComments(parsed.body)

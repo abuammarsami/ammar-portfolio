@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 372" width="880" height="372" role="img" aria-labelledby="c2-title c2-desc">
+  <title id="c2-title">The CLAUDE.md layout after cleanup</title>
+  <desc id="c2-desc">A lean 221-line root CLAUDE.md is always loaded. Below it sit six module rule files — Domain 31, Application 61, Infrastructure 45, Api 42, tests 50, database 29 lines — each of which auto-loads only when you edit that subtree. A dashed side branch points to docs/, loaded on demand. A focus cycle lights one module teal at a time while the root stays lit, proving selective loading.</desc>
+  <defs>
+    <marker id="c2-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted, #8a8f9c)" />
+    </marker>
+  </defs>
+  <style>
+    @keyframes c2-focus {
+      0%   { opacity: 0; }
+      3%   { opacity: 1; }
+      13%  { opacity: 1; }
+      17%  { opacity: 0; }
+      100% { opacity: 0; }
+    }
+    @keyframes c2-glow { 0%, 100% { opacity: 0.35; } 50% { opacity: 0.8; } }
+    .c2-focus { animation: c2-focus 13s ease-in-out infinite; }
+    .c2-d1 { animation-delay: 2.17s; }
+    .c2-d2 { animation-delay: 4.33s; }
+    .c2-d3 { animation-delay: 6.5s; }
+    .c2-d4 { animation-delay: 8.67s; }
+    .c2-d5 { animation-delay: 10.83s; }
+    .c2-halo { animation: c2-glow 3.6s ease-in-out infinite; }
+    @media (prefers-reduced-motion: reduce) {
+      .c2-focus { animation: none; opacity: 0; }
+      .c2-halo  { animation: none; opacity: 0.55; }
+    }
+  </style>
+  <g style="font-family: var(--font-mono, 'IBM Plex Mono', ui-monospace, monospace)" fill="var(--color-ink, #e9e7e0)" font-size="13">
+
+    <!-- eyebrow -->
+    <text x="440" y="30" text-anchor="middle" font-size="11" letter-spacing="1.5" fill="var(--color-q1, #9d8cff)">THE LAYOUT AFTER CLEANUP</text>
+
+    <!-- ── ROOT ── -->
+    <rect x="320" y="50" width="240" height="64" rx="4" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" />
+    <rect class="c2-halo" x="320" y="50" width="240" height="64" rx="4" fill="none" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" opacity="0.4" />
+    <text x="440" y="80" text-anchor="middle" font-size="13">CLAUDE.md · 221 lines</text>
+    <text x="440" y="100" text-anchor="middle" font-size="10.5" fill="var(--color-q0, #5fc9bf)">always loaded</text>
+
+    <!-- ── docs side branch (dashed, on demand) ── -->
+    <line x1="560" y1="82" x2="618" y2="86" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" stroke-dasharray="5 5" opacity="0.75" marker-end="url(#c2-ah)" />
+    <rect x="620" y="58" width="230" height="56" rx="4" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" stroke-dasharray="6 5" opacity="0.9" />
+    <text x="735" y="82" text-anchor="middle" font-size="12">docs/</text>
+    <text x="735" y="101" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">loaded on demand</text>
+
+    <!-- ── connectors: root → bus → modules ── -->
+    <line x1="440" y1="114" x2="440" y2="180" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.7" />
+    <line x1="80" y1="180" x2="800" y2="180" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.7" />
+    <line x1="80"  y1="180" x2="80"  y2="210" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.7" />
+    <line x1="224" y1="180" x2="224" y2="210" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.7" />
+    <line x1="368" y1="180" x2="368" y2="210" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.7" />
+    <line x1="512" y1="180" x2="512" y2="210" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.7" />
+    <line x1="656" y1="180" x2="656" y2="210" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.7" />
+    <line x1="800" y1="180" x2="800" y2="210" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.7" />
+
+    <!-- ── MODULE NODES ── -->
+    <!-- Domain -->
+    <rect x="15" y="210" width="130" height="58" rx="3" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" />
+    <rect class="c2-focus" x="15" y="210" width="130" height="58" rx="3" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.14" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" />
+    <text x="80" y="236" text-anchor="middle" font-size="11">Domain</text>
+    <text x="80" y="254" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">31 lines</text>
+
+    <!-- Application -->
+    <rect x="159" y="210" width="130" height="58" rx="3" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" />
+    <rect class="c2-focus c2-d1" x="159" y="210" width="130" height="58" rx="3" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.14" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" />
+    <text x="224" y="236" text-anchor="middle" font-size="11">Application</text>
+    <text x="224" y="254" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">61 lines</text>
+
+    <!-- Infrastructure -->
+    <rect x="303" y="210" width="130" height="58" rx="3" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" />
+    <rect class="c2-focus c2-d2" x="303" y="210" width="130" height="58" rx="3" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.14" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" />
+    <text x="368" y="236" text-anchor="middle" font-size="11">Infrastructure</text>
+    <text x="368" y="254" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">45 lines</text>
+
+    <!-- Api -->
+    <rect x="447" y="210" width="130" height="58" rx="3" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" />
+    <rect class="c2-focus c2-d3" x="447" y="210" width="130" height="58" rx="3" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.14" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" />
+    <text x="512" y="236" text-anchor="middle" font-size="11">Api</text>
+    <text x="512" y="254" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">42 lines</text>
+
+    <!-- tests -->
+    <rect x="591" y="210" width="130" height="58" rx="3" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" />
+    <rect class="c2-focus c2-d4" x="591" y="210" width="130" height="58" rx="3" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.14" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" />
+    <text x="656" y="236" text-anchor="middle" font-size="11">tests</text>
+    <text x="656" y="254" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">50 lines</text>
+
+    <!-- database -->
+    <rect x="735" y="210" width="130" height="58" rx="3" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" />
+    <rect class="c2-focus c2-d5" x="735" y="210" width="130" height="58" rx="3" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.14" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" />
+    <text x="800" y="236" text-anchor="middle" font-size="11">database</text>
+    <text x="800" y="254" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">29 lines</text>
+
+    <!-- sub-caption -->
+    <text x="440" y="296" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">each module rule auto-loads only when you edit that subtree</text>
+
+    <!-- caption -->
+    <text x="440" y="328" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">Fig. — a 221-line root that is always loaded, module rules that auto-load only in their own</text>
+    <text x="440" y="344" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">subtree, and everything else linked in docs/ and loaded on demand.</text>
+  </g>
+</svg>

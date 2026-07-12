@@ -5,6 +5,7 @@ import { ThemeToggle } from "./theme-toggle";
 const links = [
   { href: "/learn", label: "learn" },
   { href: "/work", label: "work" },
+  { href: "/deep-dives", label: "writing" },
   { href: "/research", label: "research" },
   { href: "/agents", label: "agents" },
   { href: "/hire", label: "hire" },
@@ -14,36 +15,43 @@ const links = [
 export function Nav() {
   return (
     <header className="sticky top-0 z-40 border-b rule-hair bg-bg/85 backdrop-blur">
-      <nav className="mx-auto flex max-w-4xl items-center justify-between px-6 py-3">
-        <Link href="/" className="font-serif text-lg tracking-tight" aria-label="Abu Ammar — home">
+      <nav className="mx-auto flex max-w-4xl items-center justify-between gap-3 px-6 py-3">
+        <Link href="/" className="shrink-0 font-serif text-lg tracking-tight" aria-label="Abu Ammar — home">
           <CircuitMark />
           <span className="ml-2 align-middle">Abu Ammar</span>
         </Link>
-        <div className="flex items-center gap-5">
-          {links.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              className="font-mono text-sm text-muted transition-colors hover:text-q0"
-            >
-              {l.label}
-            </Link>
-          ))}
+        <div className="flex min-w-0 items-center gap-4">
+          {/* links scroll within the nav on narrow screens so the page body never scrolls sideways */}
+          <div className="scrollbar-none flex min-w-0 items-center gap-5 overflow-x-auto">
+            {links.map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                className="font-mono text-sm text-muted transition-colors hover:text-q0"
+              >
+                {l.label}
+              </Link>
+            ))}
+          </div>
           {/* plain <a>: next/link would RSC-prefetch the PDF and 404 in console */}
           <a
             href="/resume.pdf"
-            className="font-mono text-sm text-muted transition-colors hover:text-q1"
+            className="shrink-0 font-mono text-sm text-muted transition-colors hover:text-q1"
           >
             cv↓
           </a>
           <kbd
-            className="hidden rounded-sm border rule-hair px-1.5 py-0.5 font-mono text-xs text-muted md:inline"
+            className="hidden shrink-0 rounded-sm border rule-hair px-1.5 py-0.5 font-mono text-xs text-muted md:inline"
             title="Command palette"
           >
             ⌘K
           </kbd>
-          <LensPill />
-          <ThemeToggle />
+          <span className="shrink-0">
+            <LensPill />
+          </span>
+          <span className="shrink-0">
+            <ThemeToggle />
+          </span>
         </div>
       </nav>
     </header>

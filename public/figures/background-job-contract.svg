@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 548" width="940" height="548" role="img" aria-labelledby="bgj-contract-title">
+  <title id="bgj-contract-title">The job contract: an interface-bound Enqueue creates an id-only message of primitive IDs; a sealed scoped runner checks its fail-closed kill switch and its JobProcessedMessage idempotency marker before doing work, so a handler that runs at least twice converges to exactly one effect</title>
+  <defs>
+    <marker id="a6-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted, #8a8f9c)" />
+    </marker>
+    <marker id="a6-aht" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-q0, #5fc9bf)" />
+    </marker>
+  </defs>
+  <style>
+    @keyframes a6-flow {
+      0%   { offset-distance: 0%;   opacity: 0; }
+      8%   { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { offset-distance: 100%; opacity: 0; }
+    }
+    @keyframes a6-dup {
+      0%, 48% { offset-distance: 0%; opacity: 0; }
+      55%     { opacity: 1; }
+      86%     { offset-distance: 100%; opacity: 0.9; }
+      100%    { offset-distance: 100%; opacity: 0; }
+    }
+    @keyframes a6-glow { 0%,100% { opacity: 0.35; } 50% { opacity: 0.9; } }
+    .a6-tok {
+      offset-path: path("M 278 256 L 470 132 L 470 198 L 470 280 L 470 355 L 600 355 L 690 256");
+      offset-rotate: 0deg;
+      fill: var(--color-q0, #5fc9bf);
+      filter: drop-shadow(0 0 5px var(--color-q0, #5fc9bf));
+      animation: a6-flow 6s ease-in-out infinite;
+    }
+    .a6-tok--2 { animation-delay: 3s; }
+    .a6-dup {
+      offset-path: path("M 278 256 L 470 132 L 470 198 L 470 280");
+      offset-rotate: 0deg;
+      fill: var(--color-muted, #8a8f9c);
+      filter: drop-shadow(0 0 4px var(--color-muted, #8a8f9c));
+      animation: a6-dup 6s linear infinite;
+    }
+    .a6-halo { animation: a6-glow 4.5s ease-in-out infinite; }
+    @media (prefers-reduced-motion: reduce) {
+      .a6-tok, .a6-dup { animation: none; opacity: 0; }
+      .a6-halo { animation: none; opacity: 0.5; }
+    }
+  </style>
+  <g style="font-family: var(--font-mono, 'IBM Plex Mono', ui-monospace, monospace)" fill="var(--color-ink, #e9e7e0)" font-size="13">
+
+    <!-- ── BINDING ── -->
+    <rect x="40" y="44" width="300" height="92" rx="4" fill="var(--color-surface, #12151d)" stroke="var(--color-q1, #9d8cff)" stroke-width="2" />
+    <text x="52" y="64" font-size="11" fill="var(--color-muted, #8a8f9c)">the binding</text>
+    <text x="190" y="88" text-anchor="middle" font-size="12">Enqueue&lt;IEmailJobs&gt;(x =&gt;</text>
+    <text x="190" y="106" text-anchor="middle" font-size="12">x.SendWelcome(userId, ct))</text>
+    <text x="190" y="126" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">interface, not concrete type</text>
+
+    <!-- binding → message -->
+    <line x1="159" y1="138" x2="159" y2="180" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" marker-end="url(#a6-ah)" />
+    <text x="166" y="164" font-size="10.5" fill="var(--color-muted, #8a8f9c)">creates</text>
+
+    <!-- ── MESSAGE ── -->
+    <rect x="40" y="182" width="238" height="150" rx="4" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" />
+    <text x="52" y="204" font-size="11" fill="var(--color-muted, #8a8f9c)">the message</text>
+    <line x1="52" y1="214" x2="266" y2="214" stroke="var(--color-muted, #8a8f9c)" stroke-width="1" opacity="0.4" />
+    <text x="159" y="236" text-anchor="middle" font-size="12">MessageId — dedup</text>
+    <text x="159" y="262" text-anchor="middle" font-size="12">IdempotencyKey — key</text>
+    <text x="159" y="288" text-anchor="middle" font-size="12">CorrelationId — trace</text>
+    <text x="159" y="318" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">primitive IDs only · no PII</text>
+
+    <!-- message → runner -->
+    <line x1="278" y1="256" x2="354" y2="256" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" marker-end="url(#a6-aht)" />
+
+    <!-- ── RUNNER boundary ── -->
+    <rect x="356" y="74" width="244" height="356" rx="4" fill="none" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" stroke-dasharray="6 5" opacity="0.6" />
+    <text x="368" y="96" font-size="11" fill="var(--color-muted, #8a8f9c)">sealed · scoped runner</text>
+
+    <rect x="370" y="110" width="216" height="42" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-ink, #e9e7e0)" stroke-width="2" />
+    <text x="478" y="136" text-anchor="middle" font-size="12">RunAsync(msg, ct)</text>
+
+    <rect x="370" y="166" width="216" height="64" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" />
+    <text x="478" y="192" text-anchor="middle" font-size="12">1 · kill switch</text>
+    <text x="478" y="210" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">IsJobEnabled · fail-closed</text>
+
+    <rect x="370" y="242" width="216" height="76" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" />
+    <rect class="a6-halo" x="370" y="242" width="216" height="76" rx="2" fill="none" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" opacity="0.4" />
+    <text x="478" y="266" text-anchor="middle" font-size="12">2 · idempotency marker</text>
+    <text x="478" y="284" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">JobProcessedMessage</text>
+    <text x="478" y="302" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">insert · catch 2627/2601</text>
+
+    <rect x="370" y="330" width="216" height="58" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" />
+    <text x="478" y="354" text-anchor="middle" font-size="12">3 · the body</text>
+    <text x="478" y="372" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">do the effect once</text>
+
+    <!-- runner → one effect -->
+    <line x1="600" y1="300" x2="688" y2="262" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" marker-end="url(#a6-aht)" />
+    <text x="628" y="292" font-size="10.5" fill="var(--color-muted, #8a8f9c)">converge</text>
+
+    <!-- ── ONE EFFECT ── -->
+    <rect x="690" y="214" width="214" height="86" rx="4" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" />
+    <text x="797" y="252" text-anchor="middle" font-size="12">one effect</text>
+    <text x="797" y="272" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">runs converge</text>
+
+    <!-- ── INSET ── -->
+    <rect x="300" y="452" width="470" height="50" rx="3" fill="none" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.3" stroke-dasharray="6 5" opacity="0.6" />
+    <text x="535" y="474" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">every handler runs ≥ 2× · run #2 hits the marker</text>
+    <text x="535" y="492" text-anchor="middle" font-size="10.5" fill="var(--color-q0, #5fc9bf)">→ no-op → exactly one effect</text>
+
+    <!-- animated tokens -->
+    <circle class="a6-dup" r="4" />
+    <circle class="a6-tok" r="4.5" />
+    <circle class="a6-tok a6-tok--2" r="4.5" />
+
+    <!-- caption -->
+    <text x="470" y="520" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">Fig. — the job contract: an id-only message, a runner that checks its kill switch and</text>
+    <text x="470" y="536" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">idempotency marker before doing work, bound through an interface.</text>
+  </g>
+</svg>

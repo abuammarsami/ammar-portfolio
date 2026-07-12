@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 380" width="880" height="380" role="img" aria-labelledby="c5-title c5-desc">
+  <title id="c5-title">A hash note files itself into the right CLAUDE.md</title>
+  <desc id="c5-desc">A left-to-right flow in three stages. On the left, a terminal note begins with a teal hash: "# Tests fail unless you call SeedAsync first". In the middle, a route-and-summarize node decides which file the note belongs to and shortens it. On the right, a stack of candidate targets — root, Application, tests, database — has tests slash CLAUDE.md highlighted teal as the chosen destination, where a terse rule "Call SeedAsync before tests" lands under a Rules heading. A token travels the path, shrinking from a long note to a short rule, and the tests target pulses as the rule drops in.</desc>
+  <defs>
+    <marker id="c5-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted, #8a8f9c)" />
+    </marker>
+  </defs>
+  <style>
+    @keyframes c5-move1 {
+      0% { transform: translateX(0); opacity: 0; }
+      6% { opacity: 1; }
+      40% { transform: translateX(150px); opacity: 1; }
+      45% { transform: translateX(150px); opacity: 0; }
+      100% { opacity: 0; }
+    }
+    @keyframes c5-move2 {
+      0%, 48% { opacity: 0; transform: translateX(0); }
+      50% { transform: translateX(0); opacity: 1; }
+      85% { transform: translateX(88px); opacity: 1; }
+      92% { transform: translateX(88px); opacity: 0; }
+      100% { opacity: 0; }
+    }
+    @keyframes c5-gear { 0%, 100% { opacity: 0.3; } 42% { opacity: 0.85; } 55% { opacity: 0.3; } }
+    @keyframes c5-pulse { 0%, 80% { opacity: 0; } 88% { opacity: 0.65; } 100% { opacity: 0; } }
+    @keyframes c5-drop { 0%, 82% { opacity: 0; } 90% { opacity: 1; } 100% { opacity: 1; } }
+    .c5-move1 { animation: c5-move1 5.6s ease-in-out infinite; }
+    .c5-move2 { animation: c5-move2 5.6s ease-in-out infinite; }
+    .c5-gear { animation: c5-gear 5.6s ease-in-out infinite; }
+    .c5-pulse { animation: c5-pulse 5.6s ease-in-out infinite; }
+    .c5-drop { animation: c5-drop 5.6s ease-in-out infinite; }
+    @media (prefers-reduced-motion: reduce) {
+      .c5-move1 { animation: none; opacity: 0; }
+      .c5-move2 { animation: none; opacity: 0; }
+      .c5-gear { animation: none; opacity: 0.5; }
+      .c5-pulse { animation: none; opacity: 0; }
+      .c5-drop { animation: none; opacity: 1; }
+    }
+  </style>
+  <g style="font-family: var(--font-mono, 'IBM Plex Mono', ui-monospace, monospace)" fill="var(--color-ink, #e9e7e0)" font-size="13">
+
+    <!-- eyebrow -->
+    <text x="440" y="30" text-anchor="middle" font-size="11" letter-spacing="1.5" fill="var(--color-q1, #9d8cff)">THE # SHORTCUT &#183; ROUTE &#8594; SUMMARIZE &#8594; SAVE</text>
+
+    <!-- stage labels -->
+    <text x="150" y="64" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">1 &#183; you type one line</text>
+    <text x="440" y="64" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">2 &#183; it routes + shortens</text>
+    <text x="725" y="64" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">3 &#183; it files itself</text>
+
+    <!-- ── STAGE 1 · terminal note ── -->
+    <rect x="30" y="120" width="245" height="92" rx="5" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.4" />
+    <circle cx="46" cy="137" r="3.5" fill="var(--color-error, #d32f2f)" opacity="0.75" />
+    <circle cx="58" cy="137" r="3.5" fill="var(--color-muted, #8a8f9c)" opacity="0.6" />
+    <circle cx="70" cy="137" r="3.5" fill="var(--color-muted, #8a8f9c)" opacity="0.6" />
+    <line x1="30" y1="150" x2="275" y2="150" stroke="var(--color-muted, #8a8f9c)" stroke-width="1" opacity="0.35" />
+    <text x="46" y="176" font-size="10.5"><tspan fill="var(--color-q0, #5fc9bf)"># </tspan><tspan fill="var(--color-ink, #e9e7e0)">Tests fail unless you call</tspan></text>
+    <text x="60" y="194" font-size="10.5" fill="var(--color-ink, #e9e7e0)">SeedAsync first</text>
+
+    <!-- arrow 1 → 2 -->
+    <line x1="278" y1="166" x2="352" y2="166" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.7" marker-end="url(#c5-ah)" />
+
+    <!-- ── STAGE 2 · route + summarize node ── -->
+    <rect x="358" y="128" width="164" height="76" rx="6" fill="var(--color-surface, #12151d)" stroke="var(--color-q1, #9d8cff)" stroke-width="1.6" />
+    <rect class="c5-gear" x="358" y="128" width="164" height="76" rx="6" fill="none" stroke="var(--color-q1, #9d8cff)" stroke-width="1.6" opacity="0.3" />
+    <text x="440" y="160" text-anchor="middle" font-size="12" fill="var(--color-q1, #9d8cff)">route +</text>
+    <text x="440" y="180" text-anchor="middle" font-size="12" fill="var(--color-q1, #9d8cff)">summarize</text>
+    <text x="440" y="224" text-anchor="middle" font-size="10" fill="var(--color-muted, #8a8f9c)">long note &#8594; terse rule</text>
+
+    <!-- arrow 2 → 3 -->
+    <line x1="525" y1="166" x2="598" y2="166" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.7" marker-end="url(#c5-ah)" />
+
+    <!-- ── STAGE 3 · candidate targets ── -->
+    <text x="725" y="98" text-anchor="middle" font-size="10" fill="var(--color-muted, #8a8f9c)">candidate targets</text>
+
+    <!-- root -->
+    <rect x="600" y="108" width="250" height="26" rx="3" fill="var(--color-surface, #12151d)" fill-opacity="0.5" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.3" opacity="0.6" />
+    <text x="616" y="125" font-size="11" fill="var(--color-muted, #8a8f9c)">root/CLAUDE.md</text>
+
+    <!-- Application -->
+    <rect x="600" y="140" width="250" height="26" rx="3" fill="var(--color-surface, #12151d)" fill-opacity="0.5" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.3" opacity="0.6" />
+    <text x="616" y="157" font-size="11" fill="var(--color-muted, #8a8f9c)">Application/CLAUDE.md</text>
+
+    <!-- tests (chosen) -->
+    <rect x="600" y="172" width="250" height="70" rx="4" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.12" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" />
+    <rect class="c5-pulse" x="600" y="172" width="250" height="70" rx="4" fill="none" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" opacity="0" />
+    <text x="616" y="191" font-size="11" fill="var(--color-q0, #5fc9bf)">tests/CLAUDE.md</text>
+    <line x1="616" y1="200" x2="834" y2="200" stroke="var(--color-q0, #5fc9bf)" stroke-width="1" opacity="0.3" />
+    <text x="616" y="217" font-size="9.5" letter-spacing="1" fill="var(--color-muted, #8a8f9c)">RULES</text>
+    <text class="c5-drop" x="616" y="234" font-size="10.5" fill="var(--color-q0, #5fc9bf)" opacity="0">&#8226; Call SeedAsync before tests</text>
+
+    <!-- database -->
+    <rect x="600" y="248" width="250" height="26" rx="3" fill="var(--color-surface, #12151d)" fill-opacity="0.5" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.3" opacity="0.6" />
+    <text x="616" y="265" font-size="11" fill="var(--color-muted, #8a8f9c)">database/CLAUDE.md</text>
+
+    <!-- ── travelling token: long note → short rule ── -->
+    <g class="c5-move1" opacity="0">
+      <rect x="278" y="158" width="92" height="16" rx="8" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.28" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.3" />
+    </g>
+    <g class="c5-move2" opacity="0">
+      <rect x="524" y="158" width="40" height="16" rx="8" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.5" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.3" />
+    </g>
+
+    <!-- caption -->
+    <text x="440" y="332" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">Fig. — you type one line; it is routed to the file that owns that subtree, summarized to a</text>
+    <text x="440" y="348" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">terse rule, and saved — so the file grows from real hits and auto-loads it next time.</text>
+  </g>
+</svg>

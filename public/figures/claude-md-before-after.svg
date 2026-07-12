@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 430" width="820" height="430" role="img" aria-labelledby="c3-title c3-desc">
+  <title id="c3-title">Before and after — a 78% cut</title>
+  <desc id="c3-desc">Two paired bar comparisons. Lines drop from 1,014 before to 221 after. Tokens per turn drop from about 12,000 before to about 2,600 after. Before bars are muted and tall; after bars are teal and short. A large teal minus-78-percent callout sits between them. The after bars animate growing up from the baseline while a marker drops from the old height, dramatizing the reduction.</desc>
+  <style>
+    @keyframes c3-grow {
+      0%   { transform: scaleY(0); }
+      22%  { transform: scaleY(1); }
+      90%  { transform: scaleY(1); }
+      100% { transform: scaleY(0); }
+    }
+    @keyframes c3-drop {
+      0%   { transform: translateY(0);     opacity: 0; }
+      10%  { opacity: 1; }
+      70%  { transform: translateY(172px); opacity: 1; }
+      100% { transform: translateY(172px); opacity: 0; }
+    }
+    .c3-grow { transform-box: fill-box; transform-origin: 50% 100%; animation: c3-grow 4.8s ease-in-out infinite; }
+    .c3-g1   { animation-delay: 0.5s; }
+    .c3-drop { animation: c3-drop 4.8s ease-in-out infinite; }
+    .c3-drop1 { animation-delay: 0.5s; }
+    @media (prefers-reduced-motion: reduce) {
+      .c3-grow { animation: none; transform: none; }
+      .c3-drop { animation: none; opacity: 0; }
+    }
+  </style>
+  <g style="font-family: var(--font-mono, 'IBM Plex Mono', ui-monospace, monospace)" fill="var(--color-ink, #e9e7e0)" font-size="13">
+
+    <!-- eyebrow -->
+    <text x="410" y="42" text-anchor="middle" font-size="11" letter-spacing="1.5" fill="var(--color-q1, #9d8cff)">BEFORE &#8594; AFTER · REAL NUMBERS</text>
+
+    <!-- reference gridline at the before height -->
+    <line x1="120" y1="100" x2="700" y2="100" stroke="var(--color-muted, #8a8f9c)" stroke-width="1" stroke-dasharray="3 6" opacity="0.14" />
+    <!-- baseline axis -->
+    <line x1="120" y1="320" x2="700" y2="320" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.3" opacity="0.5" />
+
+    <!-- ── GROUP A · Lines ── -->
+    <!-- before bar -->
+    <rect x="150" y="100" width="64" height="220" rx="2" fill="var(--color-muted, #8a8f9c)" fill-opacity="0.22" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" />
+    <text x="182" y="92" text-anchor="middle" font-size="13" fill="var(--color-muted, #8a8f9c)">1,014</text>
+    <text x="182" y="336" text-anchor="middle" font-size="10" fill="var(--color-muted, #8a8f9c)">before</text>
+    <!-- drop guide + marker -->
+    <line x1="266" y1="100" x2="266" y2="272" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.2" stroke-dasharray="4 5" opacity="0.35" />
+    <path class="c3-drop" d="M 260 100 L 272 100 L 266 110 z" fill="var(--color-q0, #5fc9bf)" />
+    <!-- after bar -->
+    <rect class="c3-grow" x="234" y="272" width="64" height="48" rx="2" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.85" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.5" />
+    <text x="266" y="264" text-anchor="middle" font-size="13" fill="var(--color-q0, #5fc9bf)">221</text>
+    <text x="266" y="336" text-anchor="middle" font-size="10" fill="var(--color-q0, #5fc9bf)">after</text>
+    <text x="224" y="360" text-anchor="middle" font-size="12">Lines</text>
+
+    <!-- ── GROUP B · Tokens / turn ── -->
+    <!-- before bar -->
+    <rect x="520" y="100" width="64" height="220" rx="2" fill="var(--color-muted, #8a8f9c)" fill-opacity="0.22" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" />
+    <text x="552" y="92" text-anchor="middle" font-size="13" fill="var(--color-muted, #8a8f9c)">~12,000</text>
+    <text x="552" y="336" text-anchor="middle" font-size="10" fill="var(--color-muted, #8a8f9c)">before</text>
+    <!-- drop guide + marker -->
+    <line x1="636" y1="100" x2="636" y2="272" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.2" stroke-dasharray="4 5" opacity="0.35" />
+    <path class="c3-drop c3-drop1" d="M 630 100 L 642 100 L 636 110 z" fill="var(--color-q0, #5fc9bf)" />
+    <!-- after bar -->
+    <rect class="c3-grow c3-g1" x="604" y="272" width="64" height="48" rx="2" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.85" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.5" />
+    <text x="636" y="264" text-anchor="middle" font-size="13" fill="var(--color-q0, #5fc9bf)">~2,600</text>
+    <text x="636" y="336" text-anchor="middle" font-size="10" fill="var(--color-q0, #5fc9bf)">after</text>
+    <text x="594" y="360" text-anchor="middle" font-size="12">Tokens / turn</text>
+
+    <!-- ── −78% callout (center) ── -->
+    <text x="409" y="200" text-anchor="middle" font-size="46" font-weight="700" fill="var(--color-q0, #5fc9bf)">&#8722;78%</text>
+    <text x="409" y="228" text-anchor="middle" font-size="12" fill="var(--color-muted, #8a8f9c)">leaner every turn</text>
+
+    <!-- caption -->
+    <text x="410" y="392" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">Fig. — before and after the cleanup: 1,014 → 221 lines and ~12,000 → ~2,600 tokens per</text>
+    <text x="410" y="408" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">turn — a 78% cut in what gets loaded on every single turn.</text>
+  </g>
+</svg>

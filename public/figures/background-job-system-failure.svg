@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 970 420" width="970" height="420" role="img" aria-labelledby="bgj-fail-title">
+  <title id="bgj-fail-title">Failure lifecycle: a throwing job is classified at the provider boundary; permanent failures are deleted without retry, transient failures ride a backoff curve of five retries, and an exhausted job is copied to a durable dead-letter table that fires email and webhook alerts</title>
+  <defs>
+    <marker id="bgj3-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted, #8a8f9c)" />
+    </marker>
+  </defs>
+  <style>
+    @keyframes a3-run {
+      0%   { offset-distance: 0%;   opacity: 0; }
+      8%   { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { offset-distance: 100%; opacity: 0; }
+    }
+    @keyframes a3-pulse { 0%, 100% { r: 3.5; } 50% { r: 5.2; } }
+    @keyframes a3-divert {
+      0%, 58% { offset-distance: 0%; opacity: 0; }
+      64%     { opacity: 0.55; }
+      78%     { offset-distance: 100%; opacity: 0.55; }
+      84%, 100% { opacity: 0; }
+    }
+    .a3-token {
+      offset-path: path("M 90 199 L 300 199 L 400 245 L 540 251 L 700 251 L 824 253 L 824 345");
+      offset-rotate: 0deg;
+      fill: var(--color-q0, #5fc9bf);
+      filter: drop-shadow(0 0 5px var(--color-q0, #5fc9bf));
+      animation: a3-run 5s ease-in-out infinite, a3-pulse 1.2s ease-in-out infinite;
+    }
+    .a3-divert {
+      offset-path: path("M 300 199 L 340 186 L 540 109");
+      offset-rotate: 0deg;
+      fill: var(--color-muted, #8a8f9c);
+      filter: drop-shadow(0 0 3px var(--color-muted, #8a8f9c));
+      animation: a3-divert 10s linear infinite;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .a3-token, .a3-divert { animation: none; opacity: 0; }
+    }
+  </style>
+  <g style="font-family: var(--font-mono, 'IBM Plex Mono', ui-monospace, monospace)" fill="var(--color-ink, #e9e7e0)" font-size="13">
+
+    <!-- job throws -->
+    <rect x="28" y="172" width="112" height="54" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" />
+    <text x="84" y="195" text-anchor="middle" font-size="12">job throws</text>
+    <text x="84" y="212" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">on the worker</text>
+
+    <!-- classify -->
+    <rect x="176" y="166" width="152" height="66" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-ink, #e9e7e0)" stroke-width="2" />
+    <text x="252" y="194" text-anchor="middle" font-size="12">classify at the</text>
+    <text x="252" y="211" text-anchor="middle" font-size="12">provider boundary</text>
+
+    <line x1="140" y1="199" x2="174" y2="199" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" marker-end="url(#bgj3-ah)" />
+
+    <!-- permanent branch (up) -->
+    <line x1="328" y1="186" x2="392" y2="116" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" marker-end="url(#bgj3-ah)" />
+    <text x="334" y="150" font-size="10.5" fill="var(--color-muted, #8a8f9c)">permanent</text>
+    <rect x="396" y="80" width="288" height="58" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" />
+    <text x="540" y="103" text-anchor="middle" font-size="12">PermanentJobException → Deleted</text>
+    <text x="540" y="122" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">4xx · validation · poison — never retried</text>
+
+    <!-- transient branch (down) -->
+    <line x1="328" y1="212" x2="392" y2="244" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" marker-end="url(#bgj3-ah)" />
+    <text x="334" y="246" font-size="10.5" fill="var(--color-muted, #8a8f9c)">transient</text>
+    <rect x="396" y="214" width="288" height="74" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" />
+    <text x="540" y="238" text-anchor="middle" font-size="12">AutomaticRetry — 5 retries</text>
+    <text x="540" y="257" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">60s → 5m → 30m → 2h</text>
+    <text x="540" y="274" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">(last delay reused · ~4.5 h window)</text>
+
+    <!-- retry → DLQ -->
+    <text x="702" y="205" text-anchor="middle" font-size="10" fill="var(--color-muted, #8a8f9c)">retries exhausted → FailedState</text>
+    <line x1="684" y1="251" x2="720" y2="251" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" marker-end="url(#bgj3-ah)" />
+    <rect x="722" y="216" width="204" height="74" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-q1, #9d8cff)" stroke-width="2" />
+    <text x="824" y="240" text-anchor="middle" font-size="12">dbo.JobDeadLetter</text>
+    <text x="824" y="259" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">durable · business-owned</text>
+    <text x="824" y="274" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">args · exception · trace</text>
+
+    <!-- DLQ → alerts -->
+    <line x1="824" y1="290" x2="824" y2="308" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" marker-end="url(#bgj3-ah)" />
+    <text x="836" y="322" font-size="10.5" fill="var(--color-muted, #8a8f9c)">on arrival</text>
+    <rect x="722" y="328" width="204" height="46" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" />
+    <text x="824" y="355" text-anchor="middle" font-size="12">alerts → email + webhook</text>
+
+    <!-- footer -->
+    <text x="360" y="350" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">redrive = a fresh enqueue + audit row —</text>
+    <text x="360" y="366" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">never mutate the dead job</text>
+    <text x="360" y="394" text-anchor="middle" font-size="11" fill="var(--color-q0, #5fc9bf)">Error logs stay 1:1 with dead-letter arrivals</text>
+
+    <!-- a failing job travelling to the dead-letter queue (self-contained; removed under reduced-motion) -->
+    <circle class="a3-divert" r="3.5" />
+    <circle class="a3-token" r="3.5" />
+  </g>
+</svg>
