@@ -19,6 +19,12 @@ status: active
   221, the nested files that auto-load per module, and the `#` workflow that grows the
   file without ever hand-editing it. · [Read the series](/deep-dives)
 
+- **ML Research, Explained** — each machine-learning project I've done, rebuilt from first
+  principles and grounded in the actual paper and code: a quantum classifier on a
+  variational circuit, knowledge distillation for Bangla POS tagging and network-intrusion
+  detection, blood-cell detection (and why augmentation is a modeling decision), a
+  multi-output CNN, and ensemble startup-success prediction. · [Read the series](/deep-dives)
+
 - **This portfolio is now agent-operable** — humans read it, agents call it, browsers
   operate it: an MCP server, WebMCP browser tools (live in Chrome's origin trial), an
   A2A agent card, and a fit-report engine that answers "does he fit?" with citations

@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 400" width="880" height="400" role="img" aria-labelledby="r2-title r2-desc">
+  <title id="r2-title">Knowledge distillation transfers soft targets, not hard labels</title>
+  <desc id="r2-desc">A left-to-right flow. An input token enters a teacher tagger. Instead of emitting one hard one-hot label, the teacher emits a softened probability distribution over the 30 part-of-speech tags — a little bar chart with many non-zero bars (dark knowledge), contrasted against the single dashed spike a hard label would keep. That distribution flows along an arrow into a student network, which lights up teal as it absorbs the signal. The soft distribution, not the label, is the training signal.</desc>
+  <defs>
+    <marker id="r2-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted, #8a8f9c)" />
+    </marker>
+    <marker id="r2-ah-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-q0, #5fc9bf)" />
+    </marker>
+  </defs>
+  <style>
+    @keyframes r2-flow {
+      0%   { transform: translateX(0);     opacity: 0; }
+      10%  { opacity: 1; }
+      70%  { transform: translateX(150px); opacity: 1; }
+      82%  { transform: translateX(150px); opacity: 0; }
+      100% { transform: translateX(150px); opacity: 0; }
+    }
+    @keyframes r2-absorb { 0%, 52% { opacity: 0.08; } 74% { opacity: 0.85; } 92% { opacity: 0.08; } 100% { opacity: 0.08; } }
+    @keyframes r2-learn  { 0%, 58% { opacity: 0; } 76% { opacity: 1; } 94% { opacity: 0; } 100% { opacity: 0; } }
+    @keyframes r2-shine  { 0%, 100% { opacity: 0.85; } 50% { opacity: 1; } }
+    .r2-flow  { animation: r2-flow 4.8s ease-in-out infinite; }
+    .r2-d1 { animation-delay: 1.6s; }
+    .r2-d2 { animation-delay: 3.2s; }
+    .r2-absorb { animation: r2-absorb 4.8s ease-in-out infinite; }
+    .r2-learn  { animation: r2-learn 4.8s ease-in-out infinite; }
+    .r2-shine  { animation: r2-shine 3.4s ease-in-out infinite; }
+    @media (prefers-reduced-motion: reduce) {
+      .r2-flow   { animation: none; opacity: 0; }
+      .r2-absorb { animation: none; opacity: 0.5; }
+      .r2-learn  { animation: none; opacity: 1; }
+      .r2-shine  { animation: none; opacity: 1; }
+    }
+  </style>
+  <g style="font-family: var(--font-mono, 'IBM Plex Mono', ui-monospace, monospace)" fill="var(--color-ink, #e9e7e0)" font-size="13">
+
+    <!-- eyebrow -->
+    <text x="440" y="30" text-anchor="middle" font-size="11" letter-spacing="1.5" fill="var(--color-q1, #9d8cff)">KNOWLEDGE DISTILLATION &#183; SOFT TARGETS, NOT HARD LABELS</text>
+
+    <!-- stage labels -->
+    <text x="83"  y="66" text-anchor="middle" font-size="10" fill="var(--color-muted, #8a8f9c)">1 &#183; input token</text>
+    <text x="246" y="66" text-anchor="middle" font-size="10" fill="var(--color-muted, #8a8f9c)">2 &#183; teacher</text>
+    <text x="451" y="66" text-anchor="middle" font-size="10" fill="var(--color-muted, #8a8f9c)">3 &#183; soft distribution</text>
+    <text x="690" y="66" text-anchor="middle" font-size="10" fill="var(--color-muted, #8a8f9c)">4 &#183; student learns</text>
+
+    <!-- ── input token ── -->
+    <rect x="24" y="158" width="118" height="62" rx="5" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" />
+    <text x="83" y="186" text-anchor="middle" font-size="11">input token</text>
+    <text x="83" y="204" text-anchor="middle" font-size="9.5" fill="var(--color-muted, #8a8f9c)">one word</text>
+
+    <line x1="144" y1="189" x2="172" y2="189" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.7" marker-end="url(#r2-ah)" />
+
+    <!-- ── teacher ── -->
+    <rect x="174" y="150" width="144" height="78" rx="5" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.6" />
+    <text x="246" y="184" text-anchor="middle" font-size="11.5">teacher</text>
+    <text x="246" y="202" text-anchor="middle" font-size="9.5" fill="var(--color-muted, #8a8f9c)">emits soft targets</text>
+
+    <line x1="320" y1="189" x2="346" y2="189" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.7" marker-end="url(#r2-ah)" />
+
+    <!-- ── soft-distribution panel ── -->
+    <rect x="348" y="112" width="208" height="164" rx="6" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.8" />
+    <text x="452" y="132" text-anchor="middle" font-size="11" fill="var(--color-q0, #5fc9bf)">soft targets</text>
+    <text x="452" y="148" text-anchor="middle" font-size="9" fill="var(--color-muted, #8a8f9c)">dark knowledge &#183; T&#62;1</text>
+
+    <!-- baseline -->
+    <line x1="360" y1="252" x2="546" y2="252" stroke="var(--color-muted, #8a8f9c)" stroke-width="1" opacity="0.4" />
+
+    <!-- hard-label ghost spike (one-hot, discarded) over the first bar -->
+    <rect x="365" y="160" width="15" height="92" fill="none" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.3" stroke-dasharray="4 3" opacity="0.7" />
+    <text x="372" y="172" text-anchor="middle" font-size="7.5" fill="var(--color-muted, #8a8f9c)">1.0</text>
+
+    <!-- soft bars (teal) -->
+    <g class="r2-shine" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.85">
+      <rect x="365" y="196" width="15" height="56" rx="1.5" />
+      <rect x="388" y="216" width="15" height="36" rx="1.5" />
+      <rect x="411" y="224" width="15" height="28" rx="1.5" />
+      <rect x="434" y="232" width="15" height="20" rx="1.5" />
+      <rect x="457" y="236" width="15" height="16" rx="1.5" />
+      <rect x="480" y="240" width="15" height="12" rx="1.5" />
+      <rect x="503" y="243" width="15" height="9"  rx="1.5" />
+      <rect x="526" y="245" width="15" height="7"  rx="1.5" />
+    </g>
+    <text x="452" y="268" text-anchor="middle" font-size="8.5" fill="var(--color-muted, #8a8f9c)">P(tag) over 30 POS tags</text>
+
+    <!-- flow arrow panel → student -->
+    <line x1="558" y1="194" x2="596" y2="194" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" marker-end="url(#r2-ah-teal)" />
+
+    <!-- ── student ── -->
+    <rect x="600" y="152" width="164" height="80" rx="6" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" />
+    <rect class="r2-absorb" x="600" y="152" width="164" height="80" rx="6" fill="var(--color-q0, #5fc9bf)" fill-opacity="1" stroke="none" opacity="0.08" />
+    <rect class="r2-absorb" x="600" y="152" width="164" height="80" rx="6" fill="none" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" opacity="0.08" />
+    <text x="682" y="182" text-anchor="middle" font-size="11.5">student</text>
+    <text x="682" y="200" text-anchor="middle" font-size="9.5" fill="var(--color-muted, #8a8f9c)">neural net</text>
+    <text class="r2-learn" x="682" y="220" text-anchor="middle" font-size="9.5" fill="var(--color-q0, #5fc9bf)" opacity="0">absorbing P &#8942;</text>
+
+    <!-- travelling soft-distribution particles -->
+    <g class="r2-flow"      opacity="0"><circle cx="548" cy="194" r="4" fill="var(--color-q0, #5fc9bf)" /></g>
+    <g class="r2-flow r2-d1" opacity="0"><circle cx="548" cy="194" r="4" fill="var(--color-q0, #5fc9bf)" /></g>
+    <g class="r2-flow r2-d2" opacity="0"><circle cx="548" cy="194" r="4" fill="var(--color-q0, #5fc9bf)" /></g>
+
+    <!-- legend -->
+    <rect x="300" y="300" width="12" height="12" rx="2" fill="none" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.2" stroke-dasharray="3 2" />
+    <text x="318" y="310" font-size="9.5" fill="var(--color-muted, #8a8f9c)">hard label &#8212; discarded</text>
+    <rect x="470" y="300" width="12" height="12" rx="2" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.85" />
+    <text x="488" y="310" font-size="9.5" fill="var(--color-muted, #8a8f9c)">soft targets &#8212; the signal</text>
+
+    <!-- caption -->
+    <text x="440" y="344" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">Fig. &#8212; a hard label keeps one spike and throws the rest away; the softened distribution keeps</text>
+    <text x="440" y="360" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">the runner-up mass, and that spread &#8212; not the label &#8212; is what the student is trained to match.</text>
+  </g>
+</svg>

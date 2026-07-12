@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 400" width="880" height="400" role="img" aria-labelledby="r1-title r1-desc">
+  <title id="r1-title">The hybrid quantum-classical training loop</title>
+  <desc id="r1-desc">A cycle. Along the top, a forward pass runs left to right: classical data is encoded into qubit rotations, a variational circuit of parameterized gates transforms the quantum state, a measurement reads out class scores, and a prediction comes out. Below, a classical optimizer computes the gradient and sends an emphasized teal return arrow straight up into the variational circuit — updating its parameters. That return arrow is the part that learns. A token travels the whole loop and slows as it climbs the update arrow.</desc>
+  <defs>
+    <marker id="r1-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted, #8a8f9c)" />
+    </marker>
+    <marker id="r1-ah-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-q0, #5fc9bf)" />
+    </marker>
+  </defs>
+  <style>
+    @keyframes r1-orbit {
+      0%   { transform: translate(0,0);        opacity: 0; }
+      3%   { transform: translate(0,0);        opacity: 1; }
+      38%  { transform: translate(696px,0);    opacity: 1; }
+      50%  { transform: translate(696px,156px); opacity: 1; }
+      66%  { transform: translate(359px,156px); opacity: 1; }
+      90%  { transform: translate(359px,32px);  opacity: 1; }
+      96%  { transform: translate(359px,32px);  opacity: 0; }
+      100% { transform: translate(359px,32px);  opacity: 0; }
+    }
+    @keyframes r1-glow { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.82; } }
+    @keyframes r1-pulse { 0%, 60% { opacity: 0; } 78% { opacity: 0.7; } 100% { opacity: 0; } }
+    .r1-orbit { animation: r1-orbit 7s ease-in-out infinite; }
+    .r1-halo  { animation: r1-glow 3.6s ease-in-out infinite; }
+    .r1-pulse { animation: r1-pulse 7s ease-in-out infinite; }
+    @media (prefers-reduced-motion: reduce) {
+      .r1-orbit { animation: none; opacity: 0; }
+      .r1-halo  { animation: none; opacity: 0.5; }
+      .r1-pulse { animation: none; opacity: 0; }
+    }
+  </style>
+  <g style="font-family: var(--font-mono, 'IBM Plex Mono', ui-monospace, monospace)" fill="var(--color-ink, #e9e7e0)" font-size="13">
+
+    <!-- eyebrow -->
+    <text x="440" y="30" text-anchor="middle" font-size="11" letter-spacing="1.5" fill="var(--color-q1, #9d8cff)">THE HYBRID QUANTUM&#8211;CLASSICAL TRAINING LOOP</text>
+
+    <!-- forward-pass label -->
+    <text x="440" y="66" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">forward pass &#183; classical &#8594; quantum device &#8594; classical</text>
+
+    <!-- ── FORWARD ROW ── -->
+    <!-- box1 · classical data -->
+    <rect x="24" y="88" width="140" height="64" rx="5" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" />
+    <text x="94" y="116" text-anchor="middle" font-size="11">classical data</text>
+    <text x="94" y="134" text-anchor="middle" font-size="9.5" fill="var(--color-muted, #8a8f9c)">MNIST pixels</text>
+
+    <line x1="166" y1="120" x2="194" y2="120" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.7" marker-end="url(#r1-ah)" />
+
+    <!-- box2 · encode -->
+    <rect x="196" y="88" width="150" height="64" rx="5" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.5" />
+    <text x="271" y="116" text-anchor="middle" font-size="11">encode</text>
+    <text x="271" y="134" text-anchor="middle" font-size="9.5" fill="var(--color-muted, #8a8f9c)">&#8594; qubit rotations</text>
+
+    <line x1="348" y1="120" x2="376" y2="120" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.7" marker-end="url(#r1-ah)" />
+
+    <!-- box3 · variational circuit (the learner) -->
+    <rect x="378" y="88" width="150" height="64" rx="5" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" />
+    <rect class="r1-halo" x="378" y="88" width="150" height="64" rx="5" fill="none" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" opacity="0.4" />
+    <text x="453" y="116" text-anchor="middle" font-size="11" fill="var(--color-q0, #5fc9bf)">variational</text>
+    <text x="453" y="134" text-anchor="middle" font-size="9.5" fill="var(--color-muted, #8a8f9c)">parameterized &#952;</text>
+
+    <line x1="530" y1="120" x2="558" y2="120" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.7" marker-end="url(#r1-ah)" />
+
+    <!-- box4 · measurement -->
+    <rect x="560" y="88" width="132" height="64" rx="5" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.5" />
+    <text x="626" y="116" text-anchor="middle" font-size="11">measurement</text>
+    <text x="626" y="134" text-anchor="middle" font-size="9.5" fill="var(--color-muted, #8a8f9c)">expectation</text>
+
+    <line x1="694" y1="120" x2="722" y2="120" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.7" marker-end="url(#r1-ah)" />
+
+    <!-- box5 · prediction -->
+    <rect x="724" y="88" width="132" height="64" rx="5" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" />
+    <text x="790" y="116" text-anchor="middle" font-size="11">prediction</text>
+    <text x="790" y="134" text-anchor="middle" font-size="9.5" fill="var(--color-muted, #8a8f9c)">class scores</text>
+
+    <!-- ── RETURN PATH (muted): prediction → down → optimizer ── -->
+    <polyline points="790,152 790,276 570,276" fill="none" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.7" marker-end="url(#r1-ah)" />
+
+    <!-- optimizer node -->
+    <rect x="338" y="252" width="232" height="58" rx="6" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" />
+    <text x="454" y="278" text-anchor="middle" font-size="11">classical optimizer</text>
+    <text x="454" y="296" text-anchor="middle" font-size="9.5" fill="var(--color-muted, #8a8f9c)">computes &#8711; &#183; parameter-shift</text>
+
+    <!-- ── EMPHASIZED return arrow: optimizer → variational circuit ── -->
+    <line x1="454" y1="252" x2="454" y2="156" stroke="var(--color-q0, #5fc9bf)" stroke-width="3" marker-end="url(#r1-ah-teal)" />
+    <line class="r1-pulse" x1="454" y1="252" x2="454" y2="156" stroke="var(--color-q0, #5fc9bf)" stroke-width="6" opacity="0" />
+    <text x="470" y="192" font-size="10.5" fill="var(--color-q0, #5fc9bf)">update &#952;</text>
+    <text x="470" y="207" font-size="9" fill="var(--color-muted, #8a8f9c)">&#8212; this is what learns</text>
+
+    <!-- ── travelling token ── -->
+    <g class="r1-orbit" opacity="0">
+      <circle cx="94" cy="120" r="5.5" fill="var(--color-q0, #5fc9bf)" />
+    </g>
+
+    <!-- caption -->
+    <text x="440" y="352" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">Fig. &#8212; the forward pass detours through a quantum circuit; the parameter-shift rule turns a</text>
+    <text x="440" y="368" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">measurement into a gradient, so a classical optimizer can update the circuit&#8217;s angles and loop.</text>
+  </g>
+</svg>
