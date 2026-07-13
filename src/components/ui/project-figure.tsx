@@ -14,7 +14,7 @@ export function ProjectFigure({ src, caption }: Figure) {
   return (
     <figure className="mt-12">
       <div
-        className="rounded-sm border rule-hair bg-surface p-5 [&>svg]:h-auto [&>svg]:w-full"
+        className="project-figure-svg rounded-sm border rule-hair bg-surface p-5 [&>svg]:h-auto [&>svg]:w-full"
         dangerouslySetInnerHTML={{ __html: svg }}
       />
       <figcaption className="mt-2 text-center font-mono text-xs text-muted">{caption}</figcaption>

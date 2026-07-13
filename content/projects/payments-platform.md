@@ -54,17 +54,19 @@ re-delivered already-settled callback — because each fulfilment stored procedu
 and letting a settled-but-unfulfilled row self-heal on the next pass. A Hangfire job runs every
 five minutes with three disjoint passes (Fig. 2): sweep inline-Bundle fulfilled-but-Pending rows
 to Settled, expire abandoned intents past a 30-minute TTL, and re-dispatch the idempotent settle
-command for settled-but-unfulfilled rows (giving up after 168 hours). Idempotency on the *create*
-side is a MediatR pipeline behavior (ADR-0008) over 13 curated high-risk endpoints, keyed by a
-required `Idempotency-Key` header with a SHA-256 body hash and a 7-day TTL for payments.
+command for settled-but-unfulfilled rows (giving up after 168 hours). On the *create* side, a
+retried "start payment" is deduped today at the SQL layer by a per-user `IdempotencyKey` unique
+index; a MediatR pipeline behavior (ADR-0008; required header + SHA-256 body hash, 7-day payment
+TTL) is built and registered for a curated 13-endpoint rollout, but not yet marked live on any command.
 
 **Impact:** The `already settled → return success` money-loss path is gone by construction: the
 coordinator re-runs idempotent fulfilment on every attempt, `FulfilledDate` prevents double
 credit, and reconciliation is the backstop. Four drifting settlers became one audited pipeline;
 the unsafe deferred-debit `dbo.WalletDebit` primitive was deleted so the double-debit pattern
 can't return. Backed by ~883 automated tests (the coordinator alone has a dedicated suite). Honest
-status: the SQL is `CREATE OR ALTER`, applied manually in SSMS — green in CI but not yet run
-against the live DB, and no bKash-sandbox smoke test yet (the biggest gap). Only Bundle + bKash
+status: the SQL is `CREATE OR ALTER`, applied manually in SSMS — green in CI and the full flow
+passed end to end against the bKash sandbox, but not yet applied to the live production database
+(a production dry-run with real-money bKash is the remaining gate). Only Bundle + bKash
 are real; no webhook vendor is wired; payment callback host-header hardening and confirmation
 emails/SMS are designed but deferred; `RefundAsync` exists but has no new-stack admin surface —
 an explicit go-live gate before real bKash traffic.

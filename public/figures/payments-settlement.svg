@@ -44,6 +44,7 @@
 
     <!-- 1. lookup -->
     <g class="pset-node" tabindex="0" role="group" aria-label="Look up the payment by the gateway reference">
+      <title>Look up the payment by the gateway reference</title>
       <rect class="pset-hit" x="200" y="44" width="320" height="40"/>
       <rect class="pset-box" x="200" y="46" width="320" height="38" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4"/>
       <text x="360" y="70" text-anchor="middle" font-size="11.5">1 &#183; look up by ProviderPaymentId</text>
@@ -52,6 +53,7 @@
 
     <!-- 2. purpose check -->
     <g class="pset-node" tabindex="0" role="group" aria-label="Check the payment purpose matches this settler, else WRONG_PURPOSE">
+      <title>Check the payment purpose matches this settler, else WRONG_PURPOSE</title>
       <rect class="pset-hit" x="200" y="100" width="320" height="40"/>
       <rect class="pset-box" x="200" y="102" width="320" height="38" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4"/>
       <text x="360" y="126" text-anchor="middle" font-size="11.5">2 &#183; Purpose == expected?</text>
@@ -60,6 +62,7 @@
 
     <!-- 3. decision: already settled? -->
     <g class="pset-node" tabindex="0" role="group" aria-label="Branch on whether the payment is already settled">
+      <title>Branch on whether the payment is already settled</title>
       <rect class="pset-hit" x="256" y="158" width="208" height="42"/>
       <rect class="pset-box" x="258" y="160" width="204" height="38" rx="19" fill="var(--color-surface,#12151d)" stroke="var(--color-q1,#9d8cff)" stroke-width="1.6"/>
       <text x="360" y="184" text-anchor="middle" font-size="11.5" fill="var(--color-q1,#9d8cff)">3 &#183; already Settled?</text>
@@ -69,24 +72,28 @@
 
     <!-- LEFT path (not yet settled) -->
     <g class="pset-node" tabindex="0" role="group" aria-label="Resolve the gateway by the payment row country, server-trusted">
+      <title>Resolve the gateway by the payment row country, server-trusted</title>
       <rect class="pset-hit" x="44" y="216" width="304" height="40"/>
       <rect class="pset-box" x="46" y="218" width="300" height="36" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4"/>
       <text x="196" y="241" text-anchor="middle" font-size="10.5">resolve gateway &#183; by payment.CountryCode</text>
       <text class="pset-note" x="196" y="211" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">server-trusted country, not the caller's</text>
     </g>
     <g class="pset-node" tabindex="0" role="group" aria-label="Verify with the vendor, the single trusted settlement gate">
+      <title>Verify with the vendor, the single trusted settlement gate</title>
       <rect class="pset-hit" x="44" y="268" width="304" height="38"/>
       <rect class="pset-box" x="46" y="270" width="300" height="36" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.5"/>
       <text x="196" y="293" text-anchor="middle" font-size="10.5" fill="var(--color-q0,#5fc9bf)">VerifyCallbackAsync &#8212; the trusted gate</text>
       <text class="pset-note" x="196" y="263" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">signature/execute verified before any state changes</text>
     </g>
     <g class="pset-node" tabindex="0" role="group" aria-label="Cross-check the captured amount against the server-stored order, else AMOUNT_MISMATCH">
+      <title>Cross-check the captured amount against the server-stored order, else AMOUNT_MISMATCH</title>
       <rect class="pset-hit" x="44" y="320" width="304" height="38"/>
       <rect class="pset-box" x="46" y="322" width="300" height="36" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4"/>
       <text x="196" y="345" text-anchor="middle" font-size="10.5">amount == order? else AMOUNT_MISMATCH</text>
       <text class="pset-note" x="196" y="315" text-anchor="middle" font-size="9" fill="var(--color-error,#ef4444)">blocks a replayed cheap-payment callback settling an expensive order</text>
     </g>
     <g class="pset-node" tabindex="0" role="group" aria-label="Atomically claim Pending to Settled exactly once">
+      <title>Atomically claim Pending to Settled exactly once</title>
       <rect class="pset-hit" x="44" y="372" width="304" height="38"/>
       <rect class="pset-box" x="46" y="374" width="300" height="36" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4"/>
       <text x="196" y="397" text-anchor="middle" font-size="10.5">PaymentMarkSettled &#183; claim once</text>
@@ -95,6 +102,7 @@
 
     <!-- RIGHT path (already settled) -->
     <g class="pset-node" tabindex="0" role="group" aria-label="Already settled re-delivery reuses the stored transaction and skips the vendor">
+      <title>Already settled re-delivery reuses the stored transaction and skips the vendor</title>
       <rect class="pset-hit" x="446" y="246" width="228" height="40"/>
       <rect class="pset-box" x="448" y="248" width="224" height="36" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4" stroke-dasharray="5 4"/>
       <text x="560" y="271" text-anchor="middle" font-size="10">reuse trx &#183; skip vendor</text>
@@ -103,6 +111,7 @@
 
     <!-- FULFIL (the crux, accent) -->
     <g class="pset-node" tabindex="0" role="group" aria-label="Always run the idempotent fulfilment step, which stamps FulfilledDate exactly once">
+      <title>Always run the idempotent fulfilment step, which stamps FulfilledDate exactly once</title>
       <rect class="pset-hit" x="150" y="428" width="420" height="40"/>
       <rect class="pset-box" x="152" y="430" width="416" height="38" rx="6" fill="var(--color-q0,#5fc9bf)" fill-opacity="0.14" stroke="var(--color-q0,#5fc9bf)" stroke-width="2"/>
       <text x="360" y="454" text-anchor="middle" font-size="11.5" fill="var(--color-q0,#5fc9bf)">4 &#183; ALWAYS run fulfil &#8212; idempotent</text>
@@ -111,6 +120,7 @@
 
     <!-- outcome -->
     <g class="pset-node" tabindex="0" role="group" aria-label="If fulfilment fails, log critical and return FULFILMENT_FAILED, never success">
+      <title>If fulfilment fails, log critical and return FULFILMENT_FAILED, never success</title>
       <rect class="pset-hit" x="150" y="470" width="420" height="26"/>
       <text x="360" y="482" text-anchor="middle" font-size="10">ok &#8594; <tspan fill="var(--color-q0,#5fc9bf)">Applied &#10003;</tspan>   |   fail &#8594; <tspan fill="var(--color-error,#ef4444)">FULFILMENT_FAILED</tspan></text>
       <text class="pset-note" x="360" y="494" text-anchor="middle" font-size="9" fill="var(--color-error,#ef4444)">LogCritical &#183; never reports success &#183; FulfilledDate still null &#8594; self-heals next pass</text>

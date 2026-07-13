@@ -302,7 +302,9 @@ body::after {
    the pointer and block the hover it belongs to. The `*-hit` targets and the
    focusable groups keep their pointer events. */
 .deepdive-prose .md-figure-svg [class*="-note"],
-.deepdive-prose .md-figure-svg [class*="-hint"] { pointer-events: none; }
+.deepdive-prose .md-figure-svg [class*="-hint"],
+.project-figure-svg [class*="-note"],
+.project-figure-svg [class*="-hint"] { pointer-events: none; }
 .deepdive-prose .md-figure figcaption {
   margin-top: 0.55rem;
   text-align: center;
