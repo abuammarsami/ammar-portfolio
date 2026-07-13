@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="mocr-title mocr-desc">
   <title id="mocr-title">Per-head results on the held-out test set</title>
-  <desc id="mocr-desc">Three horizontal bars show the multi-output model's test performance: age achieves an R-squared of 0.81 (mean absolute error about 6.8 years), gender classification reaches 94.8 percent validation accuracy, and race classification reaches 87 percent overall accuracy. A red callout flags the honest caveat: within the race head, the catch-all others class has recall of only 0.37, so the model misses nearly two-thirds of those faces despite the high headline accuracy.</desc>
+  <desc id="mocr-desc">Three horizontal bars show the multi-output model's test performance: age achieves an R-squared of 0.81 (mean absolute error about 6.8 years), gender classification reaches 94.8 percent validation accuracy, and race classification reaches 87 percent overall accuracy. A red callout flags the honest caveat: within the race head, the catch-all others class has recall of only 0.37, so the model misses nearly two-thirds of those faces despite the high headline accuracy. Hover or focus a bar to isolate it and read its exact metric.</desc>
   <style>
     @keyframes mocr-age { from{width:0} to{width:257px} }
     @keyframes mocr-gen { from{width:0} to{width:299px} }
@@ -10,36 +10,68 @@
     .mocr-gen{animation:mocr-gen 1.4s ease-out 0.18s forwards;width:0}
     .mocr-rac{animation:mocr-rac 1.4s ease-out 0.36s forwards;width:0}
     .mocr-warn{animation:mocr-warn 2.6s ease-in-out infinite}
+    /* interactive (zero-JS): hover or keyboard-focus a bar to isolate it */
+    .mocr-col{ cursor:pointer; transition:opacity .2s ease; }
+    .mocr-col:focus{ outline:none; }
+    .mocr-hit{ fill:transparent; }
+    svg:hover .mocr-col:not(:hover),
+    svg:focus-within .mocr-col:not(:focus-within){ opacity:.35; }
+    .mocr-col:hover .mocr-fill,
+    .mocr-col:focus-within .mocr-fill{ stroke:var(--color-ink,#e9e7e0); stroke-width:1.5; }
+    .mocr-note{ opacity:0; transition:opacity .18s ease; }
+    .mocr-col:hover .mocr-note,
+    .mocr-col:focus-within .mocr-note{ opacity:1; }
+    .mocr-hint{ opacity:.6; }
+    svg:hover .mocr-hint,
+    svg:focus-within .mocr-hint{ opacity:0; transition:opacity .2s ease; }
     @media (prefers-reduced-motion: reduce){ *{animation:none!important} .mocr-age{width:257px} .mocr-gen{width:299px} .mocr-rac{width:275px} .mocr-warn{opacity:0.9} }
   </style>
   <g style="font-family: var(--font-mono,'IBM Plex Mono',ui-monospace,monospace)" fill="var(--color-ink,#e9e7e0)" font-size="12">
 
     <text x="320" y="26" text-anchor="middle" font-size="11" letter-spacing="1.5" fill="var(--color-q1,#9d8cff)">WHAT EACH HEAD SCORED</text>
 
+    <!-- interaction hint (fades out once the reader hovers a bar) -->
+    <text class="mocr-hint" x="616" y="26" text-anchor="end" font-size="9" fill="var(--color-muted,#8a8f9c)">hover a bar &#9656;</text>
+
     <!-- track baseline x from 120 to 436 (width 316 = 100%) -->
     <!-- age -->
-    <text x="24" y="76" font-size="11">age</text>
-    <text x="24" y="90" font-size="9" fill="var(--color-muted,#8a8f9c)">regression</text>
-    <rect x="120" y="60" width="316" height="22" rx="4" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1" opacity="0.5" />
-    <rect class="mocr-age" x="120" y="60" height="22" rx="4" fill="var(--color-q0,#5fc9bf)" opacity="0.85" />
-    <text x="448" y="76" font-size="11" fill="var(--color-q0,#5fc9bf)">R2 0.81</text>
-    <text x="524" y="76" font-size="10" fill="var(--color-muted,#8a8f9c)">MAE ~6.8yr</text>
+    <g class="mocr-col" tabindex="0" role="group" aria-label="Age regression: R-squared 0.8143, mean absolute error about 6.8 years">
+      <title>age &#183; R&#178; 0.8143 &#183; MAE ~6.8 yr</title>
+      <rect class="mocr-hit" x="24" y="56" width="592" height="30"/>
+      <text x="24" y="76" font-size="11">age</text>
+      <text x="24" y="90" font-size="9" fill="var(--color-muted,#8a8f9c)">regression</text>
+      <rect x="120" y="60" width="316" height="22" rx="4" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1" opacity="0.5" />
+      <rect class="mocr-age mocr-fill" x="120" y="60" height="22" rx="4" fill="var(--color-q0,#5fc9bf)" opacity="0.85" />
+      <text x="448" y="76" font-size="11" fill="var(--color-q0,#5fc9bf)">R2 0.81</text>
+      <text x="524" y="76" font-size="10" fill="var(--color-muted,#8a8f9c)">MAE ~6.8yr</text>
+      <text class="mocr-note" x="120" y="100" font-size="9.5" fill="var(--color-q0,#5fc9bf)">age &#183; R&#178; 0.8143 &#183; MAE ~6.8 yr</text>
+    </g>
 
     <!-- gender -->
-    <text x="24" y="126" font-size="11">gender</text>
-    <text x="24" y="140" font-size="9" fill="var(--color-muted,#8a8f9c)">2-class</text>
-    <rect x="120" y="110" width="316" height="22" rx="4" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1" opacity="0.5" />
-    <rect class="mocr-gen" x="120" y="110" height="22" rx="4" fill="var(--color-q0,#5fc9bf)" opacity="0.85" />
-    <text x="448" y="126" font-size="11" fill="var(--color-q0,#5fc9bf)">94.8%</text>
-    <text x="524" y="126" font-size="10" fill="var(--color-muted,#8a8f9c)">val acc</text>
+    <g class="mocr-col" tabindex="0" role="group" aria-label="Gender 2-class: 94.8 percent validation accuracy">
+      <title>gender &#183; 94.8% validation accuracy</title>
+      <rect class="mocr-hit" x="24" y="106" width="592" height="30"/>
+      <text x="24" y="126" font-size="11">gender</text>
+      <text x="24" y="140" font-size="9" fill="var(--color-muted,#8a8f9c)">2-class</text>
+      <rect x="120" y="110" width="316" height="22" rx="4" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1" opacity="0.5" />
+      <rect class="mocr-gen mocr-fill" x="120" y="110" height="22" rx="4" fill="var(--color-q0,#5fc9bf)" opacity="0.85" />
+      <text x="448" y="126" font-size="11" fill="var(--color-q0,#5fc9bf)">94.8%</text>
+      <text x="524" y="126" font-size="10" fill="var(--color-muted,#8a8f9c)">val acc</text>
+      <text class="mocr-note" x="120" y="150" font-size="9.5" fill="var(--color-q0,#5fc9bf)">gender &#183; 94.8% validation accuracy</text>
+    </g>
 
     <!-- race -->
-    <text x="24" y="176" font-size="11">race</text>
-    <text x="24" y="190" font-size="9" fill="var(--color-muted,#8a8f9c)">5-class</text>
-    <rect x="120" y="160" width="316" height="22" rx="4" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1" opacity="0.5" />
-    <rect class="mocr-rac" x="120" y="160" height="22" rx="4" fill="var(--color-q1,#9d8cff)" opacity="0.85" />
-    <text x="448" y="176" font-size="11" fill="var(--color-q1,#9d8cff)">87%</text>
-    <text x="524" y="176" font-size="10" fill="var(--color-muted,#8a8f9c)">test acc</text>
+    <g class="mocr-col" tabindex="0" role="group" aria-label="Race 5-class: 87 percent test accuracy, macro-F1 0.81">
+      <title>race &#183; 87% test acc &#183; macro-F1 0.81</title>
+      <rect class="mocr-hit" x="24" y="156" width="592" height="30"/>
+      <text x="24" y="176" font-size="11">race</text>
+      <text x="24" y="190" font-size="9" fill="var(--color-muted,#8a8f9c)">5-class</text>
+      <rect x="120" y="160" width="316" height="22" rx="4" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1" opacity="0.5" />
+      <rect class="mocr-rac mocr-fill" x="120" y="160" height="22" rx="4" fill="var(--color-q1,#9d8cff)" opacity="0.85" />
+      <text x="448" y="176" font-size="11" fill="var(--color-q1,#9d8cff)">87%</text>
+      <text x="524" y="176" font-size="10" fill="var(--color-muted,#8a8f9c)">test acc</text>
+      <text class="mocr-note" x="120" y="200" font-size="9.5" fill="var(--color-q1,#9d8cff)">race &#183; 87% test acc &#183; macro-F1 0.81</text>
+    </g>
 
     <!-- honest caveat callout -->
     <rect x="24" y="214" width="592" height="66" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-error,#ef4444)" stroke-width="1.4" opacity="0.9" />

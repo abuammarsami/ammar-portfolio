@@ -7,6 +7,20 @@
     .sup-c-b1{animation-delay:.05s}.sup-c-b2{animation-delay:.17s}.sup-c-b3{animation-delay:.29s}
     .sup-c-b4{animation-delay:.41s}.sup-c-b5{animation-delay:.53s}.sup-c-b6{animation-delay:.65s}
     .sup-c-b7{animation-delay:.77s}.sup-c-b8{animation-delay:.89s}
+    /* interactive (zero-JS): hover or keyboard-focus a column to isolate it */
+    .sup-c-col{ cursor:pointer; transition:opacity .2s ease; }
+    .sup-c-col:focus{ outline:none; }
+    .sup-c-hit{ fill:transparent; }
+    svg:hover .sup-c-col:not(:hover),
+    svg:focus-within .sup-c-col:not(:focus-within){ opacity:.35; }
+    .sup-c-col:hover .sup-c-rect,
+    .sup-c-col:focus-within .sup-c-rect{ stroke:var(--color-ink, #e9e7e0); stroke-width:1.5; }
+    .sup-c-note{ opacity:0; transition:opacity .18s ease; }
+    .sup-c-col:hover .sup-c-note,
+    .sup-c-col:focus-within .sup-c-note{ opacity:1; }
+    .sup-c-hint{ opacity:.6; }
+    svg:hover .sup-c-hint,
+    svg:focus-within .sup-c-hint{ opacity:0; transition:opacity .2s ease; }
     @media (prefers-reduced-motion: reduce){ *{animation:none!important} .sup-c-bar{transform:none} }
   </style>
   <g style="font-family: var(--font-mono, 'IBM Plex Mono', ui-monospace, monospace)" fill="var(--color-ink, #e9e7e0)" font-size="11">
@@ -21,39 +35,82 @@
     <text x="52" y="189" text-anchor="end" font-size="9" fill="var(--color-muted, #8a8f9c)">0.80</text>
     <text x="52" y="74"  text-anchor="end" font-size="9" fill="var(--color-muted, #8a8f9c)">0.90</text>
 
-    <!-- bars: y=300 baseline; height = (v-0.70)*1150 -->
+    <!-- bars: y=300 baseline; height = (v-0.70)*1150 ; each wrapped in a focusable column -->
     <!-- 1 LightGBM 0.857 -> h180.5 y119.5 -->
-    <rect class="sup-c-bar sup-c-b1" x="76"  y="119.5" width="44" height="180.5" rx="3" fill="var(--color-muted, #8a8f9c)" opacity="0.8" />
-    <text x="98"  y="112" text-anchor="middle" font-size="9.5" fill="var(--color-ink, #e9e7e0)">.857</text>
-    <text x="98"  y="316" text-anchor="middle" font-size="8.5" fill="var(--color-muted, #8a8f9c)">LightGBM</text>
+    <g class="sup-c-col" tabindex="0" role="group" aria-label="LightGBM, 0.857 test accuracy — the highest single model">
+      <title>LightGBM &#183; 0.857 test accuracy</title>
+      <rect class="sup-c-hit" x="76"  y="104" width="44" height="232"/>
+      <rect class="sup-c-bar sup-c-b1 sup-c-rect" x="76"  y="119.5" width="44" height="180.5" rx="3" fill="var(--color-muted, #8a8f9c)" opacity="0.8" />
+      <text x="98"  y="112" text-anchor="middle" font-size="9.5" fill="var(--color-ink, #e9e7e0)">.857</text>
+      <text x="98"  y="316" text-anchor="middle" font-size="8.5" fill="var(--color-muted, #8a8f9c)">LightGBM</text>
+      <text class="sup-c-note" x="98"  y="332" text-anchor="middle" font-size="8" fill="var(--color-muted, #8a8f9c)">0.857 &#183; top</text>
+    </g>
     <!-- 2 RandForest 0.849 -> h171.4 y128.6 -->
-    <rect class="sup-c-bar sup-c-b2" x="144" y="128.6" width="44" height="171.4" rx="3" fill="var(--color-muted, #8a8f9c)" opacity="0.8" />
-    <text x="166" y="121" text-anchor="middle" font-size="9.5" fill="var(--color-ink, #e9e7e0)">.849</text>
-    <text x="166" y="316" text-anchor="middle" font-size="8.5" fill="var(--color-muted, #8a8f9c)">RandForest</text>
+    <g class="sup-c-col" tabindex="0" role="group" aria-label="Random forest, 0.849 test accuracy">
+      <title>RandomForest &#183; 0.849 test accuracy</title>
+      <rect class="sup-c-hit" x="144" y="104" width="44" height="232"/>
+      <rect class="sup-c-bar sup-c-b2 sup-c-rect" x="144" y="128.6" width="44" height="171.4" rx="3" fill="var(--color-muted, #8a8f9c)" opacity="0.8" />
+      <text x="166" y="121" text-anchor="middle" font-size="9.5" fill="var(--color-ink, #e9e7e0)">.849</text>
+      <text x="166" y="316" text-anchor="middle" font-size="8.5" fill="var(--color-muted, #8a8f9c)">RandForest</text>
+      <text class="sup-c-note" x="166" y="332" text-anchor="middle" font-size="8" fill="var(--color-muted, #8a8f9c)">0.849</text>
+    </g>
     <!-- 3 XGBoost 0.849 -->
-    <rect class="sup-c-bar sup-c-b3" x="212" y="128.6" width="44" height="171.4" rx="3" fill="var(--color-muted, #8a8f9c)" opacity="0.8" />
-    <text x="234" y="121" text-anchor="middle" font-size="9.5" fill="var(--color-ink, #e9e7e0)">.849</text>
-    <text x="234" y="316" text-anchor="middle" font-size="8.5" fill="var(--color-muted, #8a8f9c)">XGBoost</text>
+    <g class="sup-c-col" tabindex="0" role="group" aria-label="XGBoost, 0.849 test accuracy">
+      <title>XGBoost &#183; 0.849 test accuracy</title>
+      <rect class="sup-c-hit" x="212" y="104" width="44" height="232"/>
+      <rect class="sup-c-bar sup-c-b3 sup-c-rect" x="212" y="128.6" width="44" height="171.4" rx="3" fill="var(--color-muted, #8a8f9c)" opacity="0.8" />
+      <text x="234" y="121" text-anchor="middle" font-size="9.5" fill="var(--color-ink, #e9e7e0)">.849</text>
+      <text x="234" y="316" text-anchor="middle" font-size="8.5" fill="var(--color-muted, #8a8f9c)">XGBoost</text>
+      <text class="sup-c-note" x="234" y="332" text-anchor="middle" font-size="8" fill="var(--color-muted, #8a8f9c)">0.849</text>
+    </g>
     <!-- 4 Voting 0.845 highlight -> h166.75 y133.25 -->
-    <rect class="sup-c-bar sup-c-b4" x="280" y="133.25" width="44" height="166.75" rx="3" fill="var(--color-q0, #5fc9bf)" />
-    <text x="302" y="126" text-anchor="middle" font-size="9.5" fill="var(--color-q0, #5fc9bf)">.845</text>
-    <text x="302" y="316" text-anchor="middle" font-size="8.5" fill="var(--color-q0, #5fc9bf)">Voting</text>
+    <g class="sup-c-col" tabindex="0" role="group" aria-label="Hard-voting ensemble, 0.845 test accuracy — the highlighted model">
+      <title>Voting ensemble &#183; 0.845 test accuracy</title>
+      <rect class="sup-c-hit" x="280" y="104" width="44" height="232"/>
+      <rect class="sup-c-bar sup-c-b4 sup-c-rect" x="280" y="133.25" width="44" height="166.75" rx="3" fill="var(--color-q0, #5fc9bf)" />
+      <text x="302" y="126" text-anchor="middle" font-size="9.5" fill="var(--color-q0, #5fc9bf)">.845</text>
+      <text x="302" y="316" text-anchor="middle" font-size="8.5" fill="var(--color-q0, #5fc9bf)">Voting</text>
+      <text class="sup-c-note" x="302" y="332" text-anchor="middle" font-size="8" fill="var(--color-q0, #5fc9bf)">0.845 &#183; ensemble</text>
+    </g>
     <!-- 5 LogReg 0.837 -> h157.55 y142.45 -->
-    <rect class="sup-c-bar sup-c-b5" x="348" y="142.45" width="44" height="157.55" rx="3" fill="var(--color-muted, #8a8f9c)" opacity="0.8" />
-    <text x="370" y="135" text-anchor="middle" font-size="9.5" fill="var(--color-ink, #e9e7e0)">.837</text>
-    <text x="370" y="316" text-anchor="middle" font-size="8.5" fill="var(--color-muted, #8a8f9c)">LogReg</text>
+    <g class="sup-c-col" tabindex="0" role="group" aria-label="Logistic regression, 0.837 test accuracy">
+      <title>LogReg &#183; 0.837 test accuracy</title>
+      <rect class="sup-c-hit" x="348" y="104" width="44" height="232"/>
+      <rect class="sup-c-bar sup-c-b5 sup-c-rect" x="348" y="142.45" width="44" height="157.55" rx="3" fill="var(--color-muted, #8a8f9c)" opacity="0.8" />
+      <text x="370" y="135" text-anchor="middle" font-size="9.5" fill="var(--color-ink, #e9e7e0)">.837</text>
+      <text x="370" y="316" text-anchor="middle" font-size="8.5" fill="var(--color-muted, #8a8f9c)">LogReg</text>
+      <text class="sup-c-note" x="370" y="332" text-anchor="middle" font-size="8" fill="var(--color-muted, #8a8f9c)">0.837</text>
+    </g>
     <!-- 6 AdaBoost 0.833 -> h152.95 y147.05 -->
-    <rect class="sup-c-bar sup-c-b6" x="416" y="147.05" width="44" height="152.95" rx="3" fill="var(--color-muted, #8a8f9c)" opacity="0.8" />
-    <text x="438" y="139" text-anchor="middle" font-size="9.5" fill="var(--color-ink, #e9e7e0)">.833</text>
-    <text x="438" y="316" text-anchor="middle" font-size="8.5" fill="var(--color-muted, #8a8f9c)">AdaBoost</text>
+    <g class="sup-c-col" tabindex="0" role="group" aria-label="AdaBoost, 0.833 test accuracy">
+      <title>AdaBoost &#183; 0.833 test accuracy</title>
+      <rect class="sup-c-hit" x="416" y="104" width="44" height="232"/>
+      <rect class="sup-c-bar sup-c-b6 sup-c-rect" x="416" y="147.05" width="44" height="152.95" rx="3" fill="var(--color-muted, #8a8f9c)" opacity="0.8" />
+      <text x="438" y="139" text-anchor="middle" font-size="9.5" fill="var(--color-ink, #e9e7e0)">.833</text>
+      <text x="438" y="316" text-anchor="middle" font-size="8.5" fill="var(--color-muted, #8a8f9c)">AdaBoost</text>
+      <text class="sup-c-note" x="438" y="332" text-anchor="middle" font-size="8" fill="var(--color-muted, #8a8f9c)">0.833</text>
+    </g>
     <!-- 7 GradBoost 0.829 -> h148.35 y151.65 -->
-    <rect class="sup-c-bar sup-c-b7" x="484" y="151.65" width="44" height="148.35" rx="3" fill="var(--color-muted, #8a8f9c)" opacity="0.8" />
-    <text x="506" y="144" text-anchor="middle" font-size="9.5" fill="var(--color-ink, #e9e7e0)">.829</text>
-    <text x="506" y="316" text-anchor="middle" font-size="8.5" fill="var(--color-muted, #8a8f9c)">GradBoost</text>
+    <g class="sup-c-col" tabindex="0" role="group" aria-label="Gradient boosting, 0.829 test accuracy">
+      <title>GradBoost &#183; 0.829 test accuracy</title>
+      <rect class="sup-c-hit" x="484" y="104" width="44" height="232"/>
+      <rect class="sup-c-bar sup-c-b7 sup-c-rect" x="484" y="151.65" width="44" height="148.35" rx="3" fill="var(--color-muted, #8a8f9c)" opacity="0.8" />
+      <text x="506" y="144" text-anchor="middle" font-size="9.5" fill="var(--color-ink, #e9e7e0)">.829</text>
+      <text x="506" y="316" text-anchor="middle" font-size="8.5" fill="var(--color-muted, #8a8f9c)">GradBoost</text>
+      <text class="sup-c-note" x="506" y="332" text-anchor="middle" font-size="8" fill="var(--color-muted, #8a8f9c)">0.829</text>
+    </g>
     <!-- 8 SVM 0.762 -> h71.3 y228.7 -->
-    <rect class="sup-c-bar sup-c-b8" x="552" y="228.7" width="44" height="71.3" rx="3" fill="var(--color-error, #ef4444)" opacity="0.75" />
-    <text x="574" y="221" text-anchor="middle" font-size="9.5" fill="var(--color-error, #ef4444)">.762</text>
-    <text x="574" y="316" text-anchor="middle" font-size="8.5" fill="var(--color-muted, #8a8f9c)">SVM&#183;RBF</text>
+    <g class="sup-c-col" tabindex="0" role="group" aria-label="RBF support-vector machine, 0.762 test accuracy — the lowest model">
+      <title>SVM &#183; RBF &#8212; 0.762 test accuracy</title>
+      <rect class="sup-c-hit" x="552" y="104" width="44" height="232"/>
+      <rect class="sup-c-bar sup-c-b8 sup-c-rect" x="552" y="228.7" width="44" height="71.3" rx="3" fill="var(--color-error, #ef4444)" opacity="0.75" />
+      <text x="574" y="221" text-anchor="middle" font-size="9.5" fill="var(--color-error, #ef4444)">.762</text>
+      <text x="574" y="316" text-anchor="middle" font-size="8.5" fill="var(--color-muted, #8a8f9c)">SVM&#183;RBF</text>
+      <text class="sup-c-note" x="574" y="332" text-anchor="middle" font-size="8" fill="var(--color-error, #ef4444)">0.762 &#183; lowest</text>
+    </g>
+
+    <!-- interaction hint (fades out once the reader hovers the chart) -->
+    <text class="sup-c-hint" x="618" y="24" text-anchor="end" font-size="9" fill="var(--color-muted, #8a8f9c)">hover a bar &#9656;</text>
 
     <text x="320" y="344" text-anchor="middle" font-size="10" fill="var(--color-muted, #8a8f9c)">Fig. &#8212; the ensemble (teal) matches the leaders on one split; the SVM (red) is the odd one out at 0.762.</text>
   </g>

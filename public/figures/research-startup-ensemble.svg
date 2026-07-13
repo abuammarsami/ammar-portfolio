@@ -23,6 +23,25 @@
     .sup-e-6{animation:sup-e-6 8s ease-in-out infinite}
     .sup-e-fin{animation:sup-e-fin 8s ease-in-out infinite}
     .sup-e-pulse{animation:sup-e-pulse 3s ease-in-out infinite}
+    /* interactive (zero-JS): hover or keyboard-focus a base learner to isolate it */
+    .sup-e-col{ cursor:pointer; transition:opacity .2s ease; }
+    .sup-e-col:focus{ outline:none; }
+    .sup-e-hit{ fill:transparent; }
+    /* dim the other learners while one is engaged */
+    svg:hover .sup-e-col:not(:hover),
+    svg:focus-within .sup-e-col:not(:focus-within){ opacity:.3; }
+    /* force the engaged learner's vote fully visible (overrides the sequential loop) */
+    .sup-e-col:hover .sup-e-vote,
+    .sup-e-col:focus-within .sup-e-vote{ animation:none; opacity:1; }
+    /* hide the other learners' flashing votes so only the engaged one reads */
+    svg:hover .sup-e-col:not(:hover) .sup-e-vote,
+    svg:focus-within .sup-e-col:not(:focus-within) .sup-e-vote{ animation:none; opacity:0; }
+    .sup-e-note{ opacity:0; transition:opacity .18s ease; }
+    .sup-e-col:hover .sup-e-note,
+    .sup-e-col:focus-within .sup-e-note{ opacity:1; }
+    .sup-e-hint{ opacity:.6; }
+    svg:hover .sup-e-hint,
+    svg:focus-within .sup-e-hint{ opacity:0; transition:opacity .2s ease; }
     @media (prefers-reduced-motion: reduce){ *{animation:none!important}
       .sup-e-1,.sup-e-2,.sup-e-3,.sup-e-4,.sup-e-5,.sup-e-6,.sup-e-fin{opacity:1}
       .sup-e-pulse{opacity:0.4} }
@@ -30,6 +49,9 @@
   <g style="font-family: var(--font-mono, 'IBM Plex Mono', ui-monospace, monospace)" fill="var(--color-ink, #e9e7e0)" font-size="11">
 
     <text x="320" y="24" text-anchor="middle" font-size="10.5" letter-spacing="1.5" fill="var(--color-q1, #9d8cff)">HARD VOTING &#183; SIX DIVERSE LEARNERS, ONE STABLE CALL</text>
+
+    <!-- interaction hint (fades out once the reader hovers a learner) -->
+    <text class="sup-e-hint" x="626" y="14" text-anchor="end" font-size="9" fill="var(--color-muted, #8a8f9c)">hover a learner &#9656;</text>
 
     <!-- input -->
     <rect x="14" y="150" width="104" height="60" rx="6" fill="var(--color-surface, #12151d)" stroke="var(--color-q1, #9d8cff)" stroke-width="1.5" />
@@ -46,64 +68,94 @@
 
     <!-- base model rows: dim base + animated vote overlay -->
     <!-- 1 AdaBoost -->
-    <rect x="198" y="46" width="150" height="34" rx="5" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.2" opacity="0.55" />
-    <text x="273" y="67" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">AdaBoost</text>
-    <g class="sup-e-1" opacity="0">
-      <rect x="198" y="46" width="150" height="34" rx="5" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.08" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.6" />
-      <text x="273" y="67" text-anchor="middle" font-size="11" fill="var(--color-q0, #5fc9bf)">AdaBoost</text>
-      <line x1="348" y1="63" x2="430" y2="168" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.1" opacity="0.5" />
-      <circle cx="348" cy="63" r="10" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.6" />
-      <text x="348" y="67" text-anchor="middle" font-size="11" fill="var(--color-q0, #5fc9bf)">&#10003;</text>
+    <g class="sup-e-col" tabindex="0" role="group" aria-label="AdaBoost base learner — votes success">
+      <title>AdaBoost &#8212; votes success (&#10003;)</title>
+      <rect class="sup-e-hit" x="194" y="42" width="176" height="50"/>
+      <rect x="198" y="46" width="150" height="34" rx="5" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.2" opacity="0.55" />
+      <text x="273" y="67" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">AdaBoost</text>
+      <g class="sup-e-1 sup-e-vote" opacity="0">
+        <rect x="198" y="46" width="150" height="34" rx="5" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.08" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.6" />
+        <text x="273" y="67" text-anchor="middle" font-size="11" fill="var(--color-q0, #5fc9bf)">AdaBoost</text>
+        <line x1="348" y1="63" x2="430" y2="168" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.1" opacity="0.5" />
+        <circle cx="348" cy="63" r="10" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.6" />
+        <text x="348" y="67" text-anchor="middle" font-size="11" fill="var(--color-q0, #5fc9bf)">&#10003;</text>
+      </g>
+      <text class="sup-e-note" x="273" y="90" text-anchor="middle" font-size="8" fill="var(--color-q0, #5fc9bf)">votes success &#10003;</text>
     </g>
     <!-- 2 SVC dissent -->
-    <rect x="198" y="94" width="150" height="34" rx="5" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.2" opacity="0.55" />
-    <text x="273" y="115" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">SVC &#183; RBF</text>
-    <g class="sup-e-2" opacity="0">
-      <rect x="198" y="94" width="150" height="34" rx="5" fill="var(--color-error, #ef4444)" fill-opacity="0.08" stroke="var(--color-error, #ef4444)" stroke-width="1.6" />
-      <text x="273" y="115" text-anchor="middle" font-size="11" fill="var(--color-error, #ef4444)">SVC &#183; RBF</text>
-      <line x1="348" y1="111" x2="430" y2="172" stroke="var(--color-error, #ef4444)" stroke-width="1.1" opacity="0.5" />
-      <circle cx="348" cy="111" r="10" fill="var(--color-surface, #12151d)" stroke="var(--color-error, #ef4444)" stroke-width="1.6" />
-      <text x="348" y="115" text-anchor="middle" font-size="11" fill="var(--color-error, #ef4444)">&#10007;</text>
+    <g class="sup-e-col" tabindex="0" role="group" aria-label="RBF support-vector machine base learner — dissents, votes failure">
+      <title>SVC &#183; RBF &#8212; dissents, votes failure (&#10007;)</title>
+      <rect class="sup-e-hit" x="194" y="90" width="176" height="50"/>
+      <rect x="198" y="94" width="150" height="34" rx="5" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.2" opacity="0.55" />
+      <text x="273" y="115" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">SVC &#183; RBF</text>
+      <g class="sup-e-2 sup-e-vote" opacity="0">
+        <rect x="198" y="94" width="150" height="34" rx="5" fill="var(--color-error, #ef4444)" fill-opacity="0.08" stroke="var(--color-error, #ef4444)" stroke-width="1.6" />
+        <text x="273" y="115" text-anchor="middle" font-size="11" fill="var(--color-error, #ef4444)">SVC &#183; RBF</text>
+        <line x1="348" y1="111" x2="430" y2="172" stroke="var(--color-error, #ef4444)" stroke-width="1.1" opacity="0.5" />
+        <circle cx="348" cy="111" r="10" fill="var(--color-surface, #12151d)" stroke="var(--color-error, #ef4444)" stroke-width="1.6" />
+        <text x="348" y="115" text-anchor="middle" font-size="11" fill="var(--color-error, #ef4444)">&#10007;</text>
+      </g>
+      <text class="sup-e-note" x="273" y="138" text-anchor="middle" font-size="8" fill="var(--color-error, #ef4444)">dissents &#183; fail &#10007;</text>
     </g>
     <!-- 3 GradientBoost -->
-    <rect x="198" y="142" width="150" height="34" rx="5" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.2" opacity="0.55" />
-    <text x="273" y="163" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">GradientBoost</text>
-    <g class="sup-e-3" opacity="0">
-      <rect x="198" y="142" width="150" height="34" rx="5" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.08" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.6" />
-      <text x="273" y="163" text-anchor="middle" font-size="11" fill="var(--color-q0, #5fc9bf)">GradientBoost</text>
-      <line x1="348" y1="159" x2="430" y2="176" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.1" opacity="0.5" />
-      <circle cx="348" cy="159" r="10" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.6" />
-      <text x="348" y="163" text-anchor="middle" font-size="11" fill="var(--color-q0, #5fc9bf)">&#10003;</text>
+    <g class="sup-e-col" tabindex="0" role="group" aria-label="Gradient boosting base learner — votes success">
+      <title>GradientBoost &#8212; votes success (&#10003;)</title>
+      <rect class="sup-e-hit" x="194" y="138" width="176" height="50"/>
+      <rect x="198" y="142" width="150" height="34" rx="5" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.2" opacity="0.55" />
+      <text x="273" y="163" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">GradientBoost</text>
+      <g class="sup-e-3 sup-e-vote" opacity="0">
+        <rect x="198" y="142" width="150" height="34" rx="5" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.08" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.6" />
+        <text x="273" y="163" text-anchor="middle" font-size="11" fill="var(--color-q0, #5fc9bf)">GradientBoost</text>
+        <line x1="348" y1="159" x2="430" y2="176" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.1" opacity="0.5" />
+        <circle cx="348" cy="159" r="10" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.6" />
+        <text x="348" y="163" text-anchor="middle" font-size="11" fill="var(--color-q0, #5fc9bf)">&#10003;</text>
+      </g>
+      <text class="sup-e-note" x="273" y="186" text-anchor="middle" font-size="8" fill="var(--color-q0, #5fc9bf)">votes success &#10003;</text>
     </g>
     <!-- 4 RandomForest -->
-    <rect x="198" y="190" width="150" height="34" rx="5" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.2" opacity="0.55" />
-    <text x="273" y="211" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">RandomForest</text>
-    <g class="sup-e-4" opacity="0">
-      <rect x="198" y="190" width="150" height="34" rx="5" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.08" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.6" />
-      <text x="273" y="211" text-anchor="middle" font-size="11" fill="var(--color-q0, #5fc9bf)">RandomForest</text>
-      <line x1="348" y1="207" x2="430" y2="184" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.1" opacity="0.5" />
-      <circle cx="348" cy="207" r="10" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.6" />
-      <text x="348" y="211" text-anchor="middle" font-size="11" fill="var(--color-q0, #5fc9bf)">&#10003;</text>
+    <g class="sup-e-col" tabindex="0" role="group" aria-label="Random forest base learner — votes success">
+      <title>RandomForest &#8212; votes success (&#10003;)</title>
+      <rect class="sup-e-hit" x="194" y="186" width="176" height="50"/>
+      <rect x="198" y="190" width="150" height="34" rx="5" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.2" opacity="0.55" />
+      <text x="273" y="211" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">RandomForest</text>
+      <g class="sup-e-4 sup-e-vote" opacity="0">
+        <rect x="198" y="190" width="150" height="34" rx="5" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.08" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.6" />
+        <text x="273" y="211" text-anchor="middle" font-size="11" fill="var(--color-q0, #5fc9bf)">RandomForest</text>
+        <line x1="348" y1="207" x2="430" y2="184" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.1" opacity="0.5" />
+        <circle cx="348" cy="207" r="10" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.6" />
+        <text x="348" y="211" text-anchor="middle" font-size="11" fill="var(--color-q0, #5fc9bf)">&#10003;</text>
+      </g>
+      <text class="sup-e-note" x="273" y="234" text-anchor="middle" font-size="8" fill="var(--color-q0, #5fc9bf)">votes success &#10003;</text>
     </g>
     <!-- 5 ExtraTrees -->
-    <rect x="198" y="238" width="150" height="34" rx="5" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.2" opacity="0.55" />
-    <text x="273" y="259" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">ExtraTrees</text>
-    <g class="sup-e-5" opacity="0">
-      <rect x="198" y="238" width="150" height="34" rx="5" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.08" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.6" />
-      <text x="273" y="259" text-anchor="middle" font-size="11" fill="var(--color-q0, #5fc9bf)">ExtraTrees</text>
-      <line x1="348" y1="255" x2="430" y2="188" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.1" opacity="0.5" />
-      <circle cx="348" cy="255" r="10" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.6" />
-      <text x="348" y="259" text-anchor="middle" font-size="11" fill="var(--color-q0, #5fc9bf)">&#10003;</text>
+    <g class="sup-e-col" tabindex="0" role="group" aria-label="Extra trees base learner — votes success">
+      <title>ExtraTrees &#8212; votes success (&#10003;)</title>
+      <rect class="sup-e-hit" x="194" y="234" width="176" height="50"/>
+      <rect x="198" y="238" width="150" height="34" rx="5" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.2" opacity="0.55" />
+      <text x="273" y="259" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">ExtraTrees</text>
+      <g class="sup-e-5 sup-e-vote" opacity="0">
+        <rect x="198" y="238" width="150" height="34" rx="5" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.08" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.6" />
+        <text x="273" y="259" text-anchor="middle" font-size="11" fill="var(--color-q0, #5fc9bf)">ExtraTrees</text>
+        <line x1="348" y1="255" x2="430" y2="188" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.1" opacity="0.5" />
+        <circle cx="348" cy="255" r="10" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.6" />
+        <text x="348" y="259" text-anchor="middle" font-size="11" fill="var(--color-q0, #5fc9bf)">&#10003;</text>
+      </g>
+      <text class="sup-e-note" x="273" y="282" text-anchor="middle" font-size="8" fill="var(--color-q0, #5fc9bf)">votes success &#10003;</text>
     </g>
     <!-- 6 LightGBM -->
-    <rect x="198" y="286" width="150" height="34" rx="5" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.2" opacity="0.55" />
-    <text x="273" y="307" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">LightGBM</text>
-    <g class="sup-e-6" opacity="0">
-      <rect x="198" y="286" width="150" height="34" rx="5" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.08" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.6" />
-      <text x="273" y="307" text-anchor="middle" font-size="11" fill="var(--color-q0, #5fc9bf)">LightGBM</text>
-      <line x1="348" y1="303" x2="430" y2="192" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.1" opacity="0.5" />
-      <circle cx="348" cy="303" r="10" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.6" />
-      <text x="348" y="307" text-anchor="middle" font-size="11" fill="var(--color-q0, #5fc9bf)">&#10003;</text>
+    <g class="sup-e-col" tabindex="0" role="group" aria-label="LightGBM base learner — votes success">
+      <title>LightGBM &#8212; votes success (&#10003;)</title>
+      <rect class="sup-e-hit" x="194" y="282" width="176" height="50"/>
+      <rect x="198" y="286" width="150" height="34" rx="5" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.2" opacity="0.55" />
+      <text x="273" y="307" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">LightGBM</text>
+      <g class="sup-e-6 sup-e-vote" opacity="0">
+        <rect x="198" y="286" width="150" height="34" rx="5" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.08" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.6" />
+        <text x="273" y="307" text-anchor="middle" font-size="11" fill="var(--color-q0, #5fc9bf)">LightGBM</text>
+        <line x1="348" y1="303" x2="430" y2="192" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.1" opacity="0.5" />
+        <circle cx="348" cy="303" r="10" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.6" />
+        <text x="348" y="307" text-anchor="middle" font-size="11" fill="var(--color-q0, #5fc9bf)">&#10003;</text>
+      </g>
+      <text class="sup-e-note" x="273" y="330" text-anchor="middle" font-size="8" fill="var(--color-q0, #5fc9bf)">votes success &#10003;</text>
     </g>
 
     <!-- voting box -->

@@ -8,11 +8,26 @@
     .anom-r-b2 { animation-delay: 0.15s; } .anom-r-b3 { animation-delay: 0.3s; }
     .anom-r-b4 { animation-delay: 0.45s; } .anom-r-b5 { animation-delay: 0.6s; }
     .anom-r-val { animation: anom-r-fade 0.6s ease-out both; animation-delay: 1.0s; }
+    /* interactive (zero-JS): hover or keyboard-focus a bar to isolate it */
+    .anom-r-col { cursor: pointer; transition: opacity .2s ease; }
+    .anom-r-col:focus { outline: none; }
+    .anom-r-hit { fill: transparent; }
+    svg:hover .anom-r-col:not(:hover),
+    svg:focus-within .anom-r-col:not(:focus-within) { opacity: .35; }
+    .anom-r-col:hover .anom-r-rect,
+    .anom-r-col:focus-within .anom-r-rect { stroke: var(--color-ink, #e9e7e0); stroke-width: 1.5; }
+    .anom-r-note { opacity: 0; transition: opacity .18s ease; }
+    .anom-r-col:hover .anom-r-note,
+    .anom-r-col:focus-within .anom-r-note { opacity: 1; }
+    .anom-r-hint { opacity: .6; }
+    svg:hover .anom-r-hint,
+    svg:focus-within .anom-r-hint { opacity: 0; transition: opacity .2s ease; }
     @media (prefers-reduced-motion: reduce) { * { animation: none !important; } .anom-r-bar { transform: none; } .anom-r-val { opacity: 1; } }
   </style>
   <g style="font-family: var(--font-mono, 'IBM Plex Mono', ui-monospace, monospace)" fill="var(--color-ink, #e9e7e0)" font-size="12">
 
     <text x="320" y="30" text-anchor="middle" font-size="11" letter-spacing="1.5" fill="var(--color-q1, #9d8cff)">TEST MACRO-F1 &#183; CICIDS2017</text>
+    <text class="anom-r-hint" x="612" y="30" text-anchor="end" font-size="9" fill="var(--color-muted, #8a8f9c)">hover a bar &#9656;</text>
 
     <!-- gridlines + y labels -->
     <g stroke="var(--color-muted, #8a8f9c)" stroke-width="0.8" opacity="0.28">
@@ -29,20 +44,45 @@
 
     <!-- bars (baseline y=290; 1.0 -> 220px tall) -->
     <!-- LogReg 0.74 -->
-    <rect class="anom-r-bar" x="96"  y="127" width="56" height="163" rx="3" fill="var(--color-muted, #8a8f9c)" opacity="0.75" />
-    <text class="anom-r-val" x="124" y="120" text-anchor="middle" font-size="10">0.74</text>
+    <g class="anom-r-col" tabindex="0" role="group" aria-label="Logistic Regression, test macro-F1 0.74">
+      <title>Logistic Regression &#8212; test macro-F1 0.74</title>
+      <rect class="anom-r-hit" x="96" y="70" width="56" height="220" />
+      <rect class="anom-r-bar anom-r-rect" x="96"  y="127" width="56" height="163" rx="3" fill="var(--color-muted, #8a8f9c)" opacity="0.75" />
+      <text class="anom-r-val" x="124" y="120" text-anchor="middle" font-size="10">0.74</text>
+      <text class="anom-r-note" x="124" y="322" text-anchor="middle" font-size="8.5" fill="var(--color-muted, #8a8f9c)">macro-F1 0.74</text>
+    </g>
     <!-- Decision Tree 0.97 (teacher) -->
-    <rect class="anom-r-bar anom-r-b2" x="204" y="77"  width="56" height="213" rx="3" fill="var(--color-q0, #5fc9bf)" />
-    <text class="anom-r-val" x="232" y="70" text-anchor="middle" font-size="10" fill="var(--color-q0, #5fc9bf)">0.97</text>
+    <g class="anom-r-col" tabindex="0" role="group" aria-label="Decision Tree teacher, test macro-F1 0.97, best model">
+      <title>Decision Tree &#183; teacher &#8212; test macro-F1 0.97</title>
+      <rect class="anom-r-hit" x="204" y="70" width="56" height="220" />
+      <rect class="anom-r-bar anom-r-b2 anom-r-rect" x="204" y="77"  width="56" height="213" rx="3" fill="var(--color-q0, #5fc9bf)" />
+      <text class="anom-r-val" x="232" y="70" text-anchor="middle" font-size="10" fill="var(--color-q0, #5fc9bf)">0.97</text>
+      <text class="anom-r-note" x="232" y="322" text-anchor="middle" font-size="8.5" fill="var(--color-q0, #5fc9bf)">macro-F1 0.97</text>
+    </g>
     <!-- KNN 0.96 -->
-    <rect class="anom-r-bar anom-r-b3" x="312" y="79"  width="56" height="211" rx="3" fill="var(--color-muted, #8a8f9c)" opacity="0.75" />
-    <text class="anom-r-val" x="340" y="72" text-anchor="middle" font-size="10">0.96</text>
+    <g class="anom-r-col" tabindex="0" role="group" aria-label="K-nearest neighbours, test macro-F1 0.96">
+      <title>KNN &#8212; test macro-F1 0.96</title>
+      <rect class="anom-r-hit" x="312" y="70" width="56" height="220" />
+      <rect class="anom-r-bar anom-r-b3 anom-r-rect" x="312" y="79"  width="56" height="211" rx="3" fill="var(--color-muted, #8a8f9c)" opacity="0.75" />
+      <text class="anom-r-val" x="340" y="72" text-anchor="middle" font-size="10">0.96</text>
+      <text class="anom-r-note" x="340" y="322" text-anchor="middle" font-size="8.5" fill="var(--color-muted, #8a8f9c)">macro-F1 0.96</text>
+    </g>
     <!-- Naive Bayes 0.67 -->
-    <rect class="anom-r-bar anom-r-b4" x="420" y="143" width="56" height="147" rx="3" fill="var(--color-muted, #8a8f9c)" opacity="0.55" />
-    <text class="anom-r-val" x="448" y="136" text-anchor="middle" font-size="10">0.67</text>
+    <g class="anom-r-col" tabindex="0" role="group" aria-label="Naive Bayes, test macro-F1 0.67, weakest model">
+      <title>Naive Bayes &#8212; test macro-F1 0.67</title>
+      <rect class="anom-r-hit" x="420" y="70" width="56" height="220" />
+      <rect class="anom-r-bar anom-r-b4 anom-r-rect" x="420" y="143" width="56" height="147" rx="3" fill="var(--color-muted, #8a8f9c)" opacity="0.55" />
+      <text class="anom-r-val" x="448" y="136" text-anchor="middle" font-size="10">0.67</text>
+      <text class="anom-r-note" x="448" y="322" text-anchor="middle" font-size="8.5" fill="var(--color-muted, #8a8f9c)">macro-F1 0.67</text>
+    </g>
     <!-- Student 0.75 -->
-    <rect class="anom-r-bar anom-r-b5" x="528" y="125" width="56" height="165" rx="3" fill="var(--color-q1, #9d8cff)" />
-    <text class="anom-r-val" x="556" y="118" text-anchor="middle" font-size="10" fill="var(--color-q1, #9d8cff)">0.75</text>
+    <g class="anom-r-col" tabindex="0" role="group" aria-label="Neural-net student, test macro-F1 0.75">
+      <title>Student &#183; neural net &#8212; test macro-F1 0.75</title>
+      <rect class="anom-r-hit" x="528" y="70" width="56" height="220" />
+      <rect class="anom-r-bar anom-r-b5 anom-r-rect" x="528" y="125" width="56" height="165" rx="3" fill="var(--color-q1, #9d8cff)" />
+      <text class="anom-r-val" x="556" y="118" text-anchor="middle" font-size="10" fill="var(--color-q1, #9d8cff)">0.75</text>
+      <text class="anom-r-note" x="556" y="322" text-anchor="middle" font-size="8.5" fill="var(--color-q1, #9d8cff)">macro-F1 0.75</text>
+    </g>
 
     <!-- baseline -->
     <line x1="70" y1="290" x2="612" y2="290" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.4" />

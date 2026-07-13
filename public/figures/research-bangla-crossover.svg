@@ -6,11 +6,26 @@
     @keyframes bpos2-dot  { 0%,40% { opacity: 0; } 60% { opacity: 1; } 100% { opacity: 1; } }
     .bpos2-line { stroke-dasharray: 620; animation: bpos2-draw 2.6s ease-out forwards; }
     .bpos2-dot  { animation: bpos2-dot 3.2s ease-out forwards; }
+    /* interactive (zero-JS): hover or keyboard-focus a line to isolate it and read its values */
+    .bpos2-col{ cursor:pointer; transition:opacity .2s ease; }
+    .bpos2-col:focus{ outline:none; }
+    .bpos2-hit{ fill:none; stroke:transparent; }
+    .bpos2-note{ opacity:0; transition:opacity .18s ease; pointer-events:none; }
+    svg:hover .bpos2-col:not(:hover),
+    svg:focus-within .bpos2-col:not(:focus-within){ opacity:.35; }
+    .bpos2-col:hover .bpos2-rect,
+    .bpos2-col:focus-within .bpos2-rect{ stroke-width:3.6; }
+    .bpos2-col:hover .bpos2-note,
+    .bpos2-col:focus-within .bpos2-note{ opacity:1; }
+    .bpos2-hint{ opacity:.6; }
+    svg:hover .bpos2-hint,
+    svg:focus-within .bpos2-hint{ opacity:0; transition:opacity .2s ease; }
     @media (prefers-reduced-motion: reduce){ *{animation:none!important} .bpos2-line{stroke-dashoffset:0} .bpos2-dot{opacity:1} }
   </style>
   <g style="font-family: var(--font-mono,'IBM Plex Mono',ui-monospace,monospace)" fill="var(--color-ink,#e9e7e0)" font-size="12">
 
     <text x="320" y="26" text-anchor="middle" font-size="11" letter-spacing="1.4" fill="var(--color-q1,#9d8cff)">TEST MACRO-F1 vs BERT LAYER &#183; SAGORSARKER BANGLA-BERT</text>
+    <text class="bpos2-hint" x="566" y="44" text-anchor="end" font-size="9" fill="var(--color-muted,#8a8f9c)">hover &#9656;</text>
 
     <!-- axes -->
     <line x1="88" y1="70" x2="88" y2="284" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.3" />
@@ -31,23 +46,31 @@
     <text x="520" y="300" text-anchor="middle" font-size="9.5" fill="var(--color-muted,#8a8f9c)">layer 12</text>
     <text x="330" y="320" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">shallow / near-static &#8594; deep / contextual</text>
 
-    <!-- neural network line (teal): (140,122.5)(340,82.1)(520,82.1) -->
-    <polyline class="bpos2-line" points="140,122.5 340,82.1 520,82.1" fill="none" stroke="var(--color-q0,#5fc9bf)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+    <!-- neural network line (teal, focusable): (140,122.5)(340,82.1)(520,82.1) -->
+    <g class="bpos2-col" tabindex="0" role="group" aria-label="Neural net (student): macro-F1 rises 0.59 at layer 1, 0.69 at layer 7, 0.69 at layer 12">
+    <title>neural net (student) &#183; 0.59 &#8594; 0.69 &#8594; 0.69</title>
+    <polyline class="bpos2-hit" points="140,122.5 340,82.1 520,82.1" stroke-width="26" stroke-linecap="round" stroke-linejoin="round" />
+    <polyline class="bpos2-line bpos2-rect" points="140,122.5 340,82.1 520,82.1" fill="none" stroke="var(--color-q0,#5fc9bf)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
     <g class="bpos2-dot" fill="var(--color-q0,#5fc9bf)">
       <circle cx="140" cy="122.5" r="4.5" /><circle cx="340" cy="82.1" r="4.5" /><circle cx="520" cy="82.1" r="4.5" />
     </g>
-    <text x="140" y="114" text-anchor="middle" font-size="9" fill="var(--color-q0,#5fc9bf)">0.59</text>
-    <text x="340" y="73"  text-anchor="middle" font-size="9" fill="var(--color-q0,#5fc9bf)">0.69</text>
-    <text x="520" y="73"  text-anchor="middle" font-size="9" fill="var(--color-q0,#5fc9bf)">0.69</text>
+    <text class="bpos2-note" x="140" y="114" text-anchor="middle" font-size="9" fill="var(--color-q0,#5fc9bf)">0.59</text>
+    <text class="bpos2-note" x="340" y="73"  text-anchor="middle" font-size="9" fill="var(--color-q0,#5fc9bf)">0.69</text>
+    <text class="bpos2-note" x="520" y="73"  text-anchor="middle" font-size="9" fill="var(--color-q0,#5fc9bf)">0.69</text>
+    </g>
 
-    <!-- decision tree line (purple): (140,175)(340,223.5)(520,263.8) -->
-    <polyline class="bpos2-line" points="140,175 340,223.5 520,263.8" fill="none" stroke="var(--color-q1,#9d8cff)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+    <!-- decision tree line (purple, focusable): (140,175)(340,223.5)(520,263.8) -->
+    <g class="bpos2-col" tabindex="0" role="group" aria-label="Decision tree (teacher): macro-F1 falls 0.46 at layer 1, 0.34 at layer 7, 0.24 at layer 12">
+    <title>decision tree (teacher) &#183; 0.46 &#8594; 0.34 &#8594; 0.24</title>
+    <polyline class="bpos2-hit" points="140,175 340,223.5 520,263.8" stroke-width="26" stroke-linecap="round" stroke-linejoin="round" />
+    <polyline class="bpos2-line bpos2-rect" points="140,175 340,223.5 520,263.8" fill="none" stroke="var(--color-q1,#9d8cff)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
     <g class="bpos2-dot" fill="var(--color-q1,#9d8cff)">
       <circle cx="140" cy="175" r="4.5" /><circle cx="340" cy="223.5" r="4.5" /><circle cx="520" cy="263.8" r="4.5" />
     </g>
-    <text x="140" y="167" text-anchor="middle" font-size="9" fill="var(--color-q1,#9d8cff)">0.46</text>
-    <text x="356" y="222" text-anchor="middle" font-size="9" fill="var(--color-q1,#9d8cff)">0.34</text>
-    <text x="520" y="276" text-anchor="middle" font-size="9" fill="var(--color-q1,#9d8cff)">0.24</text>
+    <text class="bpos2-note" x="140" y="167" text-anchor="middle" font-size="9" fill="var(--color-q1,#9d8cff)">0.46</text>
+    <text class="bpos2-note" x="356" y="222" text-anchor="middle" font-size="9" fill="var(--color-q1,#9d8cff)">0.34</text>
+    <text class="bpos2-note" x="520" y="276" text-anchor="middle" font-size="9" fill="var(--color-q1,#9d8cff)">0.24</text>
+    </g>
 
     <!-- inline legend -->
     <line x1="404" y1="128" x2="428" y2="128" stroke="var(--color-q0,#5fc9bf)" stroke-width="2.6" />

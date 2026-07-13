@@ -297,6 +297,12 @@ body::after {
   padding: 1rem;
 }
 .deepdive-prose .md-figure-svg svg { width: 100%; height: auto; display: block; }
+/* Interactive figures (zero-JS hover/focus reveals): the hidden reveal-notes and
+   the fading hints are decorative overlays — never let one (at opacity:0) intercept
+   the pointer and block the hover it belongs to. The `*-hit` targets and the
+   focusable groups keep their pointer events. */
+.deepdive-prose .md-figure-svg [class*="-note"],
+.deepdive-prose .md-figure-svg [class*="-hint"] { pointer-events: none; }
 .deepdive-prose .md-figure figcaption {
   margin-top: 0.55rem;
   text-align: center;
