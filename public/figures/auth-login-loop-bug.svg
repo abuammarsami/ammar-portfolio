@@ -85,7 +85,7 @@
       <rect class="alb-box" x="120" y="306" width="440" height="52" rx="8" fill="var(--color-q0,#5fc9bf)" fill-opacity="0.12" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.7"/>
       <text x="340" y="328" text-anchor="middle" font-size="10.5" fill="var(--color-q0,#5fc9bf)">the fix: converge onto the shared GoogleLoginCommand</text>
       <text x="340" y="345" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">cookie issued cleanly at the edge &#8212; the whole bug family closed</text>
-      <text class="alb-note" x="340" y="357" text-anchor="middle" font-size="8" fill="var(--color-q0,#5fc9bf)">root cause was structural: the one user path still on the legacy repo</text>
+      <text class="alb-note" x="340" y="353" text-anchor="middle" font-size="8" fill="var(--color-q0,#5fc9bf)">root cause was structural: the one user path still on the legacy repo</text>
     </g>
 
     <text x="340" y="392" text-anchor="middle" font-size="9" fill="var(--color-q1,#9d8cff)">a login that half-succeeds is worse than one that cleanly fails</text>

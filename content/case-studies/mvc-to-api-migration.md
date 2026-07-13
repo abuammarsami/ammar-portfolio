@@ -82,7 +82,7 @@ So the design collapses to one seam. The MediatR **handler is the use case** —
 - One SP per category | Each replaces a slice of the single fat `Get_AllAdsPage_AllTypeOfAds`. Integer FK filters, `OFFSET/FETCH` instead of temp tables, no transaction around reads, items + promoted sections + count returned in one call.
 - Immutable DTOs | One shared sealed `AdListingItemDto` with `bool` flags replaces four mutable ViewModels with `int` flags — three near-identical promoted-section classes plus the 55-property main listing model. Detail DTOs are flat records with lookups pre-resolved by the SP — no manual image-list building in C#.
 - Validation in the pipeline | FluentValidation runs via `ValidationBehavior` before any handler: `Page ≥ 1`, `PageSize ∈ [1,100]`, `MaxPrice ≥ MinPrice`, `SearchText ≤ 200`. The old controllers validated nothing.
-- Atomic click increment | `UPDATE AllPosts SET ClickCount = ISNULL(ClickCount,0)+1 WHERE Id = @AllPostId` — a single statement on the primary key, outside any transaction, replacing the read-then-write race.
+- Atomic click increment | `UPDATE AllPosts SET AllPostsClickCount = ISNULL(AllPostsClickCount,0)+1 WHERE Id = @AllPostId` — a single statement on the primary key, outside any transaction, replacing the read-then-write race.
 - Shared read model, on purpose | Both old and new query the denormalized `AllPosts` projection. The migration changes the *access path*, not the storage — re-modelling `AllPosts` is a separate, riskier migration deliberately left for later.
 
 ## How it works

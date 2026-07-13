@@ -133,7 +133,7 @@ A JWT sitting in browser JavaScript is an XSS token-theft target; a cookie in a 
 
 *chose: `dbo.UserSession` on the SQL + Dapper stack we already run · over: requiring Redis now*
 
-Redis is currently off and the Plesk host can't guarantee it, so blocking a security-critical feature on infrastructure outside our control is the wrong dependency. SQL is durable, enumerable, and already here; an indexed single-row lookup keeps revocation always-instant. Redis later is a config-only flip (fill the connection string → HybridCache L1+L2), not a redesign.
+Redis is currently off and the current shared host can't guarantee it, so blocking a security-critical feature on infrastructure outside our control is the wrong dependency. SQL is durable, enumerable, and already here; an indexed single-row lookup keeps revocation always-instant. Redis later is a config-only flip (fill the connection string → HybridCache L1+L2), not a redesign.
 
 ### Keep the IdP in-house; build the JWKS seam, defer the IdP
 
@@ -149,7 +149,7 @@ The root cause was structural, not a typo: the web Google login was the one rema
 
 ## Impact
 
-The foundation is real and load-bearing. Every user login routes through one core — which is what fixed the "already logged in this browser" bug by construction, not by patch. On top of it, a full Critical/High hardening set: two Criticals and six Highs plus twelve review findings, closing the PK-as-verification-token hole, gating Google on `email_verified`, moving reset URLs server-side per country, reordering the rate-limiter after authentication so user-partitioned limiters stop collapsing to the IP bucket, making the admin logins enumeration-safe with a PBKDF2 timing-equalizer and a sign-out-on-any-failure guard, and unifying the Data-Protection key ring so cross-app token flows stop silently failing — all under 832 automated tests.
+The foundation is real and load-bearing. Every user login routes through one core — which is what fixed the "already logged in this browser" bug by construction, not by patch. On top of it, a full Critical/High hardening set: two Criticals and six Highs plus twelve review findings, closing the PK-as-verification-token hole, silencing a mobile logger that had been writing passwords and OTPs to the device log, gating Google on `email_verified`, moving reset URLs server-side per country, reordering the rate-limiter after authentication so user-partitioned limiters stop collapsing to the IP bucket, making the admin logins enumeration-safe with a PBKDF2 timing-equalizer and a sign-out-on-any-failure guard, and unifying the Data-Protection key ring so cross-app token flows stop silently failing — all under 832 automated tests.
 
 And the architecture around it is the part that ages well. Revocation is a first-class property on both edges, not something bolted on after a breach; the JWKS boundary means a dedicated OIDC server is a config change rather than a rewrite; and the decision to keep the IdP in-house is what keeps the whole thing free of a residency problem, a per-MAU cost cliff, or a forced password-hash migration. It's a security design that reaches for the top-1% property — every session killable, server-side — and builds the seams that let the rest arrive without a rebuild.
 
