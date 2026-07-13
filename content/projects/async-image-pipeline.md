@@ -40,8 +40,9 @@ instant reaping. An `ImageCleanupWorker` runs every 30 minutes behind a Redis `S
 expired/discarded rows from the CDN with bounded concurrency, dead-letters at an attempt cap, and
 hard-deletes after an audit window. A server backstop never trusts the client: magic-byte validation
 (JPEG/PNG/WebP, derives `Content-Type`), explicit per-endpoint request-body limits (which killed the
-100 MB-Vehicle `413`), server-side EXIF/GPS metadata stripping, and edge-resized delivery variants
-from one stored original via the CDN Optimizer (ADR-0010).
+100 MB-Vehicle `413`); the same ADR-0010 backstop design carries EXIF/GPS metadata stripping
+(already shipping for profile/cover photos) and edge-resized delivery variants from one stored
+original via the CDN Optimizer.
 
 **Impact:** CDN cost is structurally bounded (an orphan is gone within the hard cap + one sweep), all
 three orphan classes are handled, and on the upload path the multi-image `413` class is eliminated
@@ -55,7 +56,7 @@ delete set) and a killswitch that stops all deletes within 30 minutes with the C
 rows intact — the brakes that make an automated, guaranteed cleanup safe to run.
 
 **Tech stack:** .NET, ASP.NET Core, C#, MediatR, Dapper + stored procedures, SQL Server, Redis
-(distributed lock), BunnyCDN (storage + edge Optimizer), BackgroundService / IHostedService, Serilog,
+(distributed lock), BunnyCDN (storage + delivery), BackgroundService / IHostedService, Serilog,
 Flutter, Hive (mobile drafts)
 
 **Links:** (sole-engineer, both-ends build for a production marketplace — walk-through on request)
