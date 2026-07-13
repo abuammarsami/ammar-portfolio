@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 440" role="img" aria-labelledby="ilb-t ilb-d">
+  <title id="ilb-t">The cleanup that couldn't delete: a 404 that meant leaked forever</title>
+  <desc id="ilb-d">A five-step failure in the sweeper. Step one: the sweeper works out which object to delete by reconstructing the storage path from the image's public URL. Step two: but when the base URL carries a path prefix, the reconstructed path is not the real storage path, so the DELETE targets a path that does not exist. Step three: BunnyCDN returns 404. Step four: the delete method treats 404 as idempotent success — correct in isolation, since already-gone should not be retried — so the row is marked Deleted and the sweeper moves on. Step five: the real file sits on the CDN untouched, now with no tracking row pointing at it — an unrecoverable orphan, the exact failure the whole system exists to prevent, dressed as success. Below, the fix: carry the storage path separately from the public URL so the sweeper deletes what it actually stored. The bug was found in a second PR-review round; the dry-run gate, which logs every would-delete path before any real deletion, is the standing safety net for this class of bug. Hover or focus any step to read it.</desc>
+  <style>
+    .ilb-node{ cursor:pointer; transition:opacity .2s ease; }
+    .ilb-node:focus{ outline:none; }
+    .ilb-hit{ fill:transparent; }
+    svg:hover .ilb-node:not(:hover),
+    svg:focus-within .ilb-node:not(:focus-within){ opacity:.3; }
+    .ilb-box{ transition:stroke-width .2s ease; }
+    .ilb-node:hover .ilb-box,
+    .ilb-node:focus-within .ilb-box{ stroke-width:2.4; }
+    .ilb-note{ opacity:0; transition:opacity .18s ease; }
+    .ilb-node:hover .ilb-note,
+    .ilb-node:focus-within .ilb-note{ opacity:1; }
+    .ilb-hint{ opacity:.6; }
+    svg:hover .ilb-hint, svg:focus-within .ilb-hint{ opacity:0; transition:opacity .25s ease; }
+    @media (prefers-reduced-motion: reduce){ *{animation:none!important} }
+  </style>
+  <defs>
+    <marker id="ilb-ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 1 L9 5 L0 9 z" fill="var(--color-error,#ef4444)"/>
+    </marker>
+    <marker id="ilb-ah2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 1 L9 5 L0 9 z" fill="var(--color-q0,#5fc9bf)"/>
+    </marker>
+  </defs>
+  <g style="font-family:var(--font-mono,'IBM Plex Mono',ui-monospace,monospace)" fill="var(--color-ink,#e9e7e0)" font-size="12">
+    <text x="340" y="24" text-anchor="middle" font-size="11" letter-spacing="1.1" fill="var(--color-error,#ef4444)">a clean &#8220;deleted&#8221; log &#8212; while the file leaks forever</text>
+
+    <!-- S1 -->
+    <g class="ilb-node" tabindex="0" role="group" aria-label="Step 1: the sweeper reconstructs the delete path from the image's public URL">
+      <title>1 &#183; sweeper derives the delete path from the public URL</title>
+      <rect class="ilb-hit" x="116" y="40" width="448" height="40"/>
+      <rect class="ilb-box" x="120" y="44" width="440" height="32" rx="7" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4"/>
+      <text x="136" y="64" font-size="10" fill="var(--color-muted,#8a8f9c)">1</text>
+      <text x="344" y="64" text-anchor="middle" font-size="10">sweeper derives the delete path from the public URL</text>
+    </g>
+    <path d="M340 76 V86" stroke="var(--color-error,#ef4444)" stroke-width="1.4" fill="none" marker-end="url(#ilb-ah)"/>
+    <!-- S2 -->
+    <g class="ilb-node" tabindex="0" role="group" aria-label="Step 2: when the base URL carries a path prefix, the reconstructed path is not the real storage path, so the DELETE targets a path that does not exist">
+      <title>2 &#183; base URL prefix &#8594; path &#8800; real storage path</title>
+      <rect class="ilb-hit" x="116" y="88" width="448" height="48"/>
+      <rect class="ilb-box" x="120" y="92" width="440" height="40" rx="7" fill="var(--color-error,#ef4444)" fill-opacity="0.10" stroke="var(--color-error,#ef4444)" stroke-width="1.5"/>
+      <text x="136" y="108" font-size="10" fill="var(--color-error,#ef4444)">2</text>
+      <text x="344" y="108" text-anchor="middle" font-size="10" fill="var(--color-error,#ef4444)">base URL has a path prefix &#8594; path &#8800; real storage path</text>
+      <text x="344" y="123" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">DELETE targets a path that doesn't exist</text>
+    </g>
+    <path d="M340 132 V142" stroke="var(--color-error,#ef4444)" stroke-width="1.4" fill="none" marker-end="url(#ilb-ah)"/>
+    <!-- S3 -->
+    <g class="ilb-node" tabindex="0" role="group" aria-label="Step 3: BunnyCDN returns 404">
+      <title>3 &#183; BunnyCDN returns 404</title>
+      <rect class="ilb-hit" x="116" y="144" width="448" height="40"/>
+      <rect class="ilb-box" x="120" y="148" width="440" height="32" rx="7" fill="var(--color-error,#ef4444)" fill-opacity="0.10" stroke="var(--color-error,#ef4444)" stroke-width="1.5"/>
+      <text x="136" y="168" font-size="10" fill="var(--color-error,#ef4444)">3</text>
+      <text x="344" y="168" text-anchor="middle" font-size="10" fill="var(--color-error,#ef4444)">BunnyCDN returns 404</text>
+    </g>
+    <path d="M340 180 V190" stroke="var(--color-error,#ef4444)" stroke-width="1.4" fill="none" marker-end="url(#ilb-ah)"/>
+    <!-- S4 -->
+    <g class="ilb-node" tabindex="0" role="group" aria-label="Step 4: the delete method treats 404 as idempotent success — correct in isolation since already-gone should not be retried — so the row is marked Deleted">
+      <title>4 &#183; 404 treated as success (idempotent) &#8594; row marked Deleted</title>
+      <rect class="ilb-hit" x="116" y="192" width="448" height="48"/>
+      <rect class="ilb-box" x="120" y="196" width="440" height="40" rx="7" fill="var(--color-error,#ef4444)" fill-opacity="0.10" stroke="var(--color-error,#ef4444)" stroke-width="1.5"/>
+      <text x="136" y="212" font-size="10" fill="var(--color-error,#ef4444)">4</text>
+      <text x="344" y="212" text-anchor="middle" font-size="10" fill="var(--color-error,#ef4444)">404 treated as success &#8594; row marked Deleted</text>
+      <text class="ilb-note" x="344" y="227" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">correct in isolation: &#8220;already gone&#8221; shouldn't retry</text>
+    </g>
+    <path d="M340 240 V250" stroke="var(--color-error,#ef4444)" stroke-width="1.4" fill="none" marker-end="url(#ilb-ah)"/>
+    <!-- S5 leak -->
+    <g class="ilb-node" tabindex="0" role="group" aria-label="Step 5: the real file sits on the CDN untouched, now with no tracking row pointing at it — an unrecoverable orphan, the exact failure the system exists to prevent, dressed as success">
+      <title>5 &#183; the real file leaks forever &#8212; an unrecoverable orphan</title>
+      <rect class="ilb-hit" x="116" y="252" width="448" height="52"/>
+      <rect class="ilb-box" x="120" y="256" width="440" height="44" rx="7" fill="var(--color-error,#ef4444)" fill-opacity="0.15" stroke="var(--color-error,#ef4444)" stroke-width="1.8"/>
+      <text x="136" y="273" font-size="10" fill="var(--color-error,#ef4444)">5</text>
+      <text x="344" y="274" text-anchor="middle" font-size="10.5" fill="var(--color-error,#ef4444)">the real file leaks forever &#8212; no row points at it</text>
+      <text x="344" y="290" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">the exact failure the system exists to prevent, dressed as success</text>
+    </g>
+
+    <!-- fix -->
+    <path d="M340 304 V316" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.5" fill="none" marker-end="url(#ilb-ah2)"/>
+    <g class="ilb-node" tabindex="0" role="group" aria-label="The fix: carry the storage path separately from the public URL so the sweeper deletes what it actually stored; the bug was found in a second PR-review round, and the dry-run gate — which logs every would-delete path before any real deletion — is the standing safety net for this class of bug">
+      <title>fix &#183; carry the storage path separately &#183; found in a 2nd PR review</title>
+      <rect class="ilb-hit" x="116" y="318" width="448" height="60"/>
+      <rect class="ilb-box" x="120" y="322" width="440" height="52" rx="8" fill="var(--color-q0,#5fc9bf)" fill-opacity="0.12" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.7"/>
+      <text x="340" y="344" text-anchor="middle" font-size="10.5" fill="var(--color-q0,#5fc9bf)">fix: carry the storage path separately from the URL</text>
+      <text x="340" y="361" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">delete what you actually stored &#8212; never reconstruct it from the public URL</text>
+      <text class="ilb-note" x="340" y="373" text-anchor="middle" font-size="8" fill="var(--color-q0,#5fc9bf)">found in a 2nd PR review &#183; dry-run gate is the standing net before real deletes</text>
+    </g>
+
+    <text x="340" y="408" text-anchor="middle" font-size="9" fill="var(--color-q1,#9d8cff)">an idempotent 404 and a wrong path composed into a silent, unbounded leak</text>
+
+    <text class="ilb-hint" x="668" y="24" text-anchor="end" font-size="9" fill="var(--color-muted,#8a8f9c)">hover a step &#9656;</text>
+  </g>
+</svg>

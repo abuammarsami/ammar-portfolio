@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 470" role="img" aria-labelledby="ibf-t ibf-d">
+  <title id="ibf-t">The both-ends flow: mobile, API, CDN, and the sweeper</title>
+  <desc id="ibf-d">Three lanes: the Flutter mobile app on the left, the Partners.Api in the middle, and BunnyCDN on the right. The mobile picks a photo and posts it to the API. The API validates the magic bytes (deriving the Content-Type from them) and stores the object on the CDN, then inserts a tracked row and returns the pending image id, url, and expiry to the mobile. As the draft auto-saves, the mobile sends keep-alives and the API extends the TTL monotonically. On submit, the mobile commits the ids and the API resolves ownership and freshness, inlines the URLs, and flips CommittedAt. Separately, a background sweeper runs every thirty minutes behind a Redis lock: it fetches the expired and discarded batch, deletes those objects from the CDN, and marks the rows deleted, dead-lettering at the attempt cap. The sweeper is the server-side guarantee that runs regardless of the client. Hover or focus any step to read it.</desc>
+  <style>
+    .ibf-node{ cursor:pointer; transition:opacity .2s ease; }
+    .ibf-node:focus{ outline:none; }
+    .ibf-hit{ fill:transparent; }
+    svg:hover .ibf-node:not(:hover),
+    svg:focus-within .ibf-node:not(:focus-within){ opacity:.3; }
+    .ibf-box{ transition:stroke-width .2s ease; }
+    .ibf-node:hover .ibf-box,
+    .ibf-node:focus-within .ibf-box{ stroke-width:2.6; }
+    .ibf-note{ opacity:0; transition:opacity .18s ease; }
+    .ibf-node:hover .ibf-note,
+    .ibf-node:focus-within .ibf-note{ opacity:1; }
+    .ibf-hint{ opacity:.6; }
+    svg:hover .ibf-hint, svg:focus-within .ibf-hint{ opacity:0; transition:opacity .25s ease; }
+    @media (prefers-reduced-motion: reduce){ *{animation:none!important} }
+  </style>
+  <defs>
+    <marker id="ibf-ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 1 L9 5 L0 9 z" fill="var(--color-q1,#9d8cff)"/>
+    </marker>
+  </defs>
+  <g style="font-family:var(--font-mono,'IBM Plex Mono',ui-monospace,monospace)" fill="var(--color-ink,#e9e7e0)" font-size="12">
+    <text x="340" y="24" text-anchor="middle" font-size="11" letter-spacing="1.1" fill="var(--color-q1,#9d8cff)">upload-first, both ends &#183; the sweeper is the guarantee</text>
+    <line x1="237" y1="58" x2="237" y2="348" stroke="var(--color-muted,#8a8f9c)" stroke-width="1" stroke-dasharray="3 5" opacity="0.4"/>
+    <line x1="447" y1="58" x2="447" y2="348" stroke="var(--color-muted,#8a8f9c)" stroke-width="1" stroke-dasharray="3 5" opacity="0.4"/>
+    <text x="132" y="48" text-anchor="middle" font-size="10.5" fill="var(--color-muted,#8a8f9c)">Mobile &#183; Flutter</text>
+    <text x="341" y="48" text-anchor="middle" font-size="10.5" fill="var(--color-q1,#9d8cff)">Partners.Api</text>
+    <text x="551" y="48" text-anchor="middle" font-size="10.5" fill="var(--color-q0,#5fc9bf)">BunnyCDN</text>
+
+    <!-- N1 mobile upload -->
+    <g class="ibf-node" tabindex="0" role="group" aria-label="Mobile: pick a photo and POST it to the images endpoint; per-photo progress, retry just the failed one">
+      <title>pick &#8594; POST /ads/images (per-photo, retryable)</title>
+      <rect class="ibf-hit" x="28" y="66" width="204" height="42"/>
+      <rect class="ibf-box" x="32" y="70" width="196" height="34" rx="7" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4"/>
+      <text x="130" y="91" text-anchor="middle" font-size="9.5">pick &#8594; POST /ads/images</text>
+    </g>
+    <path d="M228 87 H298 C310 87, 316 100, 322 116" stroke="var(--color-q1,#9d8cff)" stroke-width="1.4" fill="none" marker-end="url(#ibf-ah)"/>
+
+    <!-- N2 api validate -->
+    <g class="ibf-node" tabindex="0" role="group" aria-label="API: validate magic bytes (JPEG/PNG/WebP) and derive Content-Type from the bytes, not the extension">
+      <title>validate magic bytes &#183; Content-Type from bytes</title>
+      <rect class="ibf-hit" x="243" y="116" width="196" height="46"/>
+      <rect class="ibf-box" x="247" y="120" width="188" height="38" rx="7" fill="var(--color-surface,#12151d)" stroke="var(--color-q1,#9d8cff)" stroke-width="1.4"/>
+      <text x="341" y="138" text-anchor="middle" font-size="9.5" fill="var(--color-q1,#9d8cff)">validate magic bytes</text>
+      <text x="341" y="151" text-anchor="middle" font-size="8" fill="var(--color-muted,#8a8f9c)">derives Content-Type from the bytes</text>
+    </g>
+    <path d="M435 138 H452" stroke="var(--color-q1,#9d8cff)" stroke-width="1.4" fill="none" marker-end="url(#ibf-ah)"/>
+    <!-- N3 cdn store -->
+    <g class="ibf-node" tabindex="0" role="group" aria-label="CDN: store the object on BunnyCDN (Singapore)">
+      <title>store object on BunnyCDN</title>
+      <rect class="ibf-hit" x="455" y="116" width="192" height="46"/>
+      <rect class="ibf-box" x="459" y="120" width="184" height="38" rx="7" fill="var(--color-q0,#5fc9bf)" fill-opacity="0.10" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.4"/>
+      <text x="551" y="143" text-anchor="middle" font-size="9.5" fill="var(--color-q0,#5fc9bf)">store object</text>
+    </g>
+
+    <!-- N4 api insert row -->
+    <g class="ibf-node" tabindex="0" role="group" aria-label="API: insert the tracked PendingImageUpload row and return the pending image id, url, and expiry to the mobile">
+      <title>insert tracked row &#8594; (id, url, expiresAt)</title>
+      <rect class="ibf-hit" x="243" y="170" width="196" height="44"/>
+      <rect class="ibf-box" x="247" y="174" width="188" height="36" rx="7" fill="var(--color-surface,#12151d)" stroke="var(--color-q1,#9d8cff)" stroke-width="1.4"/>
+      <text x="341" y="192" text-anchor="middle" font-size="9.5" fill="var(--color-q1,#9d8cff)">insert tracked row</text>
+      <text x="341" y="205" text-anchor="middle" font-size="8" fill="var(--color-muted,#8a8f9c)">returns (id, url, expiresAt)</text>
+    </g>
+    <path d="M247 192 H130 V116" stroke="var(--color-q1,#9d8cff)" stroke-width="1.3" fill="none" stroke-dasharray="4 3" marker-end="url(#ibf-ah)"/>
+    <text x="150" y="230" text-anchor="middle" font-size="8" fill="var(--color-muted,#8a8f9c)">thumbnail shown</text>
+
+    <!-- N5 mobile keep-alive -->
+    <g class="ibf-node" tabindex="0" role="group" aria-label="Mobile: each 1.5-second-debounced auto-save posts a keep-alive with the draft's image ids">
+      <title>auto-save &#8594; keep-alive (1.5s debounce)</title>
+      <rect class="ibf-hit" x="28" y="240" width="204" height="42"/>
+      <rect class="ibf-box" x="32" y="244" width="196" height="34" rx="7" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4"/>
+      <text x="130" y="265" text-anchor="middle" font-size="9.5">auto-save &#8594; keep-alive</text>
+    </g>
+    <path d="M228 261 H243" stroke="var(--color-q1,#9d8cff)" stroke-width="1.4" fill="none" marker-end="url(#ibf-ah)"/>
+    <!-- N6 api extend -->
+    <g class="ibf-node" tabindex="0" role="group" aria-label="API: extend the TTL monotonically — LEAST of NOW plus 7 days and UploadedAt plus 15 days">
+      <title>extend TTL &#183; LEAST(NOW+7d, UploadedAt+15d)</title>
+      <rect class="ibf-hit" x="243" y="240" width="196" height="42"/>
+      <rect class="ibf-box" x="247" y="244" width="188" height="34" rx="7" fill="var(--color-surface,#12151d)" stroke="var(--color-q1,#9d8cff)" stroke-width="1.4"/>
+      <text x="341" y="265" text-anchor="middle" font-size="9.5" fill="var(--color-q1,#9d8cff)">extend TTL (monotonic)</text>
+    </g>
+
+    <!-- N7 mobile submit -->
+    <g class="ibf-node" tabindex="0" role="group" aria-label="Mobile: submit the ad, committing the pending image ids">
+      <title>submit ad &#8594; commit ids</title>
+      <rect class="ibf-hit" x="28" y="292" width="204" height="42"/>
+      <rect class="ibf-box" x="32" y="296" width="196" height="34" rx="7" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4"/>
+      <text x="130" y="317" text-anchor="middle" font-size="9.5">submit ad &#8594; commit ids</text>
+    </g>
+    <path d="M228 313 H243" stroke="var(--color-q1,#9d8cff)" stroke-width="1.4" fill="none" marker-end="url(#ibf-ah)"/>
+    <!-- N8 api commit -->
+    <g class="ibf-node" tabindex="0" role="group" aria-label="API: resolve ownership and freshness for all ids, inline the URLs, and flip CommittedAt; any bad id returns IMAGE_INVALID and no ad is created">
+      <title>resolve + inline + CommittedAt (else IMAGE_INVALID)</title>
+      <rect class="ibf-hit" x="243" y="292" width="196" height="46"/>
+      <rect class="ibf-box" x="247" y="296" width="188" height="38" rx="7" fill="var(--color-q0,#5fc9bf)" fill-opacity="0.10" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.5"/>
+      <text x="341" y="314" text-anchor="middle" font-size="9.5" fill="var(--color-q0,#5fc9bf)">resolve + inline + CommittedAt</text>
+      <text x="341" y="327" text-anchor="middle" font-size="8" fill="var(--color-muted,#8a8f9c)">any bad id &#8594; IMAGE_INVALID, no ad</text>
+    </g>
+
+    <!-- Sweeper band -->
+    <g class="ibf-node" tabindex="0" role="group" aria-label="The sweeper: a background worker every 30 minutes behind a Redis lock fetches the expired and discarded batch, deletes those objects from the CDN with bounded concurrency, marks rows deleted, and dead-letters at the attempt cap — the server-side guarantee independent of the client">
+      <title>Sweeper &#183; the server-side guarantee, independent of the client</title>
+      <rect class="ibf-hit" x="28" y="360" width="620" height="76"/>
+      <rect class="ibf-box" x="32" y="364" width="612" height="68" rx="9" fill="var(--color-q0,#5fc9bf)" fill-opacity="0.10" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.7"/>
+      <text x="340" y="388" text-anchor="middle" font-size="10.5" fill="var(--color-q0,#5fc9bf)">ImageCleanupWorker &#183; every 30 min &#183; one instance via Redis SETNX lock</text>
+      <text x="340" y="407" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">GetExpiredBatch &#8594; DELETE from BunnyCDN (bounded concurrency) &#8594; mark Deleted &#183; dead-letter at cap</text>
+      <text x="340" y="423" text-anchor="middle" font-size="9" fill="var(--color-q0,#5fc9bf)">runs whether or not the app is alive &#8212; the guarantee the client can't give</text>
+    </g>
+
+    <text class="ibf-hint" x="668" y="24" text-anchor="end" font-size="9" fill="var(--color-muted,#8a8f9c)">hover a step &#9656;</text>
+  </g>
+</svg>
