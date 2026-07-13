@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 460" role="img" aria-labelledby="cdf-t cdf-d">
+  <title id="cdf-t">From tap to PDF: one Download-My-CV request, server-side</title>
+  <desc id="cdf-d">A Download-My-CV request flows top to bottom. Step one: the client calls GET cv/download with a chosen design number. Step two: the gate is enforced in the generator against the server-trusted IsProfessionalProfile flag — Design 1 is always free, designs 2 to 6 need an active Professional Profile, otherwise the server returns 403 CV_DESIGN_LOCKED, which the client turns into an upsell. Step three: one aggregation query returns the whole profile in five result sets. Step four: a CvRenderModel is built once, deriving the full name, initials, type-split lists, and contact lines. Step five: the request dispatches to one of six template classes by design number. Step six: the avatar is fetched only if its URL is an absolute HTTPS address on the configured CDN host and its bytes pass a magic-byte check, otherwise it degrades to a drawn initials circle. Step seven: QuestPDF renders the PDF off the request thread and streams back a binary PDF the app opens or shares. Hover or focus any step to read it.</desc>
+  <style>
+    .cdf-node{ cursor:pointer; transition:opacity .2s ease; }
+    .cdf-node:focus{ outline:none; }
+    .cdf-hit{ fill:transparent; }
+    svg:hover .cdf-node:not(:hover),
+    svg:focus-within .cdf-node:not(:focus-within){ opacity:.3; }
+    .cdf-box{ transition:stroke-width .2s ease; }
+    .cdf-node:hover .cdf-box,
+    .cdf-node:focus-within .cdf-box{ stroke-width:2.4; }
+    .cdf-note{ opacity:0; transition:opacity .18s ease; }
+    .cdf-node:hover .cdf-note,
+    .cdf-node:focus-within .cdf-note{ opacity:1; }
+    .cdf-hint{ opacity:.6; }
+    svg:hover .cdf-hint, svg:focus-within .cdf-hint{ opacity:0; transition:opacity .25s ease; }
+    @media (prefers-reduced-motion: reduce){ *{animation:none!important} }
+  </style>
+  <defs>
+    <marker id="cdf-ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 1 L9 5 L0 9 z" fill="var(--color-q1,#9d8cff)"/>
+    </marker>
+    <marker id="cdf-ahr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 1 L9 5 L0 9 z" fill="var(--color-error,#ef4444)"/>
+    </marker>
+  </defs>
+  <g style="font-family:var(--font-mono,'IBM Plex Mono',ui-monospace,monospace)" fill="var(--color-ink,#e9e7e0)" font-size="12">
+    <text x="340" y="24" text-anchor="middle" font-size="11" letter-spacing="1.1" fill="var(--color-q1,#9d8cff)">the paywall is enforced where the bytes are made, not in the UI</text>
+
+    <!-- S1 -->
+    <g class="cdf-node" tabindex="0" role="group" aria-label="Step 1: the client calls GET cv download with a chosen design number">
+      <title>1 &#183; GET cv/download?design=n</title>
+      <rect class="cdf-hit" x="150" y="40" width="380" height="38"/>
+      <rect class="cdf-box" x="154" y="44" width="372" height="30" rx="7" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.3"/>
+      <text x="170" y="63" font-size="9.5" fill="var(--color-muted,#8a8f9c)">1</text>
+      <text x="340" y="63" text-anchor="middle" font-size="10">tap &#8220;Download My CV&#8221; &#8594; GET cv/download?design=n</text>
+    </g>
+    <path d="M340 78 V88" stroke="var(--color-q1,#9d8cff)" stroke-width="1.4" fill="none" marker-end="url(#cdf-ah)"/>
+    <!-- S2 gate -->
+    <g class="cdf-node" tabindex="0" role="group" aria-label="Step 2: the gate is enforced in GenerateCv against the server-trusted IsProfessionalProfile flag; design 1 free, 2 to 6 need Pro, else 403 CV_DESIGN_LOCKED">
+      <title>2 &#183; gate in GenerateCv &#8212; design 1 free, 2&#8211;6 need Pro, else 403</title>
+      <rect class="cdf-hit" x="150" y="90" width="380" height="50"/>
+      <rect class="cdf-box" x="154" y="94" width="372" height="42" rx="7" fill="var(--color-q0,#5fc9bf)" fill-opacity="0.12" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.6"/>
+      <text x="170" y="112" font-size="9.5" fill="var(--color-q0,#5fc9bf)">2</text>
+      <text x="340" y="112" text-anchor="middle" font-size="10" fill="var(--color-q0,#5fc9bf)">gate: check IsProfessionalProfile (server-trusted)</text>
+      <text x="340" y="128" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">Design 1 free &#183; 2&#8211;6 need Pro</text>
+    </g>
+    <!-- 403 branch -->
+    <path d="M526 115 H600" stroke="var(--color-error,#ef4444)" stroke-width="1.4" fill="none" marker-end="url(#cdf-ahr)"/>
+    <g class="cdf-node" tabindex="0" role="group" aria-label="Locked branch: a design you have not paid for returns 403 CV_DESIGN_LOCKED, which the client turns into an upsell">
+      <title>locked &#8594; 403 CV_DESIGN_LOCKED &#8594; upsell</title>
+      <rect class="cdf-hit" x="600" y="92" width="76" height="46"/>
+      <rect class="cdf-box" x="602" y="96" width="72" height="38" rx="6" fill="var(--color-error,#ef4444)" fill-opacity="0.10" stroke="var(--color-error,#ef4444)" stroke-width="1.4"/>
+      <text x="638" y="112" text-anchor="middle" font-size="8" fill="var(--color-error,#ef4444)">403 LOCKED</text>
+      <text x="638" y="125" text-anchor="middle" font-size="7.5" fill="var(--color-muted,#8a8f9c)">&#8594; upsell</text>
+    </g>
+    <path d="M340 136 V148" stroke="var(--color-q1,#9d8cff)" stroke-width="1.4" fill="none" marker-end="url(#cdf-ah)"/>
+    <!-- S3 -->
+    <g class="cdf-node" tabindex="0" role="group" aria-label="Step 3: one aggregation query returns the whole profile in five result sets">
+      <title>3 &#183; UserCvDataGetByUserId &#8212; 5 result sets, one round trip</title>
+      <rect class="cdf-hit" x="150" y="150" width="380" height="38"/>
+      <rect class="cdf-box" x="154" y="154" width="372" height="30" rx="7" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.3"/>
+      <text x="170" y="173" font-size="9.5" fill="var(--color-muted,#8a8f9c)">3</text>
+      <text x="340" y="173" text-anchor="middle" font-size="10">one query &#8594; profile + 4 lists in 5 result sets</text>
+    </g>
+    <path d="M340 188 V198" stroke="var(--color-q1,#9d8cff)" stroke-width="1.4" fill="none" marker-end="url(#cdf-ah)"/>
+    <!-- S4 -->
+    <g class="cdf-node" tabindex="0" role="group" aria-label="Step 4: a CvRenderModel is built once, deriving name, initials, type-split lists, and contact lines">
+      <title>4 &#183; CvRenderModel built once (templates only lay out)</title>
+      <rect class="cdf-hit" x="150" y="200" width="380" height="38"/>
+      <rect class="cdf-box" x="154" y="204" width="372" height="30" rx="7" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.3"/>
+      <text x="170" y="223" font-size="9.5" fill="var(--color-muted,#8a8f9c)">4</text>
+      <text x="340" y="223" text-anchor="middle" font-size="10">CvRenderModel derived once &#8212; templates only lay out</text>
+    </g>
+    <path d="M340 238 V248" stroke="var(--color-q1,#9d8cff)" stroke-width="1.4" fill="none" marker-end="url(#cdf-ah)"/>
+    <!-- S5 -->
+    <g class="cdf-node" tabindex="0" role="group" aria-label="Step 5: dispatch to one of six ICvTemplate classes by design number, Classic as the fallback">
+      <title>5 &#183; dispatch to one of 6 ICvTemplate classes</title>
+      <rect class="cdf-hit" x="150" y="250" width="380" height="38"/>
+      <rect class="cdf-box" x="154" y="254" width="372" height="30" rx="7" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.3"/>
+      <text x="170" y="273" font-size="9.5" fill="var(--color-muted,#8a8f9c)">5</text>
+      <text x="340" y="273" text-anchor="middle" font-size="10">dispatch to one of 6 templates (Classic fallback)</text>
+    </g>
+    <path d="M340 288 V298" stroke="var(--color-q1,#9d8cff)" stroke-width="1.4" fill="none" marker-end="url(#cdf-ah)"/>
+    <!-- S6 avatar -->
+    <g class="cdf-node" tabindex="0" role="group" aria-label="Step 6: the avatar is fetched only for an absolute HTTPS URL on the configured CDN host with a magic-byte check, else it degrades to a drawn initials circle">
+      <title>6 &#183; avatar: https + CDN host + magic-byte, else drawn initials</title>
+      <rect class="cdf-hit" x="150" y="300" width="380" height="50"/>
+      <rect class="cdf-box" x="154" y="304" width="372" height="42" rx="7" fill="var(--color-q0,#5fc9bf)" fill-opacity="0.10" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.5"/>
+      <text x="170" y="322" font-size="9.5" fill="var(--color-q0,#5fc9bf)">6</text>
+      <text x="340" y="322" text-anchor="middle" font-size="10" fill="var(--color-q0,#5fc9bf)">avatar: https + CDN host + magic-byte</text>
+      <text x="340" y="338" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">any failure &#8594; drawn initials circle, never a 500</text>
+    </g>
+    <path d="M340 350 V360" stroke="var(--color-q1,#9d8cff)" stroke-width="1.4" fill="none" marker-end="url(#cdf-ah)"/>
+    <!-- S7 -->
+    <g class="cdf-node" tabindex="0" role="group" aria-label="Step 7: QuestPDF renders off the request thread and streams back a binary PDF the app opens or shares">
+      <title>7 &#183; render off-thread &#8594; binary %PDF &#8594; open / share</title>
+      <rect class="cdf-hit" x="150" y="362" width="380" height="46"/>
+      <rect class="cdf-box" x="154" y="366" width="372" height="38" rx="7" fill="var(--color-q0,#5fc9bf)" fill-opacity="0.12" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.6"/>
+      <text x="170" y="384" font-size="9.5" fill="var(--color-q0,#5fc9bf)">7</text>
+      <text x="340" y="384" text-anchor="middle" font-size="10" fill="var(--color-q0,#5fc9bf)">render off-thread &#8594; binary %PDF</text>
+      <text x="340" y="399" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">app opens / shares the file</text>
+    </g>
+
+    <text class="cdf-hint" x="668" y="24" text-anchor="end" font-size="9" fill="var(--color-muted,#8a8f9c)">hover a step &#9656;</text>
+  </g>
+</svg>

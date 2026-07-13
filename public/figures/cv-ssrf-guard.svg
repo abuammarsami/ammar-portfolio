@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 440" role="img" aria-labelledby="csg-t csg-d">
+  <title id="csg-t">The CV generator that could have been an SSRF probe, and the guard that closed it</title>
+  <desc id="csg-d">To embed the avatar, the CV generator makes an outbound HTTP request to a URL that traces back to a user-controllable field, the legacy AspNetUsers.Image. Left open, that is a server-side request forgery: a user sets their photo URL to an internal address such as the cloud metadata endpoint 169.254.169.254 or an internal service, asks the server to render their CV, and the server fetches that internal address from inside the network and tries to embed whatever bytes come back into the PDF — a network probe with an image-exfiltration side channel. The guard is layered. First, the fetch proceeds only for an absolute HTTPS URL whose host is the configured CDN host, so a relative, legacy, or internal URL never leaves the box. Second, the returned bytes are magic-byte sniffed against known image formats before they reach QuestPDF, so a non-image 200 response cannot throw inside the renderer or smuggle in non-image content. Third, every failure in the resilience pipeline — timeout, tripped circuit breaker — is caught and degrades to a drawn initials circle, while genuine caller cancellation still propagates. The artifact always renders; the network is never probed. Hover or focus any node to read it.</desc>
+  <style>
+    .csg-node{ cursor:pointer; transition:opacity .2s ease; }
+    .csg-node:focus{ outline:none; }
+    .csg-hit{ fill:transparent; }
+    svg:hover .csg-node:not(:hover),
+    svg:focus-within .csg-node:not(:focus-within){ opacity:.3; }
+    .csg-box{ transition:stroke-width .2s ease; }
+    .csg-node:hover .csg-box,
+    .csg-node:focus-within .csg-box{ stroke-width:2.4; }
+    .csg-note{ opacity:0; transition:opacity .18s ease; }
+    .csg-node:hover .csg-note,
+    .csg-node:focus-within .csg-note{ opacity:1; }
+    .csg-hint{ opacity:.6; }
+    svg:hover .csg-hint, svg:focus-within .csg-hint{ opacity:0; transition:opacity .25s ease; }
+    @media (prefers-reduced-motion: reduce){ *{animation:none!important} }
+  </style>
+  <defs>
+    <marker id="csg-ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 1 L9 5 L0 9 z" fill="var(--color-error,#ef4444)"/>
+    </marker>
+  </defs>
+  <g style="font-family:var(--font-mono,'IBM Plex Mono',ui-monospace,monospace)" fill="var(--color-ink,#e9e7e0)" font-size="12">
+    <text x="340" y="24" text-anchor="middle" font-size="11" letter-spacing="1.1" fill="var(--color-error,#ef4444)">the dangerous line isn't a template &#8212; it's the avatar fetch</text>
+
+    <!-- setup -->
+    <g class="csg-node" tabindex="0" role="group" aria-label="The setup: to embed the avatar, the server fetches a URL that traces back to a user-controllable field, the legacy AspNetUsers.Image">
+      <title>the avatar fetch &#8212; an outbound request to a user-controllable URL</title>
+      <rect class="csg-hit" x="56" y="40" width="568" height="44"/>
+      <rect class="csg-box" x="60" y="44" width="560" height="36" rx="7" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4"/>
+      <text x="340" y="60" text-anchor="middle" font-size="10">to embed your avatar, the server fetches a URL &#8212; from a user-controllable field</text>
+      <text x="340" y="73" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">the legacy AspNetUsers.Image</text>
+    </g>
+    <path d="M340 84 V96" stroke="var(--color-error,#ef4444)" stroke-width="1.5" fill="none" marker-end="url(#csg-ah)"/>
+
+    <!-- attack -->
+    <g class="csg-node" tabindex="0" role="group" aria-label="Left open, it is server-side request forgery: a user points the photo URL at an internal address, the server fetches it from inside the network and tries to embed the bytes — a network probe with an image-exfiltration side channel">
+      <title>without a guard &#8212; server-side request forgery (SSRF)</title>
+      <rect class="csg-hit" x="56" y="98" width="568" height="76"/>
+      <rect class="csg-box" x="60" y="102" width="560" height="68" rx="8" fill="var(--color-error,#ef4444)" fill-opacity="0.12" stroke="var(--color-error,#ef4444)" stroke-width="1.7"/>
+      <text x="340" y="122" text-anchor="middle" font-size="10.5" fill="var(--color-error,#ef4444)">without a guard = SSRF</text>
+      <text x="340" y="139" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">photo URL &#8594; 169.254.169.254 (cloud metadata) or an internal service</text>
+      <text x="340" y="154" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">server fetches it from inside the network, embeds whatever returns</text>
+      <text class="csg-note" x="340" y="167" text-anchor="middle" font-size="8" fill="var(--color-error,#ef4444)">a CV generator becomes a network probe + exfil channel</text>
+    </g>
+
+    <text x="340" y="196" text-anchor="middle" font-size="10" letter-spacing="1" fill="var(--color-q0,#5fc9bf)">the guard, layered</text>
+
+    <!-- G1 -->
+    <g class="csg-node" tabindex="0" role="group" aria-label="Guard 1: the fetch proceeds only for an absolute HTTPS URL whose host is the configured CDN host, so a relative, legacy, or internal URL never leaves the box">
+      <title>guard 1 &#183; absolute https on the configured CDN host only</title>
+      <rect class="csg-hit" x="56" y="206" width="568" height="46"/>
+      <rect class="csg-box" x="60" y="210" width="560" height="38" rx="7" fill="var(--color-surface,#12151d)" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.5"/>
+      <text x="76" y="228" font-size="9.5" fill="var(--color-q0,#5fc9bf)">1</text>
+      <text x="340" y="228" text-anchor="middle" font-size="9.5" fill="var(--color-q0,#5fc9bf)">only absolute https URLs on the configured CDN host</text>
+      <text x="340" y="242" text-anchor="middle" font-size="8" fill="var(--color-muted,#8a8f9c)">relative / legacy / internal &#8594; never leaves the box &#8594; initials</text>
+    </g>
+    <!-- G2 -->
+    <g class="csg-node" tabindex="0" role="group" aria-label="Guard 2: the returned bytes are magic-byte sniffed against known image formats before they reach QuestPDF, so a non-image 200 response cannot throw inside the renderer">
+      <title>guard 2 &#183; magic-byte sniff before the bytes reach QuestPDF</title>
+      <rect class="csg-hit" x="56" y="256" width="568" height="46"/>
+      <rect class="csg-box" x="60" y="260" width="560" height="38" rx="7" fill="var(--color-surface,#12151d)" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.5"/>
+      <text x="76" y="278" font-size="9.5" fill="var(--color-q0,#5fc9bf)">2</text>
+      <text x="340" y="278" text-anchor="middle" font-size="9.5" fill="var(--color-q0,#5fc9bf)">magic-byte sniff the response (JPEG/PNG/GIF/WebP/BMP)</text>
+      <text x="340" y="292" text-anchor="middle" font-size="8" fill="var(--color-muted,#8a8f9c)">a non-image 200 body can't throw inside the renderer</text>
+    </g>
+    <!-- G3 -->
+    <g class="csg-node" tabindex="0" role="group" aria-label="Guard 3: every failure in the resilience pipeline is caught and degrades to a drawn initials circle, while genuine caller cancellation still propagates">
+      <title>guard 3 &#183; catch every resilience failure &#8594; drawn initials</title>
+      <rect class="csg-hit" x="56" y="306" width="568" height="48"/>
+      <rect class="csg-box" x="60" y="310" width="560" height="40" rx="7" fill="var(--color-surface,#12151d)" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.5"/>
+      <text x="76" y="329" font-size="9.5" fill="var(--color-q0,#5fc9bf)">3</text>
+      <text x="340" y="328" text-anchor="middle" font-size="9.5" fill="var(--color-q0,#5fc9bf)">catch every failure: timeout, tripped circuit &#8594; drawn initials</text>
+      <text x="340" y="343" text-anchor="middle" font-size="8" fill="var(--color-muted,#8a8f9c)">genuine caller cancellation still propagates</text>
+    </g>
+
+    <text x="340" y="378" text-anchor="middle" font-size="9.5" fill="var(--color-q0,#5fc9bf)">the artifact always renders &#8212; and the generator can't be turned against its own network</text>
+    <text x="340" y="398" text-anchor="middle" font-size="9" fill="var(--color-q1,#9d8cff)">&#8220;make a PDF&#8221; was really a small pile of trust boundaries</text>
+
+    <text class="csg-hint" x="668" y="24" text-anchor="end" font-size="9" fill="var(--color-muted,#8a8f9c)">hover a node &#9656;</text>
+  </g>
+</svg>
