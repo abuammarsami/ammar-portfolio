@@ -3,7 +3,7 @@ name: background-job-system
 title: "Background Job System"
 type: case-study
 status: active
-updated: 2026-07-12
+updated: 2026-07-13
 ---
 
 ## Tagline
@@ -12,7 +12,7 @@ The invisible machine that runs everything a user shouldn't have to wait for —
 
 ## Role
 
-Sole engineer of Partners.com.bd — I design, build, and run the whole platform end to end: the Flutter mobile apps, the .NET API, and the legacy MVC → API migration. This background-job system is one slice of that rebuild, taken from first principles to a production cutover.
+Sole engineer of Partners.com.bd — I design, build, and run the whole platform end to end: the Flutter mobile apps, the .NET API, and the legacy MVC → API migration. This background-job system is one slice of that rebuild, taken from first principles through the sequenced cutover that retires the legacy money scheduler.
 
 ## In one minute
 
@@ -23,7 +23,7 @@ The fix is a **background job system**: the app does the fast part now and hands
 ## Stats
 
 - 3 → 1 | tangled subsystems replaced by one
-- ~1,100 | automated tests, incl. live-database
+- real DB | integration tests over the actual stored procedures
 - 0 | business rules changed in the migration
 - ≥1 | every job runs at least once — safely
 
@@ -35,19 +35,19 @@ Before this, "background work" wasn't a system — it was scattered habits. Some
 
 ### Registration could return an error *and* create the account
 
-*Symptom → cause*
+*symptom → cause*
 
 A user tapped Register. The database saved their account, then the code tried to send the verification email on the same thread. The mail server hiccuped, the send threw, and the request returned a 500. From the user's side: "registration failed." From the database's side: a half-born account that already existed. Two sources of truth, disagreeing — the bug that generates support tickets for weeks.
 
 ### One slow email could freeze a web thread for a minute
 
-*Symptom → cause*
+*symptom → cause*
 
 The email client had no timeout configured, so its default was ~100 seconds. A single unresponsive mail server didn't just delay one email — it held a precious request-handling thread hostage for a minute and a half, starving every other user waiting behind it.
 
 ### A failed signup leaked files onto the CDN forever
 
-*Symptom → cause*
+*symptom → cause*
 
 Document uploads pushed files to the CDN *before* the user record was committed. If the signup then failed, the files were already out there — orphaned, unowned, and (because of a naive naming scheme) able to collide across users. Storage that only ever grew, and nobody to clean it.
 
@@ -64,7 +64,7 @@ So the thesis I built the whole system around is one sentence: **the engine is p
 - Failure classification | Failures are sorted into "worth retrying" (a timeout) and "never retry" (a bad payload) — so the system doesn't waste hours re-running something that can't succeed.
 - Dead-letter queue | When a job exhausts its retries it lands in a durable table with its full history, and two alert channels fire — the opposite of failing silently.
 - Observability | Every execution is measured; the flagship signal is the *age of the oldest un-started job* — if it's climbing, the whole pipeline is stalled, and I know before users do.
-- Security | Write access to the job store is remote code execution on the worker, so the app, the worker, and deploys each run under their own least-privilege database login.
+- Security | Write access to the job store is remote code execution on the worker, so the API, the worker, the job-dispatch role, and deploys each run under their own least-privilege database login.
 - Kill switches | Any job can be switched off in seconds without a deploy, and the switch fails *closed* — a typo can never accidentally turn a sensitive job on.
 
 ## How it works
@@ -119,13 +119,13 @@ Because writing to job storage equals running code on the worker, the blast radi
 
 ## The war story
 
-The most dangerous part wasn't in the new code — it was a *legacy scheduler* nobody had touched since 2024, quietly running three recurring jobs against the production database. One of them credited real money to user balances, and it was **not** idempotent: run it twice, pay twice.
+The most dangerous part wasn't in the new code — it was a *legacy scheduler* nobody had touched in a long while, quietly running three recurring jobs against the production database. One of them credited real money to user balances, and it was **not** idempotent: run it twice, pay twice.
 
-Retiring it safely was pure sequencing. The new worker's safety lock lives in its own storage and *cannot* coordinate with the old app's storage, so the only thing preventing a double-payout was ordering: **stop the old scheduler first, confirm it's fully down, then enable ours — and enable the money job dead last.** I pinned that job to *never* auto-retry (a re-run means a re-payment), wrote an executable "did it run exactly once?" check for the morning after, and a runbook rule in bold: a missed run is reconciled in SQL, never by pressing "run again." The cutover moved real money and double-paid no one.
+Retiring it safely was pure sequencing. The new worker's safety lock lives in its own storage and *cannot* coordinate with the old app's storage, so the only thing preventing a double-payout was ordering: **stop the old scheduler first, confirm it's fully down, then enable ours — and enable the money job dead last.** I pinned that job to *never* auto-retry (a re-run means a re-payment), wrote an executable "did it run exactly once?" check to confirm the morning after, and a runbook rule in bold: a missed run is reconciled in SQL, never by pressing "run again." The promise isn't that the cutover is careful — it's that the ordering plus the never-retry pin make a double-payout structurally impossible, not merely unlikely. It's rehearsed against a separate database; the money job flips on dead last.
 
 ## Impact
 
-One observable, secure, idempotent subsystem now owns every piece of async work, and an entire class of production defects — the half-created account, the frozen thread, the orphaned files — is gone by construction, not by patch. Three hand-rolled loops and a standalone scheduler app collapsed into uniform, dashboarded, dead-lettered jobs. It shipped in independently-releasable phases, each behind a hot-reloadable switch, with zero business-rule changes and ~1,100 tests — including a suite that spins up a real database in a container and exercises the actual stored procedures.
+One observable, secure, idempotent subsystem now owns every piece of async work, and an entire class of production defects — the half-created account, the frozen thread, the orphaned files — is gone by construction, not by patch. Three hand-rolled loops and a standalone scheduler app collapsed into uniform, dashboarded, dead-lettered jobs. It shipped in independently-releasable phases, each behind a hot-reloadable switch, with zero business-rule changes — and it's covered by a test suite that spins up a real database in a container and exercises the actual stored procedures, not just mocks.
 
 ## Going deeper
 
