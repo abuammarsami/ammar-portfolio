@@ -122,6 +122,6 @@
     </g>
 
     <!-- caption -->
-    <text x="320" y="344" text-anchor="middle" font-size="10" fill="var(--color-muted, #8a8f9c)">Fig. &#8212; the SVM dissents, but a majority vote outweighs any one member &#8212; 0.845 test accuracy, 0.922 &#177; 0.041 in CV.</text>
+    <text x="320" y="344" text-anchor="middle" font-size="9" fill="var(--color-muted, #8a8f9c)">Fig. &#8212; the SVM dissents, but a majority vote outweighs any one member &#8212; 0.845 test accuracy, 0.922 &#177; 0.041 in CV.</text>
   </g>
 </svg>

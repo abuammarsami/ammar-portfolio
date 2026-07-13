@@ -170,7 +170,7 @@ That is not a disappointing result, and it's worth being precise about why. The 
 | KNN | 0.684 | 0.060 |
 | ComplementNB | 0.668 | 0.044 |
 
-ExtraTrees edges the vote on the mean (0.927 vs 0.922) but with a *wider* spread (0.056 vs 0.041). The ensemble buys the third-best mean for the second-tightest deviation among the strong models — the classic "give up a fraction of a point of peak for a meaningful cut in variance" trade. That is the entire case for shipping the vote over the single best tree, and it's why the paper concludes the voting classifier is "the best model for this problem" — best on *reliability*, not on any single column.
+ExtraTrees edges the vote on the mean (0.927 vs 0.922) but with a *wider* spread (0.056 vs 0.041). The ensemble buys the third-best mean for the second-tightest deviation among the strong models — the classic "give up a fraction of a point of peak for a meaningful cut in variance" trade. That is the entire case for shipping the vote over the single best tree. The paper reaches the same destination by a blunter route — it declares the ensemble "the best model" on the strength of its 92.2% cross-validated score — but that headline number is the leaky one (I oversample before the fold split below); the honest reason to prefer the vote is the *reliability*, not the peak.
 :::
 
 ## What actually predicted success

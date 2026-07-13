@@ -56,6 +56,7 @@
       <text x="510" y="298" fill="var(--color-muted,#8a8f9c)">CST-YOLO</text>
     </g>
 
-    <text x="320" y="336" text-anchor="middle" font-size="10" fill="var(--color-muted,#8a8f9c)">Fig. &#8212; same RetinaNet scores 0.5525 mAP @ IoU 0.50:0.95 (val best &#8776; 0.58) &#183; 4 GB laptop, pretrained weights, no arch surgery</text>
+    <text x="320" y="330" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">Fig. &#8212; same RetinaNet scores 0.5525 mAP @ IoU 0.50:0.95 (val best &#8776; 0.58)</text>
+    <text x="320" y="344" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">4 GB laptop, pretrained weights, no architecture surgery</text>
   </g>
 </svg>

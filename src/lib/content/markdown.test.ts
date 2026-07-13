@@ -38,8 +38,25 @@ describe("markdownToHtml — Professor-mode pipeline", () => {
     expect(html).not.toContain("lens-professor");
   });
 
-  it("does not treat a prose colon-word as a directive", async () => {
-    const html = await markdownToHtml("See the note :here should stay literal.");
-    expect(html).toContain("should stay literal");
+  it("never lets a stray text/leaf directive eat prose (colons, ratios, times)", async () => {
+    // Each of these parses as a bare `:name` text directive under remark-directive;
+    // left to the default handler it becomes an empty <div> that deletes text.
+    const cases: [string, string][] = [
+      ["See the note :here should stay literal.", "See the note :here should stay literal."],
+      ["IoU 0.50:0.95 strict", "IoU 0.50:0.95 strict"],
+      ["splits are 60:20:20 sentence-level", "splits are 60:20:20 sentence-level"],
+      ["Error stays 1:1 with the DLQ.", "Error stays 1:1 with the DLQ."],
+      ["ratio 3:5 and time 14:30", "ratio 3:5 and time 14:30"],
+    ];
+    for (const [input, expected] of cases) {
+      const html = await markdownToHtml(input);
+      expect(html).toBe(`<p>${expected}</p>`); // exact — no orphan <div>, nothing deleted
+    }
+  });
+
+  it("leaves a real `::` leaf directive in prose as literal text", async () => {
+    const html = await markdownToHtml("Call ::Foo here.");
+    expect(html).toContain("::Foo");
+    expect(html).not.toContain("<div></div>");
   });
 });

@@ -20,44 +20,61 @@ const SVG_FIGURE = /^\/figures\/[\w-]+\.svg$/;
  * directive becomes a `<div class="lens-professor dd-aside dd-prof">`; the
  * `.lens-professor` class is already hidden under other lenses by the global lens
  * rules (globals.css), so the block only renders when the reader flips the nav
- * lens to "professor". `:::aside` is a neutral callout everyone sees. Only these
- * named container directives are transformed — any other `:::name` (or a stray
- * inline `:word`) passes straight through untouched, so this never mutates prose.
+ * lens to "professor". `:::aside` is a neutral callout everyone sees.
  *
- * Grep-verified safe on the existing corpus: no prose triggers a text directive
- * and `:::` is otherwise unused. Author an optional heading with
- * `:::professor[Custom label]`; otherwise the default label below is injected.
+ * We only ever author *container* (`:::`) directives. remark-directive, however,
+ * also enables single-colon TEXT and double-colon LEAF directives everywhere —
+ * and a bare `:name` needs no brackets, so a plain `0.50:0.95`, `14:30`, `1:1`,
+ * or `:word` in prose parses as a directive and, left to the default handler,
+ * renders as an empty <div> that DELETES the surrounding text. To defuse that
+ * footgun globally, `remarkLensDirectives` restores every text/leaf directive to
+ * its exact original source (via position offsets) — so only `:::professor` /
+ * `:::aside` do anything, and everything else is untouched literal prose.
+ * Author an optional heading with `:::professor[Custom label]`; otherwise the
+ * default label below is injected.
  */
 const LENS_DIRECTIVES: Record<string, { className: string[]; label: string | null }> = {
   professor: { className: ["lens-professor", "dd-aside", "dd-prof"], label: "For the professor" },
-  engineer: { className: ["lens-engineer", "dd-aside", "dd-eng"], label: "For the engineer" },
-  recruiter: { className: ["lens-recruiter", "dd-aside", "dd-rec"], label: "In one line" },
   aside: { className: ["dd-aside", "dd-note"], label: null },
 };
 
 function remarkLensDirectives() {
   // mdast nodes are walked untyped; `any` keeps the tree-rewrite readable.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (tree: any) => {
+  return (tree: any, file: unknown) => {
+    const src = String(file);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    visit(tree, "containerDirective", (node: any) => {
-      const spec = LENS_DIRECTIVES[node.name];
-      if (!spec) return; // unknown container directive — leave it for the default handler
-      const data = node.data || (node.data = {});
-      data.hName = "div";
-      data.hProperties = { className: spec.className };
-      // Heading: an explicit `:::name[label]` is lifted by remark-directive into a
-      // first child paragraph flagged `directiveLabel` — style it as the label chip.
-      // Otherwise inject the default label (if the directive defines one).
-      const first = node.children?.[0];
-      if (first?.data?.directiveLabel && first.type === "paragraph") {
-        first.data.hProperties = { className: ["dd-aside-label"] };
-      } else if (spec.label) {
-        node.children.unshift({
-          type: "paragraph",
-          data: { hProperties: { className: ["dd-aside-label"] } },
-          children: [{ type: "text", value: spec.label }],
-        });
+    visit(tree, (node: any, index: number | undefined, parent: any) => {
+      if (node.type === "containerDirective") {
+        const spec = LENS_DIRECTIVES[node.name];
+        if (!spec) return; // unknown container directive — leave it for the default handler
+        const data = node.data || (node.data = {});
+        data.hName = "div";
+        data.hProperties = { className: spec.className };
+        // Heading: an explicit `:::name[label]` is lifted by remark-directive into a
+        // first child paragraph flagged `directiveLabel` — style it as the label chip.
+        // Otherwise inject the default label (if the directive defines one).
+        const first = node.children?.[0];
+        if (first?.data?.directiveLabel && first.type === "paragraph") {
+          first.data.hProperties = { className: ["dd-aside-label"] };
+        } else if (spec.label) {
+          node.children.unshift({
+            type: "paragraph",
+            data: { hProperties: { className: ["dd-aside-label"] } },
+            children: [{ type: "text", value: spec.label }],
+          });
+        }
+        return;
+      }
+      // Never-authored text/leaf directives → restore literal source (see doc above),
+      // so a stray `0.50:0.95` / `14:30` / `:word` in prose is never eaten.
+      if ((node.type === "textDirective" || node.type === "leafDirective") && parent && typeof index === "number") {
+        const s = node.position?.start?.offset;
+        const e = node.position?.end?.offset;
+        parent.children[index] = {
+          type: "text",
+          value: s != null && e != null ? src.slice(s, e) : (node.type === "leafDirective" ? "::" : ":") + node.name,
+        };
       }
     });
   };

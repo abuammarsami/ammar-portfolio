@@ -122,6 +122,6 @@
       <text x="572" y="294" fill="var(--color-q0,#5fc9bf)">&#10216;Z&#8323;&#10217;</text>
     </g>
 
-    <text x="320" y="344" text-anchor="middle" font-size="10.5" fill="var(--color-muted,#8a8f9c)">Model 1: a 2&#215;2 pixel patch &#8594; 4 RY rotations &#8594; entangling layer &#8594; 4 &#10216;Z&#10217; channels (14&#215;14&#215;4 feature stack)</text>
+    <text x="320" y="344" text-anchor="middle" font-size="9.5" fill="var(--color-muted,#8a8f9c)">Model 1: a 2&#215;2 pixel patch &#8594; 4 RY rotations &#8594; entangling layer &#8594; 4 &#10216;Z&#10217; channels (14&#215;14&#215;4 feature stack)</text>
   </g>
 </svg>

@@ -159,7 +159,7 @@ $$
 \mathcal{L}_{\text{gender}} = -\frac{1}{N}\sum_{i=1}^{N}\sum_{c=1}^{2} y^{g}_{i,c}\,\log\hat{y}^{g}_{i,c}
 $$
 
-where $\hat{a}_i \in [0,1]$ is the **max-normalized** age ($a_i = \text{age}_i / \text{age}_{\max}$), and the weights are
+where the age target is **max-normalized** to $a_i = \text{age}_i / \text{age}_{\max} \in [0,1]$ and $\hat{a}_i$ is the head's prediction of it, and the weights are
 
 $$
 w_a = 4.0, \qquad w_r = 1.5, \qquad w_g = 0.1.
