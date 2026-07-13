@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 470" role="img" aria-labelledby="agc-t agc-d">
+  <title id="agc-t">The converged Google login: two token types, one shared handler</title>
+  <desc id="agc-d">Two clients arrive with two different Google artifacts. The web implicit flow yields an access token; the native mobile app yields an ID token. Both reach one shared GoogleLoginCommand handler — the same handler the mobile API already used. The handler validates whichever artifact was supplied: the web access token is validated through Google's tokeninfo endpoint with an audience check against the web client ID, which closes an access-token substitution or confused-deputy vector that the legacy userinfo-only path lacked; the mobile ID token path is unchanged. Then email_verified must be true before any account match or create, the shared find-or-create and token issuance run, and finally each edge issues its own artifact — an HttpOnly cookie for web, a JWT plus refresh for mobile. This path is shipped as roadmap Step 1 and is what fixed the already-logged-in bug. Hover or focus any step to read it.</desc>
+  <style>
+    .agc-node{ cursor:pointer; transition:opacity .2s ease; }
+    .agc-node:focus{ outline:none; }
+    .agc-hit{ fill:transparent; }
+    svg:hover .agc-node:not(:hover),
+    svg:focus-within .agc-node:not(:focus-within){ opacity:.3; }
+    .agc-box{ transition:stroke-width .2s ease; }
+    .agc-node:hover .agc-box,
+    .agc-node:focus-within .agc-box{ stroke-width:2.4; }
+    .agc-note{ opacity:0; transition:opacity .18s ease; }
+    .agc-node:hover .agc-note,
+    .agc-node:focus-within .agc-note{ opacity:1; }
+    .agc-hint{ opacity:.6; }
+    svg:hover .agc-hint, svg:focus-within .agc-hint{ opacity:0; transition:opacity .25s ease; }
+    @media (prefers-reduced-motion: reduce){ *{animation:none!important} }
+  </style>
+  <defs>
+    <marker id="agc-ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 1 L9 5 L0 9 z" fill="var(--color-q1,#9d8cff)"/>
+    </marker>
+  </defs>
+  <g style="font-family:var(--font-mono,'IBM Plex Mono',ui-monospace,monospace)" fill="var(--color-ink,#e9e7e0)" font-size="12">
+    <text x="340" y="24" text-anchor="middle" font-size="11" letter-spacing="1.1" fill="var(--color-q1,#9d8cff)">two Google artifacts, one handler &#183; shipped as roadmap Step 1</text>
+
+    <!-- clients -->
+    <g class="agc-node" tabindex="0" role="group" aria-label="Web input: the implicit flow yields an access token, not an ID token">
+      <title>Web &#183; implicit flow &#8594; access token</title>
+      <rect class="agc-hit" x="36" y="40" width="268" height="50"/>
+      <rect class="agc-box" x="40" y="44" width="260" height="42" rx="8" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4"/>
+      <text x="170" y="62" text-anchor="middle" font-size="10.5">web &#183; implicit flow</text>
+      <text x="170" y="77" text-anchor="middle" font-size="9" fill="var(--color-q1,#9d8cff)">&#8594; access token</text>
+    </g>
+    <g class="agc-node" tabindex="0" role="group" aria-label="Mobile input: yields an ID token; this path is unchanged">
+      <title>Mobile &#8594; ID token (unchanged)</title>
+      <rect class="agc-hit" x="376" y="40" width="268" height="50"/>
+      <rect class="agc-box" x="380" y="44" width="260" height="42" rx="8" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4"/>
+      <text x="510" y="62" text-anchor="middle" font-size="10.5">mobile</text>
+      <text x="510" y="77" text-anchor="middle" font-size="9" fill="var(--color-q1,#9d8cff)">&#8594; ID token (unchanged)</text>
+    </g>
+    <path d="M170 90 C170 104, 260 106, 300 116" stroke="var(--color-q1,#9d8cff)" stroke-width="1.5" fill="none" marker-end="url(#agc-ah)"/>
+    <path d="M510 90 C510 104, 420 106, 380 116" stroke="var(--color-q1,#9d8cff)" stroke-width="1.5" fill="none" marker-end="url(#agc-ah)"/>
+
+    <!-- handler -->
+    <g class="agc-node" tabindex="0" role="group" aria-label="One shared handler: GoogleLoginCommand, the same handler the mobile API uses; IdToken is optional, AccessToken optional">
+      <title>GoogleLoginCommand &#183; one shared handler</title>
+      <rect class="agc-hit" x="176" y="110" width="328" height="52"/>
+      <rect class="agc-box" x="180" y="114" width="320" height="44" rx="8" fill="var(--color-q0,#5fc9bf)" fill-opacity="0.12" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.7"/>
+      <text x="340" y="135" text-anchor="middle" font-size="11" fill="var(--color-q0,#5fc9bf)">GoogleLoginCommand &#183; one shared handler</text>
+      <text x="340" y="150" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">validates whichever artifact the edge supplied</text>
+    </g>
+    <path d="M340 158 V178" stroke="var(--color-q1,#9d8cff)" stroke-width="1.5" fill="none" marker-end="url(#agc-ah)"/>
+
+    <!-- validate -->
+    <g class="agc-node" tabindex="0" role="group" aria-label="Validate: the web access token goes through Google tokeninfo with an audience check against the web client ID, closing a substitution vector the legacy userinfo path lacked">
+      <title>Validate &#183; web access token audience-checked via tokeninfo</title>
+      <rect class="agc-hit" x="136" y="180" width="408" height="60"/>
+      <rect class="agc-box" x="140" y="184" width="400" height="52" rx="8" fill="var(--color-surface,#12151d)" stroke="var(--color-q1,#9d8cff)" stroke-width="1.5"/>
+      <text x="340" y="205" text-anchor="middle" font-size="10" fill="var(--color-q1,#9d8cff)">validate the supplied artifact</text>
+      <text x="340" y="221" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">web access token: tokeninfo + audience check vs web client ID</text>
+      <text class="agc-note" x="340" y="233" text-anchor="middle" font-size="8" fill="var(--color-q1,#9d8cff)">closes a substitution vector the legacy userinfo path lacked</text>
+    </g>
+    <path d="M340 236 V256" stroke="var(--color-q1,#9d8cff)" stroke-width="1.5" fill="none" marker-end="url(#agc-ah)"/>
+
+    <!-- email_verified gate -->
+    <g class="agc-node" tabindex="0" role="group" aria-label="Gate: email_verified must be true before any account match or create">
+      <title>email_verified must be true &#8212; before match/create</title>
+      <rect class="agc-hit" x="136" y="258" width="408" height="46"/>
+      <rect class="agc-box" x="140" y="262" width="400" height="38" rx="8" fill="var(--color-surface,#12151d)" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.4"/>
+      <text x="340" y="285" text-anchor="middle" font-size="10" fill="var(--color-q0,#5fc9bf)">email_verified must be true &#8594; then match / create</text>
+    </g>
+    <path d="M340 300 V320" stroke="var(--color-q1,#9d8cff)" stroke-width="1.5" fill="none" marker-end="url(#agc-ah)"/>
+
+    <!-- find or create -->
+    <g class="agc-node" tabindex="0" role="group" aria-label="Shared find-or-create and token issuance — the code every edge already shares">
+      <title>shared find-or-create + issuance</title>
+      <rect class="agc-hit" x="136" y="322" width="408" height="46"/>
+      <rect class="agc-box" x="140" y="326" width="400" height="38" rx="8" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4"/>
+      <text x="340" y="349" text-anchor="middle" font-size="10">shared find-or-create + issuance &#8212; no second Google path</text>
+    </g>
+
+    <!-- outputs -->
+    <path d="M240 364 C210 378, 190 384, 170 396" stroke="var(--color-q1,#9d8cff)" stroke-width="1.5" fill="none" marker-end="url(#agc-ah)"/>
+    <path d="M440 364 C470 378, 490 384, 510 396" stroke="var(--color-q1,#9d8cff)" stroke-width="1.5" fill="none" marker-end="url(#agc-ah)"/>
+    <g class="agc-node" tabindex="0" role="group" aria-label="Web edge issues an HttpOnly cookie via SignInWithCookieAsync; the JWT in the response is ignored">
+      <title>web edge &#8594; HttpOnly cookie (SignInWithCookieAsync)</title>
+      <rect class="agc-hit" x="36" y="400" width="268" height="52"/>
+      <rect class="agc-box" x="40" y="404" width="260" height="44" rx="8" fill="var(--color-surface,#12151d)" stroke="var(--color-q1,#9d8cff)" stroke-width="1.5"/>
+      <text x="170" y="424" text-anchor="middle" font-size="10" fill="var(--color-q1,#9d8cff)">web &#8594; HttpOnly cookie</text>
+      <text x="170" y="439" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">SignInWithCookieAsync &#183; JWT ignored here</text>
+    </g>
+    <g class="agc-node" tabindex="0" role="group" aria-label="Mobile edge issues a JWT plus refresh token in the response body">
+      <title>mobile edge &#8594; JWT + refresh</title>
+      <rect class="agc-hit" x="376" y="400" width="268" height="52"/>
+      <rect class="agc-box" x="380" y="404" width="260" height="44" rx="8" fill="var(--color-surface,#12151d)" stroke="var(--color-q1,#9d8cff)" stroke-width="1.5"/>
+      <text x="510" y="424" text-anchor="middle" font-size="10" fill="var(--color-q1,#9d8cff)">mobile &#8594; JWT + refresh</text>
+      <text x="510" y="439" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">in the response body</text>
+    </g>
+
+    <text class="agc-hint" x="668" y="24" text-anchor="end" font-size="9" fill="var(--color-muted,#8a8f9c)">hover a step &#9656;</text>
+  </g>
+</svg>

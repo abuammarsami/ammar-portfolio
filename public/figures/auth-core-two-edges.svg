@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 440" role="img" aria-labelledby="ace-t ace-d">
+  <title id="ace-t">One decision core, two transport edges, and a JWKS issuer boundary</title>
+  <desc id="ace-d">At the top are two clients: the browser (MVC web and admin) on the left, and the native mobile app on the right. Both route their login through one central Auth core — MediatR handlers over ASP.NET Core Identity — which makes a single decision: verify the credential, validate the Google token, check lockout, issue. The MVC web and mobile user logins already route through the core; the admin path is converging next (Step 1.5). The core then hands each edge the session artifact safest for its medium: the browser edge gets an HttpOnly, Secure, SameSite cookie (no browser-JavaScript token store, so it already has the Backend-for-Frontend property); the native edge gets a bearer JWT plus a rotating refresh token. Across the bottom is the JWKS issuer boundary — asymmetric ES256 signing plus a dot-well-known slash jwks.json discovery endpoint — which lets each host validate a token by the issuer's public key instead of a shared secret; it is decided in an ADR but not yet built, shown dashed. Hover or focus any node to read it.</desc>
+  <style>
+    .ace-node{ cursor:pointer; transition:opacity .2s ease; }
+    .ace-node:focus{ outline:none; }
+    .ace-hit{ fill:transparent; }
+    svg:hover .ace-node:not(:hover),
+    svg:focus-within .ace-node:not(:focus-within){ opacity:.3; }
+    .ace-box{ transition:stroke-width .2s ease; }
+    .ace-node:hover .ace-box,
+    .ace-node:focus-within .ace-box{ stroke-width:2.4; }
+    .ace-note{ opacity:0; transition:opacity .18s ease; }
+    .ace-node:hover .ace-note,
+    .ace-node:focus-within .ace-note{ opacity:1; }
+    .ace-hint{ opacity:.6; }
+    svg:hover .ace-hint, svg:focus-within .ace-hint{ opacity:0; transition:opacity .25s ease; }
+    @media (prefers-reduced-motion: reduce){ *{animation:none!important} }
+  </style>
+  <defs>
+    <marker id="ace-ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 1 L9 5 L0 9 z" fill="var(--color-q1,#9d8cff)"/>
+    </marker>
+  </defs>
+  <g style="font-family:var(--font-mono,'IBM Plex Mono',ui-monospace,monospace)" fill="var(--color-ink,#e9e7e0)" font-size="12">
+    <text x="340" y="26" text-anchor="middle" font-size="11" letter-spacing="1.1" fill="var(--color-q1,#9d8cff)">one decision &#183; two edges by medium &#183; one JWKS trust boundary</text>
+
+    <!-- clients -->
+    <g class="ace-node" tabindex="0" role="group" aria-label="Browser client: the server-rendered MVC web app (converged) and admin (converging, Step 1.5), which keep no token in browser JavaScript">
+      <title>Browser &#183; MVC web + admin (no browser-JS token store)</title>
+      <rect class="ace-hit" x="36" y="52" width="268" height="56"/>
+      <rect class="ace-box" x="40" y="56" width="260" height="48" rx="8" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4"/>
+      <text x="170" y="76" text-anchor="middle" font-size="11">Browser &#183; MVC web + admin</text>
+      <text x="170" y="92" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">no JS token store &#183; admin converging (1.5)</text>
+    </g>
+    <g class="ace-node" tabindex="0" role="group" aria-label="Native mobile client: the Flutter app, a public OAuth client per RFC 8252">
+      <title>Native mobile &#183; Flutter (RFC 8252 public client)</title>
+      <rect class="ace-hit" x="376" y="52" width="268" height="56"/>
+      <rect class="ace-box" x="380" y="56" width="260" height="48" rx="8" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4"/>
+      <text x="510" y="76" text-anchor="middle" font-size="11">Native mobile &#183; Flutter</text>
+      <text x="510" y="92" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">RFC 8252 public client</text>
+    </g>
+
+    <!-- clients -> core -->
+    <path d="M170 108 V138 C170 148, 250 150, 300 158" stroke="var(--color-q1,#9d8cff)" stroke-width="1.5" fill="none" marker-end="url(#ace-ah)"/>
+    <path d="M510 108 V138 C510 148, 430 150, 380 158" stroke="var(--color-q1,#9d8cff)" stroke-width="1.5" fill="none" marker-end="url(#ace-ah)"/>
+
+    <!-- CORE -->
+    <g class="ace-node" tabindex="0" role="group" aria-label="Auth core: MediatR handlers over ASP.NET Core Identity — the single place that decides who you are">
+      <title>Auth core &#183; MediatR over Identity &#8212; one decision</title>
+      <rect class="ace-hit" x="176" y="150" width="328" height="70"/>
+      <rect class="ace-box" x="180" y="154" width="320" height="62" rx="9" fill="var(--color-q0,#5fc9bf)" fill-opacity="0.12" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.8"/>
+      <text x="340" y="180" text-anchor="middle" font-size="12" fill="var(--color-q0,#5fc9bf)">Auth core &#183; MediatR over Identity</text>
+      <text x="340" y="199" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">one decision: verify &#183; validate &#183; lockout &#183; issue</text>
+      <text class="ace-note" x="340" y="212" text-anchor="middle" font-size="8.5" fill="var(--color-q0,#5fc9bf)">a bug fixed here fixes web + mobile at once</text>
+    </g>
+
+    <!-- core -> artifacts -->
+    <path d="M300 212 C250 224, 200 232, 170 244" stroke="var(--color-q1,#9d8cff)" stroke-width="1.5" fill="none" marker-end="url(#ace-ah)"/>
+    <path d="M380 212 C430 224, 480 232, 510 244" stroke="var(--color-q1,#9d8cff)" stroke-width="1.5" fill="none" marker-end="url(#ace-ah)"/>
+
+    <!-- artifacts -->
+    <g class="ace-node" tabindex="0" role="group" aria-label="Browser artifact: an HttpOnly, Secure, SameSite cookie — safe from XSS token theft">
+      <title>HttpOnly + Secure + SameSite cookie</title>
+      <rect class="ace-hit" x="36" y="248" width="268" height="58"/>
+      <rect class="ace-box" x="40" y="252" width="260" height="50" rx="8" fill="var(--color-surface,#12151d)" stroke="var(--color-q1,#9d8cff)" stroke-width="1.5"/>
+      <text x="170" y="272" text-anchor="middle" font-size="10.5" fill="var(--color-q1,#9d8cff)">HttpOnly + Secure + SameSite cookie</text>
+      <text x="170" y="288" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">BFF property for free &#183; no XSS token surface</text>
+    </g>
+    <g class="ace-node" tabindex="0" role="group" aria-label="Native artifact: a bearer JWT access token plus a rotating refresh token, held in the app">
+      <title>bearer JWT + rotating refresh token</title>
+      <rect class="ace-hit" x="376" y="248" width="268" height="58"/>
+      <rect class="ace-box" x="380" y="252" width="260" height="50" rx="8" fill="var(--color-surface,#12151d)" stroke="var(--color-q1,#9d8cff)" stroke-width="1.5"/>
+      <text x="510" y="272" text-anchor="middle" font-size="10.5" fill="var(--color-q1,#9d8cff)">bearer JWT + rotating refresh</text>
+      <text x="510" y="288" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">held in the app &#183; never in a browser</text>
+    </g>
+
+    <!-- JWKS band -->
+    <g class="ace-node" tabindex="0" role="group" aria-label="JWKS issuer boundary: asymmetric ES256 signing plus a jwks.json discovery endpoint, so each host validates by public key not shared secret — decided in an ADR but not yet built">
+      <title>JWKS issuer boundary &#8212; decided, not yet built</title>
+      <rect class="ace-hit" x="36" y="332" width="608" height="70"/>
+      <rect class="ace-box" x="40" y="336" width="600" height="62" rx="9" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.6" stroke-dasharray="6 4"/>
+      <text x="340" y="360" text-anchor="middle" font-size="10.5">JWKS issuer boundary &#183; ES256 + /.well-known/jwks.json</text>
+      <text x="340" y="378" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">each host validates by the issuer's public key, not a shared secret</text>
+      <text x="340" y="392" text-anchor="middle" font-size="8.5" fill="var(--color-q1,#9d8cff)">decided (ADR-0014) &#183; not yet built &#8212; unblocks a drop-in OIDC server later</text>
+    </g>
+
+    <text class="ace-hint" x="668" y="26" text-anchor="end" font-size="9" fill="var(--color-muted,#8a8f9c)">hover a node &#9656;</text>
+  </g>
+</svg>
