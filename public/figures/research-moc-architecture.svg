@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="moca-title moca-desc">
+  <title id="moca-title">One shared backbone, three heads</title>
+  <desc id="moca-desc">A face image feeds a shared convolutional stack — Conv 16, Conv 32, Conv 32 with 3 by 3 kernels — that forks into three task heads: an age head (Dense 1, linear) doing regression, a gender head (Dense 2, sigmoid) doing 2-class classification, and a race head (Dense 5, softmax) doing 5-class classification. Activation tokens flow from the backbone out to all three heads at once. Hover or focus a head to isolate it and read its output detail.</desc>
+  <style>
+    @keyframes moca-a { 0%{transform:translate(0,0);opacity:0} 8%{opacity:1} 48%{transform:translate(150px,-70px);opacity:1} 58%{opacity:0} 100%{opacity:0} }
+    @keyframes moca-g { 0%{transform:translate(0,0);opacity:0} 8%{opacity:1} 48%{transform:translate(150px,0);opacity:1} 58%{opacity:0} 100%{opacity:0} }
+    @keyframes moca-r { 0%{transform:translate(0,0);opacity:0} 8%{opacity:1} 48%{transform:translate(150px,70px);opacity:1} 58%{opacity:0} 100%{opacity:0} }
+    @keyframes moca-glow { 0%,100%{opacity:0.3} 50%{opacity:0.85} }
+    .moca-a{animation:moca-a 4.6s ease-in-out infinite}
+    .moca-g{animation:moca-g 4.6s ease-in-out infinite}
+    .moca-r{animation:moca-r 4.6s ease-in-out infinite}
+    .moca-glow{animation:moca-glow 3.4s ease-in-out infinite}
+    /* interactive (zero-JS): hover or keyboard-focus a head to isolate it */
+    .moca-col{ cursor:pointer; transition:opacity .2s ease; }
+    .moca-col:focus{ outline:none; }
+    .moca-hit{ fill:transparent; }
+    svg:hover .moca-col:not(:hover),
+    svg:focus-within .moca-col:not(:focus-within){ opacity:.35; }
+    .moca-col:hover .moca-box,
+    .moca-col:focus-within .moca-box{ stroke:var(--color-q1,#9d8cff); stroke-width:2; }
+    .moca-note{ opacity:0; transition:opacity .18s ease; }
+    .moca-col:hover .moca-note,
+    .moca-col:focus-within .moca-note{ opacity:1; }
+    .moca-hint{ opacity:.6; }
+    svg:hover .moca-hint,
+    svg:focus-within .moca-hint{ opacity:0; transition:opacity .2s ease; }
+    @media (prefers-reduced-motion: reduce){ *{animation:none!important} .moca-a,.moca-g,.moca-r{opacity:0} .moca-glow{opacity:0.55} }
+  </style>
+  <defs>
+    <marker id="moca-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted,#8a8f9c)" />
+    </marker>
+  </defs>
+  <g style="font-family: var(--font-mono,'IBM Plex Mono',ui-monospace,monospace)" fill="var(--color-ink,#e9e7e0)" font-size="12">
+
+    <text x="320" y="26" text-anchor="middle" font-size="11" letter-spacing="1.5" fill="var(--color-q1,#9d8cff)">ONE BACKBONE, THREE HEADS</text>
+
+    <!-- face input -->
+    <rect x="24" y="150" width="70" height="70" rx="5" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4" />
+    <g fill="none" stroke="var(--color-ink,#e9e7e0)" stroke-width="1.5">
+      <circle cx="59" cy="180" r="13" />
+      <circle cx="54" cy="177" r="1.4" fill="var(--color-ink,#e9e7e0)" stroke="none" />
+      <circle cx="64" cy="177" r="1.4" fill="var(--color-ink,#e9e7e0)" stroke="none" />
+      <path d="M 53 185 Q 59 189 65 185" />
+    </g>
+    <text x="59" y="238" text-anchor="middle" font-size="9.5" fill="var(--color-muted,#8a8f9c)">198x198x3</text>
+
+    <line x1="94" y1="185" x2="128" y2="185" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.5" opacity="0.6" marker-end="url(#moca-ah)" />
+
+    <!-- shared conv backbone -->
+    <rect x="140" y="150" width="150" height="72" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.6" opacity="0.45" transform="translate(14,-14)" />
+    <rect x="140" y="150" width="150" height="72" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.6" opacity="0.7" transform="translate(7,-7)" />
+    <rect class="moca-glow" x="140" y="150" width="150" height="72" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-q0,#5fc9bf)" stroke-width="2" />
+    <text x="215" y="172" text-anchor="middle" font-size="12" fill="var(--color-q0,#5fc9bf)">shared conv</text>
+    <text x="215" y="190" text-anchor="middle" font-size="9.5" fill="var(--color-muted,#8a8f9c)">16 - 32 - 32</text>
+    <text x="215" y="205" text-anchor="middle" font-size="9.5" fill="var(--color-muted,#8a8f9c)">3x3 . BN . pool</text>
+
+    <!-- fan out -->
+    <line x1="304" y1="170" x2="404" y2="110" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4" opacity="0.5" marker-end="url(#moca-ah)" />
+    <line x1="304" y1="185" x2="404" y2="185" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4" opacity="0.5" marker-end="url(#moca-ah)" />
+    <line x1="304" y1="200" x2="404" y2="260" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4" opacity="0.5" marker-end="url(#moca-ah)" />
+
+    <!-- age head -->
+    <g class="moca-col" tabindex="0" role="group" aria-label="Age head: Dense(1) linear regression, R-squared 0.81">
+      <title>age &#183; linear &#183; R&#178; 0.81</title>
+      <rect class="moca-hit" x="406" y="82" width="210" height="56"/>
+      <rect class="moca-box" x="406" y="82" width="210" height="56" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-ink,#e9e7e0)" stroke-width="1.4" />
+      <text x="418" y="106" font-size="12">age</text>
+      <text x="418" y="124" font-size="9.5" fill="var(--color-muted,#8a8f9c)">Dense(1) linear . regression</text>
+      <text class="moca-note" x="606" y="106" text-anchor="end" font-size="9.5" fill="var(--color-q1,#9d8cff)">age &#183; linear &#183; R&#178; 0.81</text>
+    </g>
+    <!-- gender head -->
+    <g class="moca-col" tabindex="0" role="group" aria-label="Gender head: Dense(2) sigmoid, 2-class, 94.8 percent">
+      <title>gender &#183; sigmoid &#183; 94.8%</title>
+      <rect class="moca-hit" x="406" y="157" width="210" height="56"/>
+      <rect class="moca-box" x="406" y="157" width="210" height="56" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-ink,#e9e7e0)" stroke-width="1.4" />
+      <text x="418" y="181" font-size="12">gender</text>
+      <text x="418" y="199" font-size="9.5" fill="var(--color-muted,#8a8f9c)">Dense(2) sigmoid . 2-class</text>
+      <text class="moca-note" x="606" y="181" text-anchor="end" font-size="9.5" fill="var(--color-q1,#9d8cff)">gender &#183; sigmoid &#183; 94.8%</text>
+    </g>
+    <!-- race head -->
+    <g class="moca-col" tabindex="0" role="group" aria-label="Race head: Dense(5) softmax, 5-class, 87 percent">
+      <title>race &#183; softmax &#183; 87%</title>
+      <rect class="moca-hit" x="406" y="232" width="210" height="56"/>
+      <rect class="moca-box" x="406" y="232" width="210" height="56" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-ink,#e9e7e0)" stroke-width="1.4" />
+      <text x="418" y="256" font-size="12">race</text>
+      <text x="418" y="274" font-size="9.5" fill="var(--color-muted,#8a8f9c)">Dense(5) softmax . 5-class</text>
+      <text class="moca-note" x="606" y="256" text-anchor="end" font-size="9.5" fill="var(--color-q1,#9d8cff)">race &#183; softmax &#183; 87%</text>
+    </g>
+
+    <!-- activation tokens -->
+    <circle class="moca-a" cx="304" cy="185" r="5" fill="var(--color-q0,#5fc9bf)" />
+    <circle class="moca-g" cx="304" cy="185" r="5" fill="var(--color-q0,#5fc9bf)" />
+    <circle class="moca-r" cx="304" cy="185" r="5" fill="var(--color-q0,#5fc9bf)" />
+
+    <text x="320" y="330" text-anchor="middle" font-size="10.5" fill="var(--color-muted,#8a8f9c)">Fig. - one convolutional body, ~3.2M params, forks into three task-specific heads</text>
+
+    <!-- interaction hint (fades out once the reader hovers a head) -->
+    <text class="moca-hint" x="616" y="52" text-anchor="end" font-size="9" fill="var(--color-muted,#8a8f9c)">hover a head &#9656;</text>
+  </g>
+</svg>

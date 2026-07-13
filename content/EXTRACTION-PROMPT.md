@@ -5,10 +5,12 @@ You are helping me build a top-1%, world-class software engineer portfolio websi
 I will attach my CV / resume. Your job is to interview me and extract the raw
 material into clean Markdown that a website builder will consume.
 
-My background: Software Engineer, backend + AI/ML + DevOps. Currently at Masjid
-Solutions (remote, US). Key work: .NET Aspire distributed systems, KioskVisionAI
-(Azure Vision AI), Stripe/Authorize.Net ACH payments, CI/CD pipelines, plus AI/ML
-research (Quantum Machine Learning, NLP, ensemble models).
+My background: Software Engineer, backend + AI/ML + DevOps. Currently Operation Manager,
+Web & App Development at Partners Online (Bangladesh & UK) — building Partners.com.bd (.NET
+API, Flutter apps, MVC→API migration). Previously at Masjid Solutions (remote, US): .NET
+Aspire distributed systems, KioskVisionAI (Azure Vision AI), Stripe/Authorize.Net ACH
+payments, CI/CD pipelines. Plus AI/ML research (Quantum Machine Learning, NLP, ensemble
+models).
 
 Produce your answer as **7 clearly-labeled Markdown sections** using the exact
 headings below. For anything you don't know about me, ASK me a short question

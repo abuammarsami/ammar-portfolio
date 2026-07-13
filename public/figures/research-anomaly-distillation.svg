@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="anom-d-title anom-d-desc">
+  <title id="anom-d-title">Distilling a decision-tree teacher into a neural-net student</title>
+  <desc id="anom-d-desc">On the left, a decision-tree teacher whose leaves emit hard probabilities of 1.0 and 0.0, badged at test macro-F1 0.97. A teal distill arrow labelled soft targets at temperature T carries a token to the right, into a neural-network student badged at test macro-F1 0.75. Between them a callout notes the roughly 22-point macro-F1 drop, because a tree's hard leaves carry almost no dark knowledge to soften.</desc>
+  <defs>
+    <marker id="anom-d-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-q0, #5fc9bf)" />
+    </marker>
+  </defs>
+  <style>
+    @keyframes anom-d-travel {
+      0%   { transform: translateX(0);   opacity: 0; }
+      10%  { opacity: 1; }
+      80%  { transform: translateX(150px); opacity: 1; }
+      92%  { transform: translateX(150px); opacity: 0; }
+      100% { transform: translateX(150px); opacity: 0; }
+    }
+    @keyframes anom-d-absorb { 0%, 55% { opacity: 0.08; } 80% { opacity: 0.6; } 100% { opacity: 0.08; } }
+    @keyframes anom-d-pulse  { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.7; } }
+    .anom-d-travel { animation: anom-d-travel 4.4s ease-in-out infinite; }
+    .anom-d-absorb { animation: anom-d-absorb 4.4s ease-in-out infinite; }
+    .anom-d-pulse  { animation: anom-d-pulse 3.4s ease-in-out infinite; }
+    /* interactive (zero-JS): hover or keyboard-focus a model to isolate it */
+    .anom-d-part { cursor: pointer; transition: opacity .2s ease; }
+    .anom-d-part:focus { outline: none; }
+    .anom-d-hit { fill: transparent; }
+    svg:hover .anom-d-part:not(:hover),
+    svg:focus-within .anom-d-part:not(:focus-within) { opacity: .35; }
+    .anom-d-part:hover .anom-d-box,
+    .anom-d-part:focus-within .anom-d-box { stroke-width: 3; }
+    .anom-d-note { opacity: 0; transition: opacity .18s ease; }
+    .anom-d-part:hover .anom-d-note,
+    .anom-d-part:focus-within .anom-d-note { opacity: 1; }
+    .anom-d-hint { opacity: .6; }
+    svg:hover .anom-d-hint,
+    svg:focus-within .anom-d-hint { opacity: 0; transition: opacity .2s ease; }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } .anom-d-travel { opacity: 0; } .anom-d-absorb { opacity: 0.4; } }
+  </style>
+  <g style="font-family: var(--font-mono, 'IBM Plex Mono', ui-monospace, monospace)" fill="var(--color-ink, #e9e7e0)" font-size="12">
+
+    <text x="320" y="30" text-anchor="middle" font-size="11" letter-spacing="1.5" fill="var(--color-q1, #9d8cff)">THE TEACHER WINS ACCURACY, THEN TEACHES POORLY</text>
+
+    <!-- ── TEACHER: decision tree ── -->
+    <g class="anom-d-part" tabindex="0" role="group" aria-label="Teacher, decision tree, test macro-F1 0.97">
+      <title>Teacher &#183; decision tree &#8212; test macro-F1 0.97</title>
+      <rect class="anom-d-hit" x="30" y="70" width="210" height="196" rx="8" />
+      <rect class="anom-d-box" x="30" y="70" width="210" height="196" rx="8" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" />
+      <text x="135" y="96" text-anchor="middle" font-size="12" fill="var(--color-q0, #5fc9bf)">teacher &#183; decision tree</text>
+
+      <!-- tree edges -->
+      <g stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" fill="none">
+        <line x1="135" y1="118" x2="92" y2="158" />
+        <line x1="135" y1="118" x2="178" y2="158" />
+        <line x1="92" y1="176" x2="70" y2="208" />
+        <line x1="92" y1="176" x2="114" y2="208" />
+        <line x1="178" y1="176" x2="156" y2="208" />
+        <line x1="178" y1="176" x2="200" y2="208" />
+      </g>
+      <!-- tree nodes -->
+      <circle cx="135" cy="114" r="9" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.25" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.5" />
+      <circle cx="92" cy="166" r="8" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.2" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.4" />
+      <circle cx="178" cy="166" r="8" fill="var(--color-q0, #5fc9bf)" fill-opacity="0.2" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.4" />
+      <!-- leaves with hard probs -->
+      <rect x="60" y="214" width="20" height="14" rx="2" fill="var(--color-muted, #8a8f9c)" opacity="0.35" />
+      <rect x="104" y="214" width="20" height="14" rx="2" fill="var(--color-error, #ef4444)" opacity="0.6" />
+      <rect x="146" y="214" width="20" height="14" rx="2" fill="var(--color-error, #ef4444)" opacity="0.6" />
+      <rect x="190" y="214" width="20" height="14" rx="2" fill="var(--color-muted, #8a8f9c)" opacity="0.35" />
+      <text x="135" y="248" text-anchor="middle" font-size="9" fill="var(--color-muted, #8a8f9c)">leaves emit hard 1.0 / 0.0</text>
+      <!-- badge -->
+      <text x="135" y="286" text-anchor="middle" font-size="11">test macro-F1 <tspan fill="var(--color-q0, #5fc9bf)">0.97</tspan></text>
+      <text class="anom-d-note" x="135" y="316" text-anchor="middle" font-size="10" fill="var(--color-q0, #5fc9bf)">macro-F1 0.97</text>
+    </g>
+
+    <!-- ── distill arrow ── -->
+    <line x1="248" y1="150" x2="392" y2="150" stroke="var(--color-q0, #5fc9bf)" stroke-width="3" marker-end="url(#anom-d-ah)" />
+    <text x="320" y="138" text-anchor="middle" font-size="10" fill="var(--color-q0, #5fc9bf)">distill</text>
+    <text x="320" y="170" text-anchor="middle" font-size="9" fill="var(--color-muted, #8a8f9c)">soft targets @ T</text>
+    <g class="anom-d-travel" opacity="0"><circle cx="256" cy="150" r="5" fill="var(--color-q0, #5fc9bf)" /></g>
+
+    <!-- ── STUDENT: neural net ── -->
+    <g class="anom-d-part" tabindex="0" role="group" aria-label="Student, neural net, test macro-F1 0.75">
+      <title>Student &#183; neural net &#8212; test macro-F1 0.75</title>
+      <rect class="anom-d-hit" x="400" y="70" width="210" height="196" rx="8" />
+      <rect class="anom-d-box" x="400" y="70" width="210" height="196" rx="8" fill="var(--color-surface, #12151d)" stroke="var(--color-q1, #9d8cff)" stroke-width="2" />
+      <rect class="anom-d-absorb" x="400" y="70" width="210" height="196" rx="8" fill="var(--color-q1, #9d8cff)" stroke="none" opacity="0.08" />
+      <text x="505" y="96" text-anchor="middle" font-size="12" fill="var(--color-q1, #9d8cff)">student &#183; neural net</text>
+
+      <!-- net nodes: 3 - 4 - 2 -->
+      <g stroke="var(--color-muted, #8a8f9c)" stroke-width="0.8" opacity="0.5">
+        <line x1="438" y1="140" x2="490" y2="120" /><line x1="438" y1="140" x2="490" y2="150" /><line x1="438" y1="140" x2="490" y2="180" /><line x1="438" y1="140" x2="490" y2="210" />
+        <line x1="438" y1="176" x2="490" y2="120" /><line x1="438" y1="176" x2="490" y2="150" /><line x1="438" y1="176" x2="490" y2="180" /><line x1="438" y1="176" x2="490" y2="210" />
+        <line x1="438" y1="212" x2="490" y2="120" /><line x1="438" y1="212" x2="490" y2="150" /><line x1="438" y1="212" x2="490" y2="180" /><line x1="438" y1="212" x2="490" y2="210" />
+        <line x1="490" y1="120" x2="558" y2="150" /><line x1="490" y1="150" x2="558" y2="150" /><line x1="490" y1="180" x2="558" y2="150" /><line x1="490" y1="210" x2="558" y2="150" />
+        <line x1="490" y1="120" x2="558" y2="196" /><line x1="490" y1="150" x2="558" y2="196" /><line x1="490" y1="180" x2="558" y2="196" /><line x1="490" y1="210" x2="558" y2="196" />
+      </g>
+      <g fill="var(--color-q1, #9d8cff)">
+        <circle cx="438" cy="140" r="6" /><circle cx="438" cy="176" r="6" /><circle cx="438" cy="212" r="6" />
+        <circle cx="490" cy="120" r="6" /><circle cx="490" cy="150" r="6" /><circle cx="490" cy="180" r="6" /><circle cx="490" cy="210" r="6" />
+        <circle cx="558" cy="150" r="6" /><circle cx="558" cy="196" r="6" />
+      </g>
+      <text x="505" y="286" text-anchor="middle" font-size="11">test macro-F1 <tspan fill="var(--color-q1, #9d8cff)">0.75</tspan></text>
+      <text class="anom-d-note" x="505" y="316" text-anchor="middle" font-size="10" fill="var(--color-q1, #9d8cff)">macro-F1 0.75</text>
+    </g>
+
+    <!-- gap callout -->
+    <rect class="anom-d-pulse" x="196" y="300" width="248" height="34" rx="6" fill="none" stroke="var(--color-error, #ef4444)" stroke-width="1.4" opacity="0.5" />
+    <text x="320" y="316" text-anchor="middle" font-size="11" fill="var(--color-error, #ef4444)">&#8722;0.22 macro-F1 lost in transfer</text>
+    <text x="320" y="329" text-anchor="middle" font-size="8.5" fill="var(--color-muted, #8a8f9c)">hard leaves carry almost no dark knowledge</text>
+
+    <!-- interaction hint (fades out on hover/focus) -->
+    <text class="anom-d-hint" x="610" y="352" text-anchor="end" font-size="9" fill="var(--color-muted, #8a8f9c)">hover a model &#9656;</text>
+  </g>
+</svg>

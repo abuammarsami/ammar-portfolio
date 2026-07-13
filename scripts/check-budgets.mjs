@@ -8,6 +8,7 @@ const BUDGETS = [
   { route: "/", html: ".next/server/app/index.html", limit: 200_000 },
   { route: "/learn", html: ".next/server/app/learn.html", limit: 350_000 },
   { route: "/work", html: ".next/server/app/work.html", limit: 200_000 },
+  { route: "/work/payments-platform", html: ".next/server/app/work/payments-platform.html", limit: 200_000 },
   { route: "/deep-dives", html: ".next/server/app/deep-dives.html", limit: 200_000 },
   // Deep-dive chapters are structurally identical server components; we budget every
   // published chapter route so a per-page JS regression can't slip through on any of them.
@@ -23,6 +24,12 @@ const BUDGETS = [
   { route: "/deep-dives/the-hash-workflow", html: ".next/server/app/deep-dives/the-hash-workflow.html", limit: 200_000 },
   { route: "/deep-dives/document-driven-development", html: ".next/server/app/deep-dives/document-driven-development.html", limit: 200_000 },
   { route: "/d3", html: ".next/server/app/d3.html", limit: 200_000 },
+  { route: "/deep-dives/quantum-machine-learning", html: ".next/server/app/deep-dives/quantum-machine-learning.html", limit: 200_000 },
+  { route: "/deep-dives/bangla-pos-tagging", html: ".next/server/app/deep-dives/bangla-pos-tagging.html", limit: 200_000 },
+  { route: "/deep-dives/network-anomaly-detection", html: ".next/server/app/deep-dives/network-anomaly-detection.html", limit: 200_000 },
+  { route: "/deep-dives/blood-cell-detection", html: ".next/server/app/deep-dives/blood-cell-detection.html", limit: 200_000 },
+  { route: "/deep-dives/multi-output-cnn", html: ".next/server/app/deep-dives/multi-output-cnn.html", limit: 200_000 },
+  { route: "/deep-dives/startup-success-prediction", html: ".next/server/app/deep-dives/startup-success-prediction.html", limit: 200_000 },
   { route: "/research", html: ".next/server/app/research.html", limit: 200_000 },
   { route: "/agents", html: ".next/server/app/agents.html", limit: 200_000 },
   { route: "/hire", html: ".next/server/app/hire.html", limit: 200_000 },

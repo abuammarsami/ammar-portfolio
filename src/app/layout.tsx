@@ -8,6 +8,7 @@ import { Nav } from "@/components/ui/nav";
 import { Vt } from "@/components/ui/vt";
 import { DEFAULT_LENS, LENS_INIT_SCRIPT } from "@/lib/agent/lens";
 import { LINKS, SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "@/lib/site";
+import "katex/dist/katex.min.css";
 import "@/styles/globals.css";
 
 const stix = STIX_Two_Text({

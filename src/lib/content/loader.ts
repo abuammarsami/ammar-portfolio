@@ -229,9 +229,11 @@ function parseCapabilities(block: string | undefined): CaseStudyCapability[] {
 export async function getCaseStudy(slug: string): Promise<CaseStudy | null> {
   const parsed = read(path.join("case-studies", `${slug}.md`));
   if (!parsed) return null;
+  const fm = (parsed.data ?? {}) as { headings?: Record<string, string> };
   const s = splitHeadingSections(stripComments(parsed.body));
   return {
     slug,
+    headings: fm.headings ?? {},
     tagline: (s.get("Tagline") ?? "").trim(),
     role: (s.get("Role") ?? "").trim(),
     inOneMinuteHtml: await markdownToHtml(s.get("In one minute") ?? ""),

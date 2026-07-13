@@ -35,7 +35,8 @@ export async function generateMetadata({
 
 function bibtex(p: Project): string {
   const year = p.date.slice(0, 4);
-  const key = `ammar${year}${p.slug.split("-")[0]}`;
+  // keep in sync with the case-study layout's citekey (slug, hyphens stripped)
+  const key = `ammar${year}${p.slug.replace(/-/g, "")}`;
   const lines = [
     `@misc{${key},`,
     `  author = {Ammar, Md. Abu},`,

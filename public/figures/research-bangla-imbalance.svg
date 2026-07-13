@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="bpos3-title bpos3-desc">
+  <title id="bpos3-title">The Bangla POS tagset is savagely imbalanced</title>
+  <desc id="bpos3-desc">A bar chart of token share per POS tag in the Microsoft IL-POST Bengali dataset. One bar towers over the rest: NC, Common Noun, is about 31 percent of all 102,933 tokens — more than twice the height of the second tag, VM, Main Verb. After those two the bars collapse into a long tail of rare tags, each a small fraction of a percent. Only NC's 31 percent is a measured value; the tail heights are illustrative of the shape.</desc>
+  <style>
+    @keyframes bpos3-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+    .bpos3-g1 { animation: bpos3-rise 0.6s ease-out 0.05s both; }
+    .bpos3-g2 { animation: bpos3-rise 0.6s ease-out 0.25s both; }
+    .bpos3-g3 { animation: bpos3-rise 0.6s ease-out 0.45s both; }
+    /* interactive (zero-JS): hover or keyboard-focus a bar to isolate it and read its share */
+    .bpos3-col{ cursor:pointer; transition:opacity .2s ease; }
+    .bpos3-col:focus{ outline:none; }
+    .bpos3-hit{ fill:transparent; }
+    .bpos3-note{ opacity:0; transition:opacity .18s ease; pointer-events:none; }
+    svg:hover .bpos3-col:not(:hover),
+    svg:focus-within .bpos3-col:not(:focus-within){ opacity:.35; }
+    .bpos3-col:hover .bpos3-rect,
+    .bpos3-col:focus-within .bpos3-rect{ stroke:var(--color-ink,#e9e7e0); stroke-width:1.5; }
+    .bpos3-col:hover .bpos3-note,
+    .bpos3-col:focus-within .bpos3-note{ opacity:1; }
+    .bpos3-hint{ opacity:.6; }
+    svg:hover .bpos3-hint,
+    svg:focus-within .bpos3-hint{ opacity:0; transition:opacity .2s ease; }
+    @media (prefers-reduced-motion: reduce){ *{animation:none!important} }
+  </style>
+  <g style="font-family: var(--font-mono,'IBM Plex Mono',ui-monospace,monospace)" fill="var(--color-ink,#e9e7e0)" font-size="12">
+
+    <text x="320" y="26" text-anchor="middle" font-size="11" letter-spacing="1.4" fill="var(--color-q1,#9d8cff)">TOKEN SHARE PER POS TAG &#183; MICROSOFT IL-POST BENGALI</text>
+    <text x="320" y="44" text-anchor="middle" font-size="9.5" fill="var(--color-muted,#8a8f9c)">7,168 sentences &#183; 102,933 tags &#183; 30 classes after merging VA into VAUX</text>
+    <text class="bpos3-hint" x="610" y="26" text-anchor="end" font-size="9" fill="var(--color-muted,#8a8f9c)">hover &#9656;</text>
+
+    <!-- baseline -->
+    <line x1="92" y1="270" x2="574" y2="270" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.2" />
+
+    <!-- NC — the dominant tag (measured ~31%), focusable -->
+    <g class="bpos3-g1">
+      <g class="bpos3-col" tabindex="0" role="group" aria-label="NC, Common Noun: about 31 percent of all 102,933 tokens, the dominant tag">
+        <title>NC &#183; Common Noun &#8212; &#8776;31% of 102,933 tokens (measured)</title>
+        <rect class="bpos3-hit" x="94" y="74" width="38" height="196" />
+        <rect class="bpos3-rect" x="100" y="90" width="26" height="180" rx="2" fill="var(--color-error,#ef4444)" fill-opacity="0.85" />
+        <text x="113" y="82" text-anchor="middle" font-size="10" fill="var(--color-error,#ef4444)">31%</text>
+        <text class="bpos3-note" x="113" y="70" text-anchor="middle" font-size="8" fill="var(--color-error,#ef4444)">Common Noun</text>
+      </g>
+      <text x="113" y="284" text-anchor="middle" font-size="9" fill="var(--color-ink,#e9e7e0)">NC</text>
+    </g>
+
+    <!-- VM — second place, less than half of NC, focusable -->
+    <g class="bpos3-g1">
+      <g class="bpos3-col" tabindex="0" role="group" aria-label="VM, Main Verb: about 14 percent of tokens, the second tag">
+        <title>VM &#183; Main Verb &#8212; &#8776;14% of tokens (2nd place)</title>
+        <rect class="bpos3-hit" x="133" y="74" width="38" height="196" />
+        <rect class="bpos3-rect" x="139" y="188.8" width="26" height="81.2" rx="2" fill="var(--color-q1,#9d8cff)" fill-opacity="0.8" />
+        <text x="152" y="181" text-anchor="middle" font-size="9" fill="var(--color-q1,#9d8cff)">&#8776;14%</text>
+        <text class="bpos3-note" x="152" y="170" text-anchor="middle" font-size="8" fill="var(--color-q1,#9d8cff)">Main Verb</text>
+      </g>
+      <text x="152" y="284" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">VM</text>
+    </g>
+
+    <!-- the collapsing tail -->
+    <g class="bpos3-g2" fill="var(--color-q0,#5fc9bf)" fill-opacity="0.7">
+      <g class="bpos3-col" tabindex="0" role="group" aria-label="A rarer tag, roughly 9 percent of tokens">
+        <title>rarer tag &#8212; &#8776;9% of tokens (illustrative)</title>
+        <rect class="bpos3-hit" x="172" y="74" width="38" height="196" />
+        <rect class="bpos3-rect" x="178" y="217.8" width="26" height="52.2" rx="2" />
+        <text class="bpos3-note" x="191" y="210" text-anchor="middle" font-size="8" fill="var(--color-q0,#5fc9bf)" fill-opacity="1">&#8776;9%</text>
+      </g>
+      <g class="bpos3-col" tabindex="0" role="group" aria-label="A rarer tag, roughly 7 percent of tokens">
+        <title>rarer tag &#8212; &#8776;7% of tokens (illustrative)</title>
+        <rect class="bpos3-hit" x="211" y="74" width="38" height="196" />
+        <rect class="bpos3-rect" x="217" y="229.4" width="26" height="40.6" rx="2" />
+        <text class="bpos3-note" x="230" y="221" text-anchor="middle" font-size="8" fill="var(--color-q0,#5fc9bf)" fill-opacity="1">&#8776;7%</text>
+      </g>
+      <g class="bpos3-col" tabindex="0" role="group" aria-label="A rarer tag, roughly 5 percent of tokens">
+        <title>rarer tag &#8212; &#8776;5% of tokens (illustrative)</title>
+        <rect class="bpos3-hit" x="250" y="74" width="38" height="196" />
+        <rect class="bpos3-rect" x="256" y="238.1" width="26" height="31.9" rx="2" />
+        <text class="bpos3-note" x="269" y="230" text-anchor="middle" font-size="8" fill="var(--color-q0,#5fc9bf)" fill-opacity="1">&#8776;5%</text>
+      </g>
+      <g class="bpos3-col" tabindex="0" role="group" aria-label="A rarer tag, roughly 4 percent of tokens">
+        <title>rarer tag &#8212; &#8776;4% of tokens (illustrative)</title>
+        <rect class="bpos3-hit" x="289" y="74" width="38" height="196" />
+        <rect class="bpos3-rect" x="295" y="243.9" width="26" height="26.1" rx="2" />
+        <text class="bpos3-note" x="308" y="236" text-anchor="middle" font-size="8" fill="var(--color-q0,#5fc9bf)" fill-opacity="1">&#8776;4%</text>
+      </g>
+    </g>
+    <g class="bpos3-g3" fill="var(--color-q0,#5fc9bf)" fill-opacity="0.55">
+      <g class="bpos3-col" tabindex="0" role="group" aria-label="A rarer tag, roughly 3 percent of tokens">
+        <title>rarer tag &#8212; &#8776;3% of tokens (illustrative)</title>
+        <rect class="bpos3-hit" x="328" y="74" width="38" height="196" />
+        <rect class="bpos3-rect" x="334" y="249.7" width="26" height="20.3" rx="2" />
+        <text class="bpos3-note" x="347" y="242" text-anchor="middle" font-size="8" fill="var(--color-q0,#5fc9bf)" fill-opacity="1">&#8776;3%</text>
+      </g>
+      <g class="bpos3-col" tabindex="0" role="group" aria-label="A rarer tag, roughly 3 percent of tokens">
+        <title>rarer tag &#8212; &#8776;3% of tokens (illustrative)</title>
+        <rect class="bpos3-hit" x="367" y="74" width="38" height="196" />
+        <rect class="bpos3-rect" x="373" y="253.8" width="26" height="16.2" rx="2" />
+        <text class="bpos3-note" x="386" y="246" text-anchor="middle" font-size="8" fill="var(--color-q0,#5fc9bf)" fill-opacity="1">&#8776;3%</text>
+      </g>
+      <g class="bpos3-col" tabindex="0" role="group" aria-label="A rarer tag, roughly 2 percent of tokens">
+        <title>rarer tag &#8212; &#8776;2% of tokens (illustrative)</title>
+        <rect class="bpos3-hit" x="406" y="74" width="38" height="196" />
+        <rect class="bpos3-rect" x="412" y="257.2" width="26" height="12.8" rx="2" />
+        <text class="bpos3-note" x="425" y="249" text-anchor="middle" font-size="8" fill="var(--color-q0,#5fc9bf)" fill-opacity="1">&#8776;2%</text>
+      </g>
+      <g class="bpos3-col" tabindex="0" role="group" aria-label="A rarer tag, roughly 2 percent of tokens">
+        <title>rarer tag &#8212; &#8776;2% of tokens (illustrative)</title>
+        <rect class="bpos3-hit" x="445" y="74" width="38" height="196" />
+        <rect class="bpos3-rect" x="451" y="260.1" width="26" height="9.9" rx="2" />
+        <text class="bpos3-note" x="464" y="252" text-anchor="middle" font-size="8" fill="var(--color-q0,#5fc9bf)" fill-opacity="1">&#8776;2%</text>
+      </g>
+      <g class="bpos3-col" tabindex="0" role="group" aria-label="A rarer tag, roughly 1 percent of tokens">
+        <title>rarer tag &#8212; &#8776;1% of tokens (illustrative)</title>
+        <rect class="bpos3-hit" x="484" y="74" width="38" height="196" />
+        <rect class="bpos3-rect" x="490" y="262.5" width="26" height="7.5" rx="2" />
+        <text class="bpos3-note" x="503" y="254" text-anchor="middle" font-size="8" fill="var(--color-q0,#5fc9bf)" fill-opacity="1">&#8776;1%</text>
+      </g>
+      <g class="bpos3-col" tabindex="0" role="group" aria-label="A rarer tag, under 1 percent of tokens">
+        <title>rarer tag &#8212; &lt;1% of tokens (illustrative)</title>
+        <rect class="bpos3-hit" x="523" y="74" width="38" height="196" />
+        <rect class="bpos3-rect" x="529" y="265.0" width="26" height="5.0" rx="2" />
+        <text class="bpos3-note" x="542" y="257" text-anchor="middle" font-size="8" fill="var(--color-q0,#5fc9bf)" fill-opacity="1">&lt;1%</text>
+      </g>
+    </g>
+
+    <!-- tail bracket -->
+    <path d="M 178 300 L 178 306 L 555 306 L 555 300" fill="none" stroke="var(--color-muted,#8a8f9c)" stroke-width="1" opacity="0.6" />
+    <text x="366" y="322" text-anchor="middle" font-size="9.5" fill="var(--color-muted,#8a8f9c)">28 rarer tags &#8212; a long tail, many under 1% each</text>
+
+    <text x="320" y="346" text-anchor="middle" font-size="10" fill="var(--color-muted,#8a8f9c)">Predict NC for everything noun-shaped and accuracy still looks fine &#8212; that&#8217;s the trap macro-F1 exposes.</text>
+  </g>
+</svg>

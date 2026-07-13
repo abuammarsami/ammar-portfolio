@@ -9,7 +9,9 @@ export const metadata: Metadata = {
 };
 
 export default async function WorkPage() {
-  const projects = visibleProjects(await getProjects());
+  // Engineering only — ML research projects live in /research (they're surfaced there
+  // as a constellation), so they don't double-show in the work/job section.
+  const projects = visibleProjects(await getProjects()).filter((p) => p.category !== "research");
 
   return (
     <main className="mx-auto max-w-4xl px-6 pb-16">

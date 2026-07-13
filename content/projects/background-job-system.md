@@ -39,15 +39,16 @@ execution, so the worker, the API, and the deploy pipeline each get their own le
 principal, and only an allow-listed set of job types can ever be created or executed. The whole
 thing is kill-switchable per job type and instrumented with OpenTelemetry (the flagship signal is
 the age of the oldest un-dispatched outbox row — the end-to-end health gauge). I also delivered a
-202-plus-status-polling async image pipeline and a rehearsed cutover that retired the legacy
-scheduler without ever double-crediting a balance.
+202-plus-status-polling async image pipeline and a rehearsed cutover sequence that retires the legacy
+scheduler with no window in which it could double-credit a balance — the ordering plus a never-retry
+pin make a double-payout structurally impossible.
 
 **Impact:** Consolidated all async work behind one observable, secure, idempotent subsystem and
 eliminated a class of production defects (registration partial-commit, unbounded SMTP timeout, CDN
 orphan leak). Replaced three hand-rolled polling loops and a standalone scheduler app with uniform,
 dashboarded, dead-lettered jobs. Shipped incrementally across independently-releasable phases with
-zero business-rule changes, behind hot-reloadable feature flags, and backed by ~1,100 passing tests
-including live-SQL integration coverage.
+zero business-rule changes, behind hot-reloadable feature flags, and backed by a test suite that
+includes live-SQL integration coverage over the actual stored procedures, not just mocks.
 
 **Tech stack:** .NET, ASP.NET Core, C#, Hangfire (SQL Server storage), Dapper + stored procedures,
 SQL Server, OpenTelemetry → Prometheus/Grafana, Polly, MailKit, Windows Service host

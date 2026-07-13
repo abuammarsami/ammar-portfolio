@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="anom-p-title anom-p-desc">
+  <title id="anom-p-title">The anomaly-detection pipeline: learn normal, score the rest</title>
+  <desc id="anom-p-desc">Left to right, four stages: raw traffic flows from CICIDS2017 are cleaned and standardized into features, a model learns the shape of normal traffic (80.3 percent benign), and each flow is scored so deviations cross an alert threshold. A packet token travels the pipeline. Below, an anomaly-score lane shows mostly-low benign bars with a few red spikes that cross the dashed threshold and blink as they are flagged.</desc>
+  <defs>
+    <marker id="anom-p-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted, #8a8f9c)" />
+    </marker>
+  </defs>
+  <style>
+    @keyframes anom-p-flow {
+      0%   { transform: translateX(0);   opacity: 0; }
+      4%   { opacity: 1; }
+      92%  { transform: translateX(462px); opacity: 1; }
+      98%  { transform: translateX(462px); opacity: 0; }
+      100% { transform: translateX(462px); opacity: 0; }
+    }
+    @keyframes anom-p-spike { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+    @keyframes anom-p-glow  { 0%, 100% { opacity: 0.30; } 50% { opacity: 0.7; } }
+    .anom-p-flow  { animation: anom-p-flow 5.2s ease-in-out infinite; }
+    .anom-p-spike { animation: anom-p-spike 2.4s ease-in-out infinite; }
+    .anom-p-s2 { animation-delay: 0.8s; }
+    .anom-p-s3 { animation-delay: 1.5s; }
+    .anom-p-halo  { animation: anom-p-glow 3.6s ease-in-out infinite; }
+    /* interactive (zero-JS): hover or keyboard-focus a stage to isolate it */
+    .anom-p-stage { cursor: pointer; transition: opacity .2s ease; }
+    .anom-p-stage:focus { outline: none; }
+    .anom-p-hit { fill: transparent; }
+    svg:hover .anom-p-stage:not(:hover),
+    svg:focus-within .anom-p-stage:not(:focus-within) { opacity: .35; }
+    .anom-p-stage:hover .anom-p-box,
+    .anom-p-stage:focus-within .anom-p-box { stroke: var(--color-ink, #e9e7e0); stroke-width: 2.5; }
+    .anom-p-note { opacity: 0; transition: opacity .18s ease; }
+    .anom-p-stage:hover .anom-p-note,
+    .anom-p-stage:focus-within .anom-p-note { opacity: 1; }
+    .anom-p-hint { opacity: .6; }
+    svg:hover .anom-p-hint,
+    svg:focus-within .anom-p-hint { opacity: 0; transition: opacity .2s ease; }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } .anom-p-flow { opacity: 0; } }
+  </style>
+  <g style="font-family: var(--font-mono, 'IBM Plex Mono', ui-monospace, monospace)" fill="var(--color-ink, #e9e7e0)" font-size="12">
+
+    <text x="320" y="30" text-anchor="middle" font-size="11" letter-spacing="1.5" fill="var(--color-q1, #9d8cff)">LEARN THE SHAPE OF NORMAL &#183; SCORE EVERYTHING ELSE</text>
+
+    <!-- stage boxes -->
+    <!-- box 1 -->
+    <g class="anom-p-stage" tabindex="0" role="group" aria-label="Stage 1: raw traffic flows from CICIDS2017">
+      <title>Stage 1 &#183; traffic flows &#8212; CICIDS2017 flows</title>
+      <rect class="anom-p-hit" x="18" y="110" width="132" height="112" />
+      <rect class="anom-p-box" x="18" y="120" width="132" height="76" rx="6" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" />
+      <text x="84" y="152" text-anchor="middle" font-size="12">traffic flows</text>
+      <text x="84" y="172" text-anchor="middle" font-size="9" fill="var(--color-muted, #8a8f9c)">CICIDS2017 &#183; 5 days</text>
+      <text class="anom-p-note" x="84" y="213" text-anchor="middle" font-size="9" fill="var(--color-muted, #8a8f9c)">CICIDS2017 flows</text>
+    </g>
+
+    <line x1="152" y1="158" x2="170" y2="158" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.7" marker-end="url(#anom-p-ah)" />
+
+    <!-- box 2 -->
+    <g class="anom-p-stage" tabindex="0" role="group" aria-label="Stage 2: flows cleaned and standardized into per-flow features">
+      <title>Stage 2 &#183; features &#8212; per-flow features</title>
+      <rect class="anom-p-hit" x="172" y="110" width="132" height="112" />
+      <rect class="anom-p-box" x="172" y="120" width="132" height="76" rx="6" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="1.5" />
+      <text x="238" y="152" text-anchor="middle" font-size="12">features</text>
+      <text x="238" y="172" text-anchor="middle" font-size="9" fill="var(--color-muted, #8a8f9c)">clean &#183; standardize</text>
+      <text class="anom-p-note" x="238" y="213" text-anchor="middle" font-size="9" fill="var(--color-q0, #5fc9bf)">per-flow features</text>
+    </g>
+
+    <line x1="306" y1="158" x2="324" y2="158" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.7" marker-end="url(#anom-p-ah)" />
+
+    <!-- box 3 (the learner) -->
+    <g class="anom-p-stage" tabindex="0" role="group" aria-label="Stage 3: model learns the shape of normal traffic, 80.3 percent benign">
+      <title>Stage 3 &#183; learn normal &#8212; BENIGN = 80.3%</title>
+      <rect class="anom-p-hit" x="326" y="110" width="132" height="112" />
+      <rect class="anom-p-box" x="326" y="120" width="132" height="76" rx="6" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" />
+      <rect class="anom-p-halo" x="326" y="120" width="132" height="76" rx="6" fill="none" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" opacity="0.35" />
+      <text x="392" y="152" text-anchor="middle" font-size="12" fill="var(--color-q0, #5fc9bf)">learn normal</text>
+      <text x="392" y="172" text-anchor="middle" font-size="9" fill="var(--color-muted, #8a8f9c)">80.3% BENIGN</text>
+      <text class="anom-p-note" x="392" y="213" text-anchor="middle" font-size="9" fill="var(--color-q0, #5fc9bf)">BENIGN = 80.3%</text>
+    </g>
+
+    <line x1="460" y1="158" x2="478" y2="158" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" opacity="0.7" marker-end="url(#anom-p-ah)" />
+
+    <!-- box 4 -->
+    <g class="anom-p-stage" tabindex="0" role="group" aria-label="Stage 4: score each flow and flag outliers above the alert threshold">
+      <title>Stage 4 &#183; score &amp; flag &#8212; score &gt; threshold &#8594; flag</title>
+      <rect class="anom-p-hit" x="480" y="110" width="132" height="112" />
+      <rect class="anom-p-box" x="480" y="120" width="132" height="76" rx="6" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1.5" />
+      <text x="546" y="152" text-anchor="middle" font-size="12">score &amp; flag</text>
+      <text x="546" y="172" text-anchor="middle" font-size="9" fill="var(--color-error, #ef4444)">outliers &#8594; alert</text>
+      <text class="anom-p-note" x="546" y="213" text-anchor="middle" font-size="9" fill="var(--color-error, #ef4444)">score &gt; threshold</text>
+    </g>
+
+    <!-- travelling packet token -->
+    <g class="anom-p-flow" opacity="0"><rect x="78" y="152" width="12" height="12" rx="2" fill="var(--color-q0, #5fc9bf)" /></g>
+
+    <!-- anomaly-score lane -->
+    <text x="18" y="238" font-size="9.5" fill="var(--color-muted, #8a8f9c)">anomaly score per flow</text>
+    <text class="anom-p-hint" x="604" y="238" text-anchor="end" font-size="9" fill="var(--color-muted, #8a8f9c)">hover a stage &#9656;</text>
+    <rect x="18" y="248" width="594" height="82" rx="6" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="1" opacity="0.6" />
+    <!-- threshold -->
+    <line x1="26" y1="270" x2="604" y2="270" stroke="var(--color-error, #ef4444)" stroke-width="1" stroke-dasharray="5 4" opacity="0.7" />
+    <text x="600" y="266" text-anchor="end" font-size="8.5" fill="var(--color-error, #ef4444)">threshold</text>
+
+    <!-- benign low bars (muted) -->
+    <g fill="var(--color-muted, #8a8f9c)" opacity="0.7">
+      <rect x="34"  y="304" width="9" height="18" /><rect x="52"  y="308" width="9" height="14" />
+      <rect x="70"  y="300" width="9" height="22" /><rect x="88"  y="309" width="9" height="13" />
+      <rect x="128" y="306" width="9" height="16" /><rect x="146" y="302" width="9" height="20" />
+      <rect x="164" y="308" width="9" height="14" /><rect x="220" y="305" width="9" height="17" />
+      <rect x="238" y="301" width="9" height="21" /><rect x="256" y="308" width="9" height="14" />
+      <rect x="300" y="304" width="9" height="18" /><rect x="318" y="307" width="9" height="15" />
+      <rect x="374" y="303" width="9" height="19" /><rect x="392" y="308" width="9" height="14" />
+      <rect x="410" y="305" width="9" height="17" /><rect x="466" y="302" width="9" height="20" />
+      <rect x="484" y="307" width="9" height="15" /><rect x="540" y="304" width="9" height="18" />
+      <rect x="558" y="308" width="9" height="14" /><rect x="576" y="303" width="9" height="19" />
+    </g>
+    <!-- attack spikes (red, cross threshold) -->
+    <rect class="anom-p-spike"        x="106" y="258" width="9" height="64" fill="var(--color-error, #ef4444)" />
+    <rect class="anom-p-spike anom-p-s2" x="346" y="256" width="9" height="66" fill="var(--color-error, #ef4444)" />
+    <rect class="anom-p-spike anom-p-s3" x="510" y="260" width="9" height="62" fill="var(--color-error, #ef4444)" />
+
+    <text x="320" y="352" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">Fig. 1 &#8212; benign flows stay under the line; the rare attack scores high enough to trip the alert.</text>
+  </g>
+</svg>

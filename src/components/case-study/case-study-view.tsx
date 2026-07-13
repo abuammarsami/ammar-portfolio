@@ -65,6 +65,9 @@ export function CaseStudyView({
   jsonLd: object;
 }) {
   const fig = (i: number) => project.figures[i];
+  // Section display headings default to the first case study's wording; a case study
+  // overrides any of them via its `headings:` frontmatter (see loader / ADR-0013).
+  const h = (key: string, fallback: string) => cs.headings?.[key] ?? fallback;
 
   return (
     <main className="pb-24">
@@ -129,7 +132,7 @@ export function CaseStudyView({
         <section className="mt-16">
           <Reveal>
             <SectionTitle kicker="01" title="The problem" />
-            <Heading>Async work wasn&rsquo;t a system — it was scattered habits</Heading>
+            <Heading>{h("problem", "Async work wasn’t a system — it was scattered habits")}</Heading>
             <div className="mt-4 max-w-2xl">{prose(cs.problemHtml)}</div>
           </Reveal>
           <Reveal stagger className="mt-8 grid gap-4 md:grid-cols-3">
@@ -143,7 +146,7 @@ export function CaseStudyView({
         <section className="mt-20">
           <Reveal>
             <SectionTitle kicker="02" title="The idea" />
-            <Heading>The engine is the easy part</Heading>
+            <Heading>{h("bigIdea", "The engine is the easy part")}</Heading>
             <div className="mt-4 max-w-2xl">
               {prose(cs.bigIdeaHtml, "[&_strong]:text-q0 [&_strong]:font-serif [&_strong]:text-[1.15em]")}
             </div>
@@ -169,7 +172,7 @@ export function CaseStudyView({
         <section className="mt-20">
           <Reveal>
             <SectionTitle kicker="03" title="How it works" />
-            <Heading>One lean API, one dedicated worker, one durable outbox</Heading>
+            <Heading>{h("howItWorks", "One lean API, one dedicated worker, one durable outbox")}</Heading>
             <div className="mt-4 max-w-2xl">{prose(cs.howItWorksHtml)}</div>
           </Reveal>
           {fig(0) && (
@@ -184,7 +187,7 @@ export function CaseStudyView({
           <section className="mt-20">
             <Reveal>
               <SectionTitle kicker="04" title="Follow a job" />
-              <Heading>The path that makes a job impossible to lose</Heading>
+              <Heading>{h("followAJob", "The path that makes a job impossible to lose")}</Heading>
             </Reveal>
             <Reveal stagger className="mt-8">
               <ol className="relative ml-3 border-l rule-hair">
@@ -217,7 +220,7 @@ export function CaseStudyView({
           <section className="mt-20">
             <Reveal>
               <SectionTitle kicker="05" title="Architect decisions" />
-              <Heading>Where the real thinking went</Heading>
+              <Heading>{h("decisions", "Where the real thinking went")}</Heading>
               <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted">
                 Every one of these had a tempting shortcut. Choosing the harder-but-correct path — and being able
                 to say why — is the difference between code that works in a demo and code that survives production.
@@ -235,8 +238,8 @@ export function CaseStudyView({
         <section className="mt-20">
           <Reveal>
             <div className="rounded-sm border rule-hair bg-surface/60 p-6">
-              <p className="font-mono text-xs tracking-widest text-q1 uppercase">The war story · production cutover</p>
-              <Heading>Retiring a money-moving job without paying anyone twice</Heading>
+              <p className="font-mono text-xs tracking-widest text-q1 uppercase">{h("warStoryKicker", "The war story · production cutover")}</p>
+              <Heading>{h("warStory", "Retiring a money-moving job without paying anyone twice")}</Heading>
               <div className="mt-4 max-w-2xl">
                 {prose(cs.warStoryHtml, "[&_strong]:text-q1")}
               </div>
@@ -253,9 +256,15 @@ export function CaseStudyView({
         <section className="mt-20">
           <Reveal>
             <SectionTitle kicker="06" title="Impact" />
-            <Heading>A whole class of bugs, gone by construction</Heading>
+            <Heading>{h("impact", "A whole class of bugs, gone by construction")}</Heading>
             <div className="mt-4 max-w-2xl">{prose(cs.impactHtml, "[&_strong]:text-q0")}</div>
           </Reveal>
+          {/* optional 4th figure (guarded; earlier case studies have only 3) */}
+          {fig(3) && (
+            <Reveal>
+              <ProjectFigure {...fig(3)!} />
+            </Reveal>
+          )}
         </section>
 
         {/* ───────────────────────── going deeper ───────────────────────── */}
@@ -273,7 +282,7 @@ export function CaseStudyView({
           )}
           <BibtexBlock
             entry={[
-              `@misc{ammar2026background,`,
+              `@misc{ammar${project.date.slice(0, 4)}${project.slug.replace(/-/g, "")},`,
               `  author = {Ammar, Md. Abu},`,
               `  title  = {${project.title}},`,
               `  year   = {${project.date.slice(0, 4)}},`,
