@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 400" role="img" aria-labelledby="iht-t iht-d">
+  <title id="iht-t">The heartbeat TTL timeline: a sliding 7-day window, capped at 15 days</title>
+  <desc id="iht-d">A timeline of one image's expiry. On day 0 the upload sets ExpiresAt to day 7. Each time the draft is saved, a heartbeat pushes ExpiresAt to NOW plus 7 days: a save on day 2 moves it to day 9, a save on day 6 moves it to day 13, and a save on day 10 would move it to day 17 but is capped at UploadedAt plus 15 days, so it lands on day 15. A user who keeps editing daily gets the full 15-day window. After the hard cap the image must be re-uploaded; the 30-minute sweeper reaps it. Below the axis, each save is drawn as a fresh 7-day window sliding to the right, clipped at the 15-day cap. The policy is monotonic — expiry only ever moves forward — bounded, and defensible in the terms of service. Hover or focus any event to read it.</desc>
+  <style>
+    .iht-node{ cursor:pointer; transition:opacity .2s ease; }
+    .iht-node:focus{ outline:none; }
+    .iht-hit{ fill:transparent; }
+    svg:hover .iht-node:not(:hover),
+    svg:focus-within .iht-node:not(:focus-within){ opacity:.3; }
+    .iht-box{ transition:stroke-width .2s ease; }
+    .iht-node:hover .iht-box,
+    .iht-node:focus-within .iht-box{ stroke-width:2.6; }
+    .iht-note{ opacity:0; transition:opacity .18s ease; }
+    .iht-node:hover .iht-note,
+    .iht-node:focus-within .iht-note{ opacity:1; }
+    .iht-hint{ opacity:.6; }
+    svg:hover .iht-hint, svg:focus-within .iht-hint{ opacity:0; transition:opacity .25s ease; }
+    @media (prefers-reduced-motion: reduce){ *{animation:none!important} }
+  </style>
+  <defs>
+    <marker id="iht-ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 1 L9 5 L0 9 z" fill="var(--color-muted,#8a8f9c)"/>
+    </marker>
+  </defs>
+  <g style="font-family:var(--font-mono,'IBM Plex Mono',ui-monospace,monospace)" fill="var(--color-ink,#e9e7e0)" font-size="12">
+    <text x="340" y="24" text-anchor="middle" font-size="11" letter-spacing="1.1" fill="var(--color-q1,#9d8cff)">each save = a fresh 7-day window, clipped at day 15</text>
+
+    <!-- event nodes -->
+    <g class="iht-node" tabindex="0" role="group" aria-label="Day 0, Upload: ExpiresAt is set to day 7">
+      <title>Day 0 &#183; Upload &#8594; Expires day 7</title>
+      <rect class="iht-hit" x="16" y="60" width="124" height="56"/>
+      <rect class="iht-box" x="20" y="64" width="116" height="48" rx="7" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.5"/>
+      <text x="78" y="84" text-anchor="middle" font-size="10">Day 0 &#183; Upload</text>
+      <text x="78" y="100" text-anchor="middle" font-size="8.5" fill="var(--color-q1,#9d8cff)">Expires &#8594; Day 7</text>
+    </g>
+    <g class="iht-node" tabindex="0" role="group" aria-label="Day 2, Save: the heartbeat pushes ExpiresAt to day 9">
+      <title>Day 2 &#183; Save &#8594; Expires day 9</title>
+      <rect class="iht-hit" x="146" y="60" width="124" height="56"/>
+      <rect class="iht-box" x="150" y="64" width="116" height="48" rx="7" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.5"/>
+      <text x="208" y="84" text-anchor="middle" font-size="10">Day 2 &#183; Save</text>
+      <text x="208" y="100" text-anchor="middle" font-size="8.5" fill="var(--color-q1,#9d8cff)">Expires &#8594; Day 9</text>
+    </g>
+    <g class="iht-node" tabindex="0" role="group" aria-label="Day 6, Save: the heartbeat pushes ExpiresAt to day 13">
+      <title>Day 6 &#183; Save &#8594; Expires day 13</title>
+      <rect class="iht-hit" x="276" y="60" width="124" height="56"/>
+      <rect class="iht-box" x="280" y="64" width="116" height="48" rx="7" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.5"/>
+      <text x="338" y="84" text-anchor="middle" font-size="10">Day 6 &#183; Save</text>
+      <text x="338" y="100" text-anchor="middle" font-size="8.5" fill="var(--color-q1,#9d8cff)">Expires &#8594; Day 13</text>
+    </g>
+    <g class="iht-node" tabindex="0" role="group" aria-label="Day 10, Save: NOW plus 7 would be day 17, but it is capped at UploadedAt plus 15, so ExpiresAt lands on day 15">
+      <title>Day 10 &#183; Save &#8594; Day 17 capped to Day 15</title>
+      <rect class="iht-hit" x="406" y="60" width="124" height="56"/>
+      <rect class="iht-box" x="410" y="64" width="116" height="48" rx="7" fill="var(--color-surface,#12151d)" stroke="var(--color-q1,#9d8cff)" stroke-width="1.6"/>
+      <text x="468" y="84" text-anchor="middle" font-size="10" fill="var(--color-q1,#9d8cff)">Day 10 &#183; Save</text>
+      <text x="468" y="100" text-anchor="middle" font-size="8.5" fill="var(--color-q1,#9d8cff)">Day 17 &#8594; capped 15</text>
+    </g>
+    <g class="iht-node" tabindex="0" role="group" aria-label="Day 15, Sweep: past the hard cap, the 30-minute sweeper deletes the CDN object">
+      <title>Day 15 &#183; Sweeper &#8594; CDN delete</title>
+      <rect class="iht-hit" x="536" y="60" width="128" height="56"/>
+      <rect class="iht-box" x="540" y="64" width="120" height="48" rx="7" fill="var(--color-q0,#5fc9bf)" fill-opacity="0.12" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.7"/>
+      <text x="600" y="84" text-anchor="middle" font-size="10" fill="var(--color-q0,#5fc9bf)">Day 15 &#183; Sweep</text>
+      <text x="600" y="100" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">CDN delete</text>
+    </g>
+
+    <!-- connectors to axis dots -->
+    <path d="M78 116 V232" stroke="var(--color-muted,#8a8f9c)" stroke-width="1" stroke-dasharray="3 3" opacity="0.6"/>
+    <path d="M208 116 V232" stroke="var(--color-muted,#8a8f9c)" stroke-width="1" stroke-dasharray="3 3" opacity="0.6"/>
+    <path d="M338 116 V232" stroke="var(--color-muted,#8a8f9c)" stroke-width="1" stroke-dasharray="3 3" opacity="0.6"/>
+    <path d="M468 116 V232" stroke="var(--color-muted,#8a8f9c)" stroke-width="1" stroke-dasharray="3 3" opacity="0.6"/>
+    <path d="M600 116 V232" stroke="var(--color-q0,#5fc9bf)" stroke-width="1" stroke-dasharray="3 3" opacity="0.7"/>
+
+    <!-- axis -->
+    <line x1="40" y1="240" x2="640" y2="240" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4" marker-end="url(#iht-ah)"/>
+    <g fill="var(--color-muted,#8a8f9c)" font-size="8.5" text-anchor="middle">
+      <circle cx="78" cy="240" r="2.4" fill="var(--color-ink,#e9e7e0)"/>
+      <circle cx="208" cy="240" r="2.4" fill="var(--color-ink,#e9e7e0)"/>
+      <circle cx="338" cy="240" r="2.4" fill="var(--color-ink,#e9e7e0)"/>
+      <circle cx="468" cy="240" r="2.4" fill="var(--color-ink,#e9e7e0)"/>
+      <circle cx="600" cy="240" r="2.4" fill="var(--color-q0,#5fc9bf)"/>
+      <text x="78" y="254">day 0</text>
+      <text x="208" y="254">day 2</text>
+      <text x="338" y="254">day 6</text>
+      <text x="468" y="254">day 10</text>
+      <text x="600" y="254">day 15</text>
+    </g>
+    <!-- hard cap wall -->
+    <line x1="600" y1="128" x2="600" y2="240" stroke="var(--color-q1,#9d8cff)" stroke-width="1.4" stroke-dasharray="5 3"/>
+    <text x="600" y="140" text-anchor="middle" font-size="8.5" fill="var(--color-q1,#9d8cff)">15-day hard cap</text>
+
+    <!-- sliding windows -->
+    <g stroke-width="4" stroke-linecap="round" opacity="0.85">
+      <line x1="78" y1="276" x2="308" y2="276" stroke="var(--color-muted,#8a8f9c)"/>
+      <line x1="208" y1="290" x2="404" y2="290" stroke="var(--color-muted,#8a8f9c)"/>
+      <line x1="338" y1="304" x2="536" y2="304" stroke="var(--color-muted,#8a8f9c)"/>
+      <line x1="468" y1="318" x2="600" y2="318" stroke="var(--color-q1,#9d8cff)"/>
+    </g>
+    <text x="612" y="321" font-size="8" fill="var(--color-q1,#9d8cff)">clip</text>
+    <text x="140" y="342" font-size="8.5" fill="var(--color-muted,#8a8f9c)">each save opens a fresh 7-day window &#8212; monotonic, only ever forward</text>
+
+    <text x="340" y="372" text-anchor="middle" font-size="9" fill="var(--color-q0,#5fc9bf)">bounded and defensible: after day 15 the image must be re-uploaded &#183; the sweeper reaps it</text>
+
+    <text class="iht-hint" x="668" y="24" text-anchor="end" font-size="9" fill="var(--color-muted,#8a8f9c)">hover an event &#9656;</text>
+  </g>
+</svg>

@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 460" role="img" aria-labelledby="ilm-t ilm-d">
+  <title id="ilm-t">The image lifecycle state machine</title>
+  <desc id="ilm-d">A PendingImageUpload row is a small state machine. It starts in Uploaded. While the draft is alive a heartbeat keeps extending its time-to-live in place. From Uploaded there are three exits. Commit-on-submit moves it to Committed — the terminal safe state, which the sweeper never touches again. Discard moves it to Discarded. Crossing its expiry or the fifteen-day hard cap moves it to Expired. Both Discarded and Expired are swept: the background sweeper deletes the CDN object and marks the row Deleted, and after an audit window it is hard-deleted. The mobile app drives the happy transitions — upload, heartbeat, commit, discard — while the server owns the guarantee: expired and discarded rows are cleaned with no client cooperation required. Hover or focus any state to read it.</desc>
+  <style>
+    .ilm-node{ cursor:pointer; transition:opacity .2s ease; }
+    .ilm-node:focus{ outline:none; }
+    .ilm-hit{ fill:transparent; }
+    svg:hover .ilm-node:not(:hover),
+    svg:focus-within .ilm-node:not(:focus-within){ opacity:.3; }
+    .ilm-box{ transition:stroke-width .2s ease; }
+    .ilm-node:hover .ilm-box,
+    .ilm-node:focus-within .ilm-box{ stroke-width:2.6; }
+    .ilm-note{ opacity:0; transition:opacity .18s ease; }
+    .ilm-node:hover .ilm-note,
+    .ilm-node:focus-within .ilm-note{ opacity:1; }
+    .ilm-hint{ opacity:.6; }
+    svg:hover .ilm-hint, svg:focus-within .ilm-hint{ opacity:0; transition:opacity .25s ease; }
+    @media (prefers-reduced-motion: reduce){ *{animation:none!important} }
+  </style>
+  <defs>
+    <marker id="ilm-ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 1 L9 5 L0 9 z" fill="var(--color-q1,#9d8cff)"/>
+    </marker>
+  </defs>
+  <g style="font-family:var(--font-mono,'IBM Plex Mono',ui-monospace,monospace)" fill="var(--color-ink,#e9e7e0)" font-size="12">
+    <text x="340" y="24" text-anchor="middle" font-size="11" letter-spacing="1.1" fill="var(--color-q1,#9d8cff)">mobile drives the happy path &#183; the server owns the guarantee</text>
+
+    <!-- heartbeat self-loop -->
+    <path d="M300 62 C280 40, 400 40, 380 62" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.4" fill="none" marker-end="url(#ilm-ah)"/>
+    <text x="340" y="40" text-anchor="middle" font-size="8.5" fill="var(--color-q0,#5fc9bf)">heartbeat: extend TTL</text>
+
+    <!-- Uploaded -->
+    <g class="ilm-node" tabindex="0" role="group" aria-label="Uploaded: the row is created after the CDN upload, with a 7-day TTL; a live draft's heartbeat keeps extending it">
+      <title>Uploaded &#183; created with a 7-day TTL, heartbeat-extended</title>
+      <rect class="ilm-hit" x="256" y="64" width="168" height="52"/>
+      <rect class="ilm-box" x="260" y="68" width="160" height="44" rx="8" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.5"/>
+      <text x="340" y="88" text-anchor="middle" font-size="11">Uploaded</text>
+      <text x="340" y="103" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">tracked row &#183; ExpiresAt = +7d</text>
+    </g>
+
+    <!-- three exits -->
+    <path d="M290 112 C220 128, 150 132, 128 146" stroke="var(--color-q1,#9d8cff)" stroke-width="1.4" fill="none" marker-end="url(#ilm-ah)"/>
+    <text x="176" y="132" text-anchor="middle" font-size="8.5" fill="var(--color-q0,#5fc9bf)">commit</text>
+    <path d="M340 116 V166" stroke="var(--color-q1,#9d8cff)" stroke-width="1.4" fill="none" marker-end="url(#ilm-ah)"/>
+    <text x="368" y="142" text-anchor="middle" font-size="8.5" fill="var(--color-q1,#9d8cff)">discard</text>
+    <path d="M390 112 C460 128, 530 132, 552 166" stroke="var(--color-q1,#9d8cff)" stroke-width="1.4" fill="none" marker-end="url(#ilm-ah)"/>
+    <text x="516" y="132" text-anchor="middle" font-size="8.5" fill="var(--color-q1,#9d8cff)">TTL / 15d cap</text>
+
+    <!-- Committed (terminal safe) -->
+    <g class="ilm-node" tabindex="0" role="group" aria-label="Committed: terminal safe state reached only through server validation on ad submit; the sweeper never touches it">
+      <title>Committed &#183; terminal, safe &#8212; sweeper ignores it</title>
+      <rect class="ilm-hit" x="36" y="148" width="188" height="58"/>
+      <rect class="ilm-box" x="40" y="152" width="180" height="50" rx="8" fill="var(--color-q0,#5fc9bf)" fill-opacity="0.12" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.7"/>
+      <text x="130" y="174" text-anchor="middle" font-size="11" fill="var(--color-q0,#5fc9bf)">Committed &#10003;</text>
+      <text x="130" y="190" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">bound to the ad &#183; permanent</text>
+      <text class="ilm-note" x="130" y="203" text-anchor="middle" font-size="8" fill="var(--color-q0,#5fc9bf)">reachable only via server validation</text>
+    </g>
+
+    <!-- Discarded -->
+    <g class="ilm-node" tabindex="0" role="group" aria-label="Discarded: removed from the grid or on logout; ExpiresAt set to now so the sweeper reaps it next tick">
+      <title>Discarded &#183; ExpiresAt = now &#8594; swept next tick</title>
+      <rect class="ilm-hit" x="250" y="166" width="180" height="48"/>
+      <rect class="ilm-box" x="254" y="170" width="172" height="40" rx="8" fill="var(--color-surface,#12151d)" stroke="var(--color-q1,#9d8cff)" stroke-width="1.5"/>
+      <text x="340" y="188" text-anchor="middle" font-size="10.5" fill="var(--color-q1,#9d8cff)">Discarded</text>
+      <text x="340" y="203" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">reaped next tick, no 7d wait</text>
+    </g>
+
+    <!-- Expired -->
+    <g class="ilm-node" tabindex="0" role="group" aria-label="Expired: crossed its ExpiresAt or the 15-day hard cap without being committed">
+      <title>Expired &#183; crossed ExpiresAt / 15-day hard cap</title>
+      <rect class="ilm-hit" x="456" y="166" width="184" height="48"/>
+      <rect class="ilm-box" x="460" y="170" width="176" height="40" rx="8" fill="var(--color-surface,#12151d)" stroke="var(--color-q1,#9d8cff)" stroke-width="1.5"/>
+      <text x="548" y="188" text-anchor="middle" font-size="10.5" fill="var(--color-q1,#9d8cff)">Expired</text>
+      <text x="548" y="203" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">never committed in time</text>
+    </g>
+
+    <!-- Discarded/Expired -> Deleted -->
+    <path d="M340 210 V276" stroke="var(--color-q1,#9d8cff)" stroke-width="1.4" fill="none" marker-end="url(#ilm-ah)"/>
+    <path d="M548 210 C548 250, 440 250, 424 278" stroke="var(--color-q1,#9d8cff)" stroke-width="1.4" fill="none" marker-end="url(#ilm-ah)"/>
+    <text x="360" y="248" text-anchor="middle" font-size="8.5" fill="var(--color-q0,#5fc9bf)">sweep &#183; CDN delete</text>
+
+    <!-- Deleted -->
+    <g class="ilm-node" tabindex="0" role="group" aria-label="Deleted: the sweeper removed the CDN object and marked the row DeletedAt; a failed delete retries and dead-letters at the attempt cap">
+      <title>Deleted &#183; CDN object removed, row marked DeletedAt</title>
+      <rect class="ilm-hit" x="250" y="278" width="180" height="52"/>
+      <rect class="ilm-box" x="254" y="282" width="172" height="44" rx="8" fill="var(--color-q0,#5fc9bf)" fill-opacity="0.12" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.6"/>
+      <text x="340" y="302" text-anchor="middle" font-size="10.5" fill="var(--color-q0,#5fc9bf)">Deleted</text>
+      <text x="340" y="317" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">30 min &#183; Redis-locked, 1 instance</text>
+    </g>
+
+    <!-- Deleted -> HardDeleted -->
+    <path d="M340 326 V366" stroke="var(--color-q1,#9d8cff)" stroke-width="1.4" fill="none" marker-end="url(#ilm-ah)"/>
+    <text x="392" y="350" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">audit window</text>
+
+    <!-- HardDeleted -->
+    <g class="ilm-node" tabindex="0" role="group" aria-label="Hard-deleted: soft-deleted rows are purged after the audit-retention window, so ops can investigate before the record is gone">
+      <title>Hard-deleted &#183; purged after the audit-retention window</title>
+      <rect class="ilm-hit" x="250" y="368" width="180" height="46"/>
+      <rect class="ilm-box" x="254" y="372" width="172" height="38" rx="8" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4"/>
+      <text x="340" y="390" text-anchor="middle" font-size="10.5">Hard-deleted</text>
+      <text x="340" y="404" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">row purged after retention</text>
+    </g>
+
+    <text x="130" y="230" text-anchor="middle" font-size="9" fill="var(--color-q0,#5fc9bf)">the only terminal that keeps the image</text>
+    <text x="130" y="244" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">every other path ends in a guaranteed delete</text>
+
+    <text class="ilm-hint" x="668" y="24" text-anchor="end" font-size="9" fill="var(--color-muted,#8a8f9c)">hover a state &#9656;</text>
+  </g>
+</svg>
