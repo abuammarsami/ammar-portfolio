@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="bpos3-title bpos3-desc">
+  <title id="bpos3-title">The Bangla POS tagset is savagely imbalanced</title>
+  <desc id="bpos3-desc">A bar chart of token share per POS tag in the Microsoft IL-POST Bengali dataset. One bar towers over the rest: NC, Common Noun, is about 31 percent of all 102,933 tokens — more than twice the height of the second tag, VM, Main Verb. After those two the bars collapse into a long tail of rare tags, each a small fraction of a percent. Only NC's 31 percent is a measured value; the tail heights are illustrative of the shape.</desc>
+  <style>
+    @keyframes bpos3-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+    .bpos3-g1 { animation: bpos3-rise 0.6s ease-out 0.05s both; }
+    .bpos3-g2 { animation: bpos3-rise 0.6s ease-out 0.25s both; }
+    .bpos3-g3 { animation: bpos3-rise 0.6s ease-out 0.45s both; }
+    @media (prefers-reduced-motion: reduce){ *{animation:none!important} }
+  </style>
+  <g style="font-family: var(--font-mono,'IBM Plex Mono',ui-monospace,monospace)" fill="var(--color-ink,#e9e7e0)" font-size="12">
+
+    <text x="320" y="26" text-anchor="middle" font-size="11" letter-spacing="1.4" fill="var(--color-q1,#9d8cff)">TOKEN SHARE PER POS TAG &#183; MICROSOFT IL-POST BENGALI</text>
+    <text x="320" y="44" text-anchor="middle" font-size="9.5" fill="var(--color-muted,#8a8f9c)">7,168 sentences &#183; 102,933 tags &#183; 30 classes after merging VA into VAUX</text>
+
+    <!-- baseline -->
+    <line x1="92" y1="270" x2="574" y2="270" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.2" />
+
+    <!-- NC — the dominant tag (measured ~31%) -->
+    <g class="bpos3-g1">
+      <rect x="100" y="90" width="26" height="180" rx="2" fill="var(--color-error,#ef4444)" fill-opacity="0.85" />
+      <text x="113" y="82" text-anchor="middle" font-size="10" fill="var(--color-error,#ef4444)">31%</text>
+      <text x="113" y="284" text-anchor="middle" font-size="9" fill="var(--color-ink,#e9e7e0)">NC</text>
+    </g>
+
+    <!-- VM — second place, less than half of NC -->
+    <g class="bpos3-g1">
+      <rect x="139" y="188.8" width="26" height="81.2" rx="2" fill="var(--color-q1,#9d8cff)" fill-opacity="0.8" />
+      <text x="152" y="181" text-anchor="middle" font-size="9" fill="var(--color-q1,#9d8cff)">&#8776;14%</text>
+      <text x="152" y="284" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">VM</text>
+    </g>
+
+    <!-- the collapsing tail -->
+    <g class="bpos3-g2" fill="var(--color-q0,#5fc9bf)" fill-opacity="0.7">
+      <rect x="178" y="217.8" width="26" height="52.2" rx="2" />
+      <rect x="217" y="229.4" width="26" height="40.6" rx="2" />
+      <rect x="256" y="238.1" width="26" height="31.9" rx="2" />
+      <rect x="295" y="243.9" width="26" height="26.1" rx="2" />
+    </g>
+    <g class="bpos3-g3" fill="var(--color-q0,#5fc9bf)" fill-opacity="0.55">
+      <rect x="334" y="249.7" width="26" height="20.3" rx="2" />
+      <rect x="373" y="253.8" width="26" height="16.2" rx="2" />
+      <rect x="412" y="257.2" width="26" height="12.8" rx="2" />
+      <rect x="451" y="260.1" width="26" height="9.9" rx="2" />
+      <rect x="490" y="262.5" width="26" height="7.5" rx="2" />
+      <rect x="529" y="265.0" width="26" height="5.0" rx="2" />
+    </g>
+
+    <!-- tail bracket -->
+    <path d="M 178 300 L 178 306 L 555 306 L 555 300" fill="none" stroke="var(--color-muted,#8a8f9c)" stroke-width="1" opacity="0.6" />
+    <text x="366" y="322" text-anchor="middle" font-size="9.5" fill="var(--color-muted,#8a8f9c)">28 rarer tags &#8212; a long tail, many under 1% each</text>
+
+    <text x="320" y="346" text-anchor="middle" font-size="10" fill="var(--color-muted,#8a8f9c)">Predict NC for everything noun-shaped and accuracy still looks fine &#8212; that&#8217;s the trap macro-F1 exposes.</text>
+  </g>
+</svg>

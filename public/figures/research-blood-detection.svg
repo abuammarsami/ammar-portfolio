@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="bcd-b-title bcd-b-desc">
+  <title id="bcd-b-title">The RetinaNet detection pipeline over a blood smear</title>
+  <desc id="bcd-b-desc">A stained smear field on the left is fed through a RetinaNet detector — a ResNet plus feature-pyramid backbone with a focal-loss head — and bounding boxes are drawn back over the field. Many teal boxes label red blood cells, one purple box labels a white blood cell, and a small amber box labels a platelet, illustrating the extreme class imbalance RBC much greater than WBC much greater than platelet that focal loss is built for.</desc>
+  <style>
+    @keyframes bcd-b-box { 0%,8%{stroke-dashoffset:var(--len,240);opacity:0} 20%{opacity:1} 92%{stroke-dashoffset:0;opacity:1} 100%{opacity:0} }
+    @keyframes bcd-b-flow { 0%{transform:translateX(0);opacity:0} 6%{opacity:1} 40%{transform:translateX(150px);opacity:1} 46%{opacity:0} 100%{opacity:0} }
+    @keyframes bcd-b-pulse { 0%,100%{opacity:.3} 50%{opacity:.8} }
+    .bcd-b-box{stroke-dasharray:var(--len,240);animation:bcd-b-box 9s ease-in-out infinite}
+    .bcd-b-flow{animation:bcd-b-flow 9s ease-in-out infinite}
+    .bcd-b-pulse{animation:bcd-b-pulse 3.4s ease-in-out infinite}
+    @media (prefers-reduced-motion: reduce){ *{animation:none!important} .bcd-b-box{stroke-dashoffset:0;opacity:1} }
+  </style>
+  <g style="font-family: var(--font-mono,'IBM Plex Mono',ui-monospace,monospace)" fill="var(--color-ink,#e9e7e0)">
+
+    <text x="320" y="26" text-anchor="middle" font-size="11" letter-spacing="1.4" fill="var(--color-q1,#9d8cff)">DETECT EVERY CELL, THEN LABEL IT ONE OF THREE CLASSES</text>
+
+    <!-- smear field -->
+    <rect x="22" y="52" width="256" height="256" rx="8" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.3"/>
+    <!-- faint background cells -->
+    <g opacity=".28" fill="none" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4">
+      <circle cx="72" cy="98" r="22"/><circle cx="128" cy="82" r="20"/><circle cx="196" cy="104" r="23"/>
+      <circle cx="240" cy="150" r="21"/><circle cx="70" cy="176" r="24"/><circle cx="120" cy="210" r="22"/>
+      <circle cx="208" cy="222" r="23"/><circle cx="238" cy="268" r="20"/><circle cx="60" cy="256" r="19"/>
+    </g>
+    <!-- WBC big nucleus -->
+    <g opacity=".5"><circle cx="150" cy="158" r="34" fill="var(--color-q1,#9d8cff)" fill-opacity=".18" stroke="var(--color-q1,#9d8cff)" stroke-width="1.6"/><circle cx="150" cy="158" r="17" fill="var(--color-q1,#9d8cff)" fill-opacity=".4"/></g>
+    <!-- platelet small -->
+    <circle cx="182" cy="262" r="7" fill="var(--color-q1,#9d8cff)" fill-opacity=".3" stroke="var(--color-muted,#8a8f9c)" stroke-width="1"/>
+
+    <!-- RBC detection boxes (teal) -->
+    <g fill="none" stroke="var(--color-q0,#5fc9bf)" stroke-width="2">
+      <rect class="bcd-b-box" style="--len:176" x="50" y="76" width="44" height="44" rx="2"/>
+      <rect class="bcd-b-box" style="--len:160" x="108" y="62" width="40" height="40" rx="2"/>
+      <rect class="bcd-b-box" style="--len:184" x="173" y="81" width="46" height="46" rx="2"/>
+      <rect class="bcd-b-box" style="--len:168" x="219" y="129" width="42" height="42" rx="2"/>
+      <rect class="bcd-b-box" style="--len:192" x="46" y="152" width="48" height="48" rx="2"/>
+      <rect class="bcd-b-box" style="--len:176" x="98" y="188" width="44" height="44" rx="2"/>
+      <rect class="bcd-b-box" style="--len:184" x="185" y="199" width="46" height="46" rx="2"/>
+      <rect class="bcd-b-box" style="--len:160" x="218" y="248" width="40" height="40" rx="2"/>
+    </g>
+    <!-- WBC box (purple) -->
+    <rect class="bcd-b-box" style="--len:280" x="114" y="122" width="72" height="72" rx="2" fill="none" stroke="var(--color-q1,#9d8cff)" stroke-width="2.4"/>
+    <!-- Platelet box (amber via error prop kept distinct as muted-warm) -->
+    <rect class="bcd-b-box" style="--len:80" x="172" y="252" width="20" height="20" rx="2" fill="none" stroke="var(--color-error,#ef4444)" stroke-width="2"/>
+
+    <!-- flow token -->
+    <circle class="bcd-b-flow" cx="286" cy="180" r="5" fill="var(--color-q0,#5fc9bf)"/>
+
+    <!-- detector block -->
+    <rect x="300" y="128" width="152" height="104" rx="7" fill="var(--color-surface,#12151d)" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.8"/>
+    <rect class="bcd-b-pulse" x="300" y="128" width="152" height="104" rx="7" fill="none" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.8"/>
+    <text x="376" y="158" text-anchor="middle" font-size="13" fill="var(--color-q0,#5fc9bf)">RetinaNet</text>
+    <text x="376" y="178" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">ResNet + FPN</text>
+    <text x="376" y="194" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">focal-loss head</text>
+    <text x="376" y="214" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">3 classes, 640&#215;640</text>
+
+    <!-- legend -->
+    <g font-size="11">
+      <rect x="474" y="70" width="16" height="16" rx="2" fill="none" stroke="var(--color-q0,#5fc9bf)" stroke-width="2"/>
+      <text x="498" y="82" fill="var(--color-ink,#e9e7e0)">RBC</text>
+      <text x="498" y="97" font-size="8.5" fill="var(--color-muted,#8a8f9c)">carpets the field</text>
+      <rect x="474" y="118" width="16" height="16" rx="2" fill="none" stroke="var(--color-q1,#9d8cff)" stroke-width="2.4"/>
+      <text x="498" y="130" fill="var(--color-ink,#e9e7e0)">WBC</text>
+      <text x="498" y="145" font-size="8.5" fill="var(--color-muted,#8a8f9c)">a handful</text>
+      <rect x="474" y="166" width="16" height="16" rx="2" fill="none" stroke="var(--color-error,#ef4444)" stroke-width="2"/>
+      <text x="498" y="178" fill="var(--color-ink,#e9e7e0)">Platelet</text>
+      <text x="498" y="193" font-size="8.5" fill="var(--color-muted,#8a8f9c)">tiny &amp; rare</text>
+    </g>
+    <text x="474" y="224" font-size="11" fill="var(--color-q1,#9d8cff)">RBC &#8811; WBC &#8811; Platelet</text>
+    <text x="474" y="240" font-size="8.5" fill="var(--color-muted,#8a8f9c)">the imbalance focal loss</text>
+    <text x="474" y="252" font-size="8.5" fill="var(--color-muted,#8a8f9c)">was built to survive</text>
+
+    <text x="320" y="292" text-anchor="middle" font-size="10.5" fill="var(--color-muted,#8a8f9c)">Fig. &#8212; BCCD: 364 images, 4,888 annotations. A field packed with red cells and a few small</text>
+    <text x="320" y="310" text-anchor="middle" font-size="10.5" fill="var(--color-muted,#8a8f9c)">platelets is the extreme-imbalance regime focal loss down-weights easy background for.</text>
+  </g>
+</svg>

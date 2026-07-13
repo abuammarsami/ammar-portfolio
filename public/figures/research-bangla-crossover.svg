@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="bpos2-title bpos2-desc">
+  <title id="bpos2-title">As BERT gets deeper, the tree falls and the network rises</title>
+  <desc id="bpos2-desc">A line chart of test macro-F1 against BERT layer depth for the Sagorsarker Bangla-BERT embeddings. The neural network line rises from 0.59 at layer 1 to 0.69 at layers 7 and 12. The decision-tree line falls the opposite way, from 0.46 at layer 1 to 0.34 at layer 7 to 0.24 at layer 12. The two models eat the same embedding geometry in opposite directions: the tree wants shallow near-static layers, the network wants deep contextual ones.</desc>
+  <style>
+    @keyframes bpos2-draw { from { stroke-dashoffset: 620; } to { stroke-dashoffset: 0; } }
+    @keyframes bpos2-dot  { 0%,40% { opacity: 0; } 60% { opacity: 1; } 100% { opacity: 1; } }
+    .bpos2-line { stroke-dasharray: 620; animation: bpos2-draw 2.6s ease-out forwards; }
+    .bpos2-dot  { animation: bpos2-dot 3.2s ease-out forwards; }
+    @media (prefers-reduced-motion: reduce){ *{animation:none!important} .bpos2-line{stroke-dashoffset:0} .bpos2-dot{opacity:1} }
+  </style>
+  <g style="font-family: var(--font-mono,'IBM Plex Mono',ui-monospace,monospace)" fill="var(--color-ink,#e9e7e0)" font-size="12">
+
+    <text x="320" y="26" text-anchor="middle" font-size="11" letter-spacing="1.4" fill="var(--color-q1,#9d8cff)">TEST MACRO-F1 vs BERT LAYER &#183; SAGORSARKER BANGLA-BERT</text>
+
+    <!-- axes -->
+    <line x1="88" y1="70" x2="88" y2="284" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.3" />
+    <line x1="88" y1="284" x2="566" y2="284" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.3" />
+
+    <!-- y gridlines + labels: 0.30, 0.50, 0.70 -->
+    <line x1="88" y1="239.6" x2="566" y2="239.6" stroke="var(--color-muted,#8a8f9c)" stroke-width="0.6" opacity="0.25" />
+    <line x1="88" y1="158.8" x2="566" y2="158.8" stroke="var(--color-muted,#8a8f9c)" stroke-width="0.6" opacity="0.25" />
+    <line x1="88" y1="78.1"  x2="566" y2="78.1"  stroke="var(--color-muted,#8a8f9c)" stroke-width="0.6" opacity="0.25" />
+    <text x="80" y="243" text-anchor="end" font-size="9" fill="var(--color-muted,#8a8f9c)">0.30</text>
+    <text x="80" y="162" text-anchor="end" font-size="9" fill="var(--color-muted,#8a8f9c)">0.50</text>
+    <text x="80" y="82"  text-anchor="end" font-size="9" fill="var(--color-muted,#8a8f9c)">0.70</text>
+    <text x="30" y="180" text-anchor="middle" font-size="9.5" fill="var(--color-muted,#8a8f9c)" transform="rotate(-90 30 180)">test macro-F1</text>
+
+    <!-- x labels: layer 1, 7, 12 -->
+    <text x="140" y="300" text-anchor="middle" font-size="9.5" fill="var(--color-muted,#8a8f9c)">layer 1</text>
+    <text x="340" y="300" text-anchor="middle" font-size="9.5" fill="var(--color-muted,#8a8f9c)">layer 7</text>
+    <text x="520" y="300" text-anchor="middle" font-size="9.5" fill="var(--color-muted,#8a8f9c)">layer 12</text>
+    <text x="330" y="320" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">shallow / near-static &#8594; deep / contextual</text>
+
+    <!-- neural network line (teal): (140,122.5)(340,82.1)(520,82.1) -->
+    <polyline class="bpos2-line" points="140,122.5 340,82.1 520,82.1" fill="none" stroke="var(--color-q0,#5fc9bf)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+    <g class="bpos2-dot" fill="var(--color-q0,#5fc9bf)">
+      <circle cx="140" cy="122.5" r="4.5" /><circle cx="340" cy="82.1" r="4.5" /><circle cx="520" cy="82.1" r="4.5" />
+    </g>
+    <text x="140" y="114" text-anchor="middle" font-size="9" fill="var(--color-q0,#5fc9bf)">0.59</text>
+    <text x="340" y="73"  text-anchor="middle" font-size="9" fill="var(--color-q0,#5fc9bf)">0.69</text>
+    <text x="520" y="73"  text-anchor="middle" font-size="9" fill="var(--color-q0,#5fc9bf)">0.69</text>
+
+    <!-- decision tree line (purple): (140,175)(340,223.5)(520,263.8) -->
+    <polyline class="bpos2-line" points="140,175 340,223.5 520,263.8" fill="none" stroke="var(--color-q1,#9d8cff)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+    <g class="bpos2-dot" fill="var(--color-q1,#9d8cff)">
+      <circle cx="140" cy="175" r="4.5" /><circle cx="340" cy="223.5" r="4.5" /><circle cx="520" cy="263.8" r="4.5" />
+    </g>
+    <text x="140" y="167" text-anchor="middle" font-size="9" fill="var(--color-q1,#9d8cff)">0.46</text>
+    <text x="356" y="222" text-anchor="middle" font-size="9" fill="var(--color-q1,#9d8cff)">0.34</text>
+    <text x="520" y="276" text-anchor="middle" font-size="9" fill="var(--color-q1,#9d8cff)">0.24</text>
+
+    <!-- inline legend -->
+    <line x1="404" y1="128" x2="428" y2="128" stroke="var(--color-q0,#5fc9bf)" stroke-width="2.6" />
+    <text x="434" y="132" font-size="9.5" fill="var(--color-ink,#e9e7e0)">neural net (student)</text>
+    <line x1="404" y1="146" x2="428" y2="146" stroke="var(--color-q1,#9d8cff)" stroke-width="2.6" />
+    <text x="434" y="150" font-size="9.5" fill="var(--color-ink,#e9e7e0)">decision tree (teacher)</text>
+
+    <text x="320" y="344" text-anchor="middle" font-size="10.5" fill="var(--color-muted,#8a8f9c)">The &#8220;best layer&#8221; isn&#8217;t a property of the data &#8212; it&#8217;s a property of the model that eats it.</text>
+  </g>
+</svg>

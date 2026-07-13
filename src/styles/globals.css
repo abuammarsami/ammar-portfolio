@@ -305,6 +305,46 @@ body::after {
   color: var(--color-muted);
 }
 
+/* Lens-conditional callouts (Professor-mode upgrade). `:::professor` blocks
+   carry `.lens-professor` and are hidden under other lenses by the global lens
+   rules below; `:::aside` (`.dd-note`) shows to everyone. */
+.deepdive-prose .dd-aside {
+  margin: 1.8rem 0;
+  padding: 1.1rem 1.25rem 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--color-muted) 24%, transparent);
+  border-left-width: 2px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--color-surface) 70%, transparent);
+  font-size: 0.98rem;
+}
+.deepdive-prose .dd-prof { border-left-color: var(--color-q1); }
+.deepdive-prose .dd-note { border-left-color: var(--color-q0); }
+.deepdive-prose .dd-aside > :first-child { margin-top: 0; }
+.deepdive-prose .dd-aside-label {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.deepdive-prose .dd-prof .dd-aside-label { color: var(--color-q1); }
+.deepdive-prose .dd-note .dd-aside-label { color: var(--color-q0); }
+/* nested figures/tables inside a callout keep their own spacing but lose the top gap */
+.deepdive-prose .dd-aside .md-figure:first-child,
+.deepdive-prose .dd-aside table:first-child { margin-top: 0; }
+
+/* KaTeX (remark-math + rehype-katex): inherit the prose ink colour, and let a
+   long display equation scroll inside its own box rather than the page body. */
+.deepdive-prose .katex { color: var(--color-ink); font-size: 1.02em; }
+.deepdive-prose .katex-display {
+  margin: 1.3rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.4rem 0;
+}
+.deepdive-prose .katex-display > .katex { font-size: 1.08em; }
+
 /* ───────────────────────── details ────────────────────────────────────────── */
 
 ::selection {

@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="qres-t qres-d">
+  <title id="qres-t">Test accuracy: hybrid quantum models vs classical baselines</title>
+  <desc id="qres-d">A grouped bar chart of MNIST test accuracy. Model 1, the quanvolutional network, reaches 0.92 against its classical baseline of 0.96. Model 2, the continuous-variable quantum neural network, reaches 0.72 against its classical baseline of 0.88. Both hybrids trail their classical counterparts; the gap is small for Model 1 and larger for Model 2. Bars grow from the axis on load.</desc>
+  <style>
+    @keyframes qres-grow { from{transform:scaleY(0)} to{transform:scaleY(1)} }
+    .qres-bar{ transform-box:fill-box; transform-origin:bottom; animation:qres-grow 1.1s cubic-bezier(.2,.7,.3,1) both; }
+    .qres-b2{animation-delay:.14s}.qres-b3{animation-delay:.28s}.qres-b4{animation-delay:.42s}
+    .qres-lab{ opacity:0; animation:qres-fade .5s ease-out forwards; }
+    @keyframes qres-fade{ to{opacity:1} }
+    .qres-l1{animation-delay:.7s}.qres-l2{animation-delay:.84s}.qres-l3{animation-delay:.98s}.qres-l4{animation-delay:1.12s}
+    @media (prefers-reduced-motion: reduce){ *{animation:none!important} .qres-bar{transform:none!important} .qres-lab{opacity:1!important} }
+  </style>
+  <g style="font-family:var(--font-mono,'IBM Plex Mono',ui-monospace,monospace)" fill="var(--color-ink,#e9e7e0)" font-size="12">
+    <text x="320" y="26" text-anchor="middle" font-size="11" letter-spacing="1.4" fill="var(--color-q1,#9d8cff)">MNIST TEST ACCURACY &#183; HYBRID vs CLASSICAL</text>
+
+    <!-- gridlines + y labels (baseline y=300 -> 0.0 ; top y=80 -> 1.0 ; 220px span) -->
+    <g stroke="var(--color-muted,#8a8f9c)" stroke-width="1" opacity="0.28">
+      <line x1="96" y1="300" x2="600" y2="300"/>
+      <line x1="96" y1="245" x2="600" y2="245"/>
+      <line x1="96" y1="190" x2="600" y2="190"/>
+      <line x1="96" y1="135" x2="600" y2="135"/>
+      <line x1="96" y1="80"  x2="600" y2="80"/>
+    </g>
+    <g font-size="9.5" fill="var(--color-muted,#8a8f9c)" text-anchor="end">
+      <text x="88" y="304">0.00</text><text x="88" y="249">0.25</text><text x="88" y="194">0.50</text><text x="88" y="139">0.75</text><text x="88" y="84">1.00</text>
+    </g>
+
+    <!-- MODEL 1 group: classical 0.96 -> y=88.8 h=211.2 ; quantum 0.92 -> y=97.6 h=202.4 -->
+    <rect class="qres-bar qres-b1" x="150" y="88.8" width="58" height="211.2" rx="3" fill="var(--color-muted,#8a8f9c)" opacity="0.72"/>
+    <rect class="qres-bar qres-b2" x="216" y="97.6" width="58" height="202.4" rx="3" fill="var(--color-q0,#5fc9bf)"/>
+    <text class="qres-lab qres-l1" x="179" y="80" text-anchor="middle" font-size="11" fill="var(--color-muted,#8a8f9c)">0.96</text>
+    <text class="qres-lab qres-l2" x="245" y="88" text-anchor="middle" font-size="11" fill="var(--color-q0,#5fc9bf)">0.92</text>
+
+    <!-- MODEL 2 group: classical 0.88 -> y=106.4 h=193.6 ; quantum 0.72 -> y=141.6 h=158.4 -->
+    <rect class="qres-bar qres-b3" x="376" y="106.4" width="58" height="193.6" rx="3" fill="var(--color-muted,#8a8f9c)" opacity="0.72"/>
+    <rect class="qres-bar qres-b4" x="442" y="141.6" width="58" height="158.4" rx="3" fill="var(--color-q1,#9d8cff)"/>
+    <text class="qres-lab qres-l3" x="405" y="98" text-anchor="middle" font-size="11" fill="var(--color-muted,#8a8f9c)">0.88</text>
+    <text class="qres-lab qres-l4" x="471" y="133" text-anchor="middle" font-size="11" fill="var(--color-q1,#9d8cff)">0.72</text>
+
+    <!-- group labels -->
+    <text x="212" y="320" text-anchor="middle" font-size="10.5">Model 1 &#183; quanvolutional</text>
+    <text x="438" y="320" text-anchor="middle" font-size="10.5">Model 2 &#183; CV-QNN</text>
+
+    <!-- legend -->
+    <g font-size="10">
+      <rect x="150" y="336" width="12" height="12" rx="2" fill="var(--color-muted,#8a8f9c)" opacity="0.72"/>
+      <text x="168" y="346">classical baseline</text>
+      <rect x="300" y="336" width="12" height="12" rx="2" fill="var(--color-q0,#5fc9bf)"/>
+      <rect x="316" y="336" width="12" height="12" rx="2" fill="var(--color-q1,#9d8cff)"/>
+      <text x="334" y="346">hybrid quantum model</text>
+    </g>
+  </g>
+</svg>
