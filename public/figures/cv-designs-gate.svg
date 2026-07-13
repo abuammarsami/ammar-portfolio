@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 380" role="img" aria-labelledby="cdg-t cdg-d">
+  <title id="cdg-t">Six CV designs behind one server-enforced gate</title>
+  <desc id="cdg-d">Six CV designs, each with its own accent palette. Design 1, Classic, is a single-column ATS-clean layout in navy and is always free. The other five sit behind the 52-BDT Professional Profile gate: Design 2 Sidebar Left in slate, Design 3 Two-Column in emerald, Design 4 Header Banner in indigo, Design 5 Minimal in charcoal, and Design 6 Sidebar Right in burgundy. The gate is enforced inside the generator against the server-trusted IsProfessionalProfile flag, so requesting a locked design returns 403 rather than a free CV; the client only ever receives an isUnlocked flag for display. The accent swatches shown are the real per-design palette colours. Hover or focus any design to read it.</desc>
+  <style>
+    .cdg-node{ cursor:pointer; transition:opacity .2s ease; }
+    .cdg-node:focus{ outline:none; }
+    .cdg-hit{ fill:transparent; }
+    svg:hover .cdg-node:not(:hover),
+    svg:focus-within .cdg-node:not(:focus-within){ opacity:.3; }
+    .cdg-box{ transition:stroke-width .2s ease; }
+    .cdg-node:hover .cdg-box,
+    .cdg-node:focus-within .cdg-box{ stroke-width:2.4; }
+    .cdg-note{ opacity:0; transition:opacity .18s ease; }
+    .cdg-node:hover .cdg-note,
+    .cdg-node:focus-within .cdg-note{ opacity:1; }
+    .cdg-hint{ opacity:.6; }
+    svg:hover .cdg-hint, svg:focus-within .cdg-hint{ opacity:0; transition:opacity .25s ease; }
+    @media (prefers-reduced-motion: reduce){ *{animation:none!important} }
+  </style>
+  <g style="font-family:var(--font-mono,'IBM Plex Mono',ui-monospace,monospace)" fill="var(--color-ink,#e9e7e0)" font-size="12">
+    <text x="340" y="24" text-anchor="middle" font-size="11" letter-spacing="1.1" fill="var(--color-q1,#9d8cff)">six designs &#183; one free &#183; the gate lives in the generator</text>
+
+    <!-- FREE: Design 1 -->
+    <text x="148" y="52" text-anchor="middle" font-size="9.5" fill="var(--color-q0,#5fc9bf)">FREE</text>
+    <g class="cdg-node" tabindex="0" role="group" aria-label="Design 1, Classic: single-column, ATS-clean, navy accent — always free">
+      <title>Design 1 &#183; Classic &#8212; single-column, ATS-clean, always free</title>
+      <rect class="cdg-hit" x="32" y="60" width="232" height="150"/>
+      <rect class="cdg-box" x="36" y="64" width="224" height="142" rx="9" fill="var(--color-q0,#5fc9bf)" fill-opacity="0.10" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.7"/>
+      <rect x="56" y="84" width="184" height="16" rx="3" fill="#1F3A5F"/>
+      <text x="148" y="126" text-anchor="middle" font-size="12" fill="var(--color-q0,#5fc9bf)">Design 1 &#183; Classic</text>
+      <text x="148" y="146" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">single-column &#183; ATS-clean</text>
+      <text x="148" y="164" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">accent: navy</text>
+      <text x="148" y="190" text-anchor="middle" font-size="9.5" fill="var(--color-q0,#5fc9bf)">always unlocked</text>
+    </g>
+
+    <!-- gate divider -->
+    <line x1="286" y1="52" x2="286" y2="330" stroke="var(--color-q1,#9d8cff)" stroke-width="1.4" stroke-dasharray="5 4"/>
+    <text x="286" y="46" text-anchor="middle" font-size="8.5" fill="var(--color-q1,#9d8cff)">52-BDT gate</text>
+
+    <!-- PRO designs 2-6 -->
+    <text x="480" y="52" text-anchor="middle" font-size="9.5" fill="var(--color-q1,#9d8cff)">PRO &#183; Professional Profile</text>
+    <g class="cdg-node" tabindex="0" role="group" aria-label="Design 2, Sidebar Left: full-height coloured rail plus a main column, slate accent">
+      <title>Design 2 &#183; Sidebar Left &#8212; coloured rail + main column, slate</title>
+      <rect class="cdg-hit" x="306" y="60" width="356" height="42"/>
+      <rect class="cdg-box" x="310" y="64" width="348" height="34" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.3"/>
+      <rect x="322" y="74" width="14" height="14" rx="2" fill="#2B3A55"/>
+      <text x="348" y="86" font-size="9.5">Design 2 &#183; Sidebar Left</text>
+      <text x="650" y="86" text-anchor="end" font-size="8" fill="var(--color-muted,#8a8f9c)">coloured rail + column</text>
+    </g>
+    <g class="cdg-node" tabindex="0" role="group" aria-label="Design 3, Two-Column: header band plus two balanced columns, emerald accent">
+      <title>Design 3 &#183; Two-Column &#8212; header band + two columns, emerald</title>
+      <rect class="cdg-hit" x="306" y="106" width="356" height="42"/>
+      <rect class="cdg-box" x="310" y="110" width="348" height="34" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.3"/>
+      <rect x="322" y="120" width="14" height="14" rx="2" fill="#0F766E"/>
+      <text x="348" y="132" font-size="9.5">Design 3 &#183; Two-Column</text>
+      <text x="650" y="132" text-anchor="end" font-size="8" fill="var(--color-muted,#8a8f9c)">header band + 2 columns</text>
+    </g>
+    <g class="cdg-node" tabindex="0" role="group" aria-label="Design 4, Header Banner: full-bleed accent banner plus a single column, indigo accent">
+      <title>Design 4 &#183; Header Banner &#8212; full-bleed banner + column, indigo</title>
+      <rect class="cdg-hit" x="306" y="152" width="356" height="42"/>
+      <rect class="cdg-box" x="310" y="156" width="348" height="34" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.3"/>
+      <rect x="322" y="166" width="14" height="14" rx="2" fill="#3730A3"/>
+      <text x="348" y="178" font-size="9.5">Design 4 &#183; Header Banner</text>
+      <text x="650" y="178" text-anchor="end" font-size="8" fill="var(--color-muted,#8a8f9c)">full-bleed banner</text>
+    </g>
+    <g class="cdg-node" tabindex="0" role="group" aria-label="Design 5, Minimal: monochrome, typographic, maximally ATS-friendly, charcoal accent">
+      <title>Design 5 &#183; Minimal &#8212; monochrome, typographic, max-ATS, charcoal</title>
+      <rect class="cdg-hit" x="306" y="198" width="356" height="42"/>
+      <rect class="cdg-box" x="310" y="202" width="348" height="34" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.3"/>
+      <rect x="322" y="212" width="14" height="14" rx="2" fill="#111827" stroke="var(--color-muted,#8a8f9c)" stroke-width="0.6"/>
+      <text x="348" y="224" font-size="9.5">Design 5 &#183; Minimal</text>
+      <text x="650" y="224" text-anchor="end" font-size="8" fill="var(--color-muted,#8a8f9c)">monochrome &#183; max-ATS</text>
+    </g>
+    <g class="cdg-node" tabindex="0" role="group" aria-label="Design 6, Sidebar Right: a mirror of Design 2, burgundy accent">
+      <title>Design 6 &#183; Sidebar Right &#8212; mirror of Design 2, burgundy</title>
+      <rect class="cdg-hit" x="306" y="244" width="356" height="42"/>
+      <rect class="cdg-box" x="310" y="248" width="348" height="34" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.3"/>
+      <rect x="322" y="258" width="14" height="14" rx="2" fill="#7A2E3A"/>
+      <text x="348" y="270" font-size="9.5">Design 6 &#183; Sidebar Right</text>
+      <text x="650" y="270" text-anchor="end" font-size="8" fill="var(--color-muted,#8a8f9c)">mirror of Design 2</text>
+    </g>
+
+    <text x="340" y="316" text-anchor="middle" font-size="9.5" fill="var(--color-muted,#8a8f9c)">gate enforced in GenerateCv against the server-trusted IsProfessionalProfile flag</text>
+    <text x="340" y="336" text-anchor="middle" font-size="9.5" fill="var(--color-q0,#5fc9bf)">the client only ever receives an isUnlocked flag &#8212; for display, never for trust</text>
+
+    <text class="cdg-hint" x="668" y="24" text-anchor="end" font-size="9" fill="var(--color-muted,#8a8f9c)">hover a design &#9656;</text>
+  </g>
+</svg>
