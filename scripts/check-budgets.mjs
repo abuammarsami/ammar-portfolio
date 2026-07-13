@@ -9,6 +9,8 @@ const BUDGETS = [
   { route: "/learn", html: ".next/server/app/learn.html", limit: 350_000 },
   { route: "/work", html: ".next/server/app/work.html", limit: 200_000 },
   { route: "/work/payments-platform", html: ".next/server/app/work/payments-platform.html", limit: 200_000 },
+  { route: "/work/mvc-to-api-migration", html: ".next/server/app/work/mvc-to-api-migration.html", limit: 200_000 },
+  { route: "/work/auth-architecture", html: ".next/server/app/work/auth-architecture.html", limit: 200_000 },
   { route: "/deep-dives", html: ".next/server/app/deep-dives.html", limit: 200_000 },
   // Deep-dive chapters are structurally identical server components; we budget every
   // published chapter route so a per-page JS regression can't slip through on any of them.

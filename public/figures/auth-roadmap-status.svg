@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 470" role="img" aria-labelledby="ars-t ars-d">
+  <title id="ars-t">The auth architecture: foundation, session &amp; trust pillars, and what it defers by design</title>
+  <desc id="ars-d">The authentication architecture in three groups. The foundation, in teal: one decision core that every login routes through, and a Critical and High hardening set under 832 tests. The session and trust pillars, in purple: converging admin login onto the core, refresh-token reuse-detection with family revocation, the server-side revocable session store via a custom ITicketStore and a dbo.UserSession table, the NIST 800-63B password model, step-up MFA on the money paths, and the JWKS ES256 issuer boundary — the trust pivot. Deferred by design, in muted dashed, each adopted only on a real trigger: Redis as an L2 cache when scaling to multiple web instances, a dedicated OpenIddict IdP when SSO or B2B federation arrives, a Duende BFF only if the web becomes a browser-JS SPA, and DPoP once tokens cross real trust boundaries. Hover or focus any item to read it.</desc>
+  <style>
+    .ars-node{ cursor:pointer; transition:opacity .2s ease; }
+    .ars-node:focus{ outline:none; }
+    .ars-hit{ fill:transparent; }
+    svg:hover .ars-node:not(:hover),
+    svg:focus-within .ars-node:not(:focus-within){ opacity:.3; }
+    .ars-box{ transition:stroke-width .2s ease; }
+    .ars-node:hover .ars-box,
+    .ars-node:focus-within .ars-box{ stroke-width:2.4; }
+    .ars-note{ opacity:0; transition:opacity .18s ease; }
+    .ars-node:hover .ars-note,
+    .ars-node:focus-within .ars-note{ opacity:1; }
+    .ars-hint{ opacity:.6; }
+    svg:hover .ars-hint, svg:focus-within .ars-hint{ opacity:0; transition:opacity .25s ease; }
+    @media (prefers-reduced-motion: reduce){ *{animation:none!important} }
+  </style>
+  <g style="font-family:var(--font-mono,'IBM Plex Mono',ui-monospace,monospace)" fill="var(--color-ink,#e9e7e0)" font-size="12">
+    <text x="340" y="24" text-anchor="middle" font-size="11" letter-spacing="1.1" fill="var(--color-q1,#9d8cff)">foundation &#183; session &amp; trust pillars &#183; deferred by design</text>
+
+    <!-- column headers -->
+    <text x="122" y="58" text-anchor="middle" font-size="10.5" fill="var(--color-q0,#5fc9bf)">THE FOUNDATION</text>
+    <text x="340" y="58" text-anchor="middle" font-size="10.5" fill="var(--color-q1,#9d8cff)">SESSION &amp; TRUST PILLARS</text>
+    <text x="558" y="58" text-anchor="middle" font-size="10.5" fill="var(--color-muted,#8a8f9c)">DEFERRED BY DESIGN</text>
+
+    <!-- ===== FOUNDATION (teal) ===== -->
+    <g class="ars-node" tabindex="0" role="group" aria-label="Foundation: one decision core that every login routes through, which fixed the already-logged-in bug by construction">
+      <title>one decision core &#183; every login routes through it</title>
+      <rect class="ars-hit" x="24" y="70" width="196" height="52"/>
+      <rect class="ars-box" x="28" y="74" width="188" height="44" rx="7" fill="var(--color-q0,#5fc9bf)" fill-opacity="0.12" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.5"/>
+      <text x="122" y="93" text-anchor="middle" font-size="9.5" fill="var(--color-q0,#5fc9bf)">one decision core</text>
+      <text x="122" y="108" text-anchor="middle" font-size="8" fill="var(--color-muted,#8a8f9c)">every login routes through it</text>
+    </g>
+    <g class="ars-node" tabindex="0" role="group" aria-label="Foundation: the Critical and High hardening set, 2 Criticals plus 6 Highs plus 12 review findings, under 832 tests">
+      <title>Critical/High hardening set &#183; 832 tests</title>
+      <rect class="ars-hit" x="24" y="126" width="196" height="52"/>
+      <rect class="ars-box" x="28" y="130" width="188" height="44" rx="7" fill="var(--color-q0,#5fc9bf)" fill-opacity="0.12" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.5"/>
+      <text x="122" y="149" text-anchor="middle" font-size="9.5" fill="var(--color-q0,#5fc9bf)">the hardening set</text>
+      <text x="122" y="164" text-anchor="middle" font-size="8" fill="var(--color-muted,#8a8f9c)">2 Crit + 6 High &#183; 832 tests</text>
+    </g>
+
+    <!-- ===== PILLARS (purple) ===== -->
+    <g class="ars-node" tabindex="0" role="group" aria-label="Pillar: converge the admin login onto the same core">
+      <title>admin login &#8594; the same core</title>
+      <rect class="ars-hit" x="242" y="70" width="196" height="34"/>
+      <rect class="ars-box" x="246" y="74" width="188" height="26" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-q1,#9d8cff)" stroke-width="1.4"/>
+      <text x="340" y="91" text-anchor="middle" font-size="9" fill="var(--color-q1,#9d8cff)">admin login &#8594; core</text>
+    </g>
+    <g class="ars-node" tabindex="0" role="group" aria-label="Pillar: refresh-token reuse-detection with family revocation">
+      <title>refresh reuse-detection + family revocation</title>
+      <rect class="ars-hit" x="242" y="106" width="196" height="34"/>
+      <rect class="ars-box" x="246" y="110" width="188" height="26" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-q1,#9d8cff)" stroke-width="1.4"/>
+      <text x="340" y="127" text-anchor="middle" font-size="9" fill="var(--color-q1,#9d8cff)">refresh reuse-detection</text>
+      <text class="ars-note" x="340" y="137" text-anchor="middle" font-size="7.5" fill="var(--color-muted,#8a8f9c)">FamilyId &#183; a reused token kills the family</text>
+    </g>
+    <g class="ars-node" tabindex="0" role="group" aria-label="Pillar: the server-side revocable session store via a custom ITicketStore and a dbo.UserSession table">
+      <title>revocable session store &#183; ITicketStore + dbo.UserSession</title>
+      <rect class="ars-hit" x="242" y="142" width="196" height="34"/>
+      <rect class="ars-box" x="246" y="146" width="188" height="26" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-q1,#9d8cff)" stroke-width="1.4"/>
+      <text x="340" y="163" text-anchor="middle" font-size="9" fill="var(--color-q1,#9d8cff)">revocable session store</text>
+      <text class="ars-note" x="340" y="173" text-anchor="middle" font-size="7.5" fill="var(--color-muted,#8a8f9c)">ITicketStore + dbo.UserSession &#183; delete a row = revoke</text>
+    </g>
+    <g class="ars-node" tabindex="0" role="group" aria-label="Pillar: the NIST 800-63B Rev 4 password model with breached-password screening">
+      <title>NIST 800-63B password model</title>
+      <rect class="ars-hit" x="242" y="178" width="196" height="34"/>
+      <rect class="ars-box" x="246" y="182" width="188" height="26" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-q1,#9d8cff)" stroke-width="1.4"/>
+      <text x="340" y="199" text-anchor="middle" font-size="9" fill="var(--color-q1,#9d8cff)">NIST 800-63B passwords</text>
+    </g>
+    <g class="ars-node" tabindex="0" role="group" aria-label="Pillar: step-up MFA on the money and account-change paths">
+      <title>step-up MFA on money paths</title>
+      <rect class="ars-hit" x="242" y="214" width="196" height="34"/>
+      <rect class="ars-box" x="246" y="218" width="188" height="26" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-q1,#9d8cff)" stroke-width="1.4"/>
+      <text x="340" y="235" text-anchor="middle" font-size="9" fill="var(--color-q1,#9d8cff)">step-up MFA</text>
+    </g>
+    <g class="ars-node" tabindex="0" role="group" aria-label="Pillar: the JWKS ES256 issuer boundary — the trust pivot that makes a drop-in OIDC server a config change">
+      <title>JWKS ES256 &#183; the trust pivot</title>
+      <rect class="ars-hit" x="242" y="250" width="196" height="38"/>
+      <rect class="ars-box" x="246" y="254" width="188" height="30" rx="6" fill="var(--color-q1,#9d8cff)" fill-opacity="0.10" stroke="var(--color-q1,#9d8cff)" stroke-width="1.7"/>
+      <text x="340" y="271" text-anchor="middle" font-size="9" fill="var(--color-q1,#9d8cff)">JWKS ES256 &#8212; the trust pivot</text>
+      <text class="ars-note" x="340" y="281" text-anchor="middle" font-size="7.5" fill="var(--color-muted,#8a8f9c)">a drop-in OIDC server becomes a config change</text>
+    </g>
+
+    <!-- ===== DEFERRED (muted dashed) ===== -->
+    <g class="ars-node" tabindex="0" role="group" aria-label="Deferred by design: Redis as an L2 cache, adopted when scaling to multiple web instances — a config-only flip">
+      <title>Redis L2 &#183; on multi-instance scale (config-only flip)</title>
+      <rect class="ars-hit" x="460" y="70" width="196" height="34"/>
+      <rect class="ars-box" x="464" y="74" width="188" height="26" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.3" stroke-dasharray="5 3"/>
+      <text x="558" y="91" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">Redis L2 cache</text>
+    </g>
+    <g class="ars-node" tabindex="0" role="group" aria-label="Deferred by design: a dedicated OpenIddict IdP, adopted when SSO or B2B federation arrives — rides on the existing user store">
+      <title>OpenIddict IdP &#183; on SSO / B2B federation</title>
+      <rect class="ars-hit" x="460" y="106" width="196" height="34"/>
+      <rect class="ars-box" x="464" y="110" width="188" height="26" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.3" stroke-dasharray="5 3"/>
+      <text x="558" y="127" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">OpenIddict IdP</text>
+      <text class="ars-note" x="558" y="137" text-anchor="middle" font-size="7.5" fill="var(--color-muted,#8a8f9c)">same AspNetUsers store &#183; the JWKS seam is the prereq</text>
+    </g>
+    <g class="ars-node" tabindex="0" role="group" aria-label="Deferred by design: a Duende BFF, adopted only if the web app becomes a browser-JS SPA or Blazor-WASM front end">
+      <title>Duende.BFF &#183; only if web becomes a browser-JS SPA</title>
+      <rect class="ars-hit" x="460" y="142" width="196" height="34"/>
+      <rect class="ars-box" x="464" y="146" width="188" height="26" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.3" stroke-dasharray="5 3"/>
+      <text x="558" y="163" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">Duende.BFF</text>
+    </g>
+    <g class="ars-node" tabindex="0" role="group" aria-label="Deferred by design: DPoP, adopted once tokens cross real trust boundaries like third-party clients or split services">
+      <title>DPoP &#183; once tokens cross real trust boundaries</title>
+      <rect class="ars-hit" x="460" y="178" width="196" height="34"/>
+      <rect class="ars-box" x="464" y="182" width="188" height="26" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.3" stroke-dasharray="5 3"/>
+      <text x="558" y="199" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">DPoP (RFC 9449)</text>
+    </g>
+
+    <!-- pillar summary -->
+    <g class="ars-node" tabindex="0" role="group" aria-label="The defining property: revocable, enumerable sessions on both edges — the web session store and the mobile refresh-family revocation together, unified into one Active Sessions and Devices screen">
+      <title>revocable, enumerable sessions on both edges</title>
+      <rect class="ars-hit" x="24" y="316" width="632" height="70"/>
+      <rect class="ars-box" x="28" y="320" width="624" height="62" rx="9" fill="var(--color-surface,#12151d)" stroke="var(--color-q1,#9d8cff)" stroke-width="1.5"/>
+      <text x="340" y="344" text-anchor="middle" font-size="10" fill="var(--color-q1,#9d8cff)">revocable, enumerable sessions on both edges</text>
+      <text x="340" y="362" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">the web session store + mobile refresh-family revocation &#8594; one &#8220;Active Sessions &amp; Devices&#8221; screen</text>
+      <text x="340" y="376" text-anchor="middle" font-size="8.5" fill="var(--color-q0,#5fc9bf)">the property that separates a good auth system from a top-1% one</text>
+    </g>
+
+    <text x="340" y="410" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">two accepted ADRs after a 4-stream R&amp;D review</text>
+
+    <text class="ars-hint" x="668" y="24" text-anchor="end" font-size="9" fill="var(--color-muted,#8a8f9c)">hover an item &#9656;</text>
+  </g>
+</svg>
