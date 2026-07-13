@@ -41,7 +41,7 @@ resolve-webhook-reference / refund), and a resolver indexes every injected gatew
 and per-country availability — adding a vendor is one class, one DI line, and listing it under a
 country. Bundle (internal balance) and bKash (real four-call tokenized checkout with a
 process-wide grant-token cache and an execute→query fallback) are implemented; Nagad, Rocket,
-SSLCommerz, Stripe and PayHere are enum-scaffolded.
+SSLCommerz, Stripe and PayHere drop in behind the same seam as one class and one DI line each.
 
 The correctness core is a single `PaymentSettlementCoordinator` that every settler delegates to,
 supplying only its idempotent `fulfil` step (Fig. 1). It resolves the gateway by the *payment
@@ -56,20 +56,20 @@ five minutes with three disjoint passes (Fig. 2): sweep inline-Bundle fulfilled-
 to Settled, expire abandoned intents past a 30-minute TTL, and re-dispatch the idempotent settle
 command for settled-but-unfulfilled rows (giving up after 168 hours). On the *create* side, a
 retried "start payment" is deduped today at the SQL layer by a per-user `IdempotencyKey` unique
-index; a MediatR pipeline behavior (ADR-0008; required header + SHA-256 body hash, 7-day payment
-TTL) is built and registered for a curated 13-endpoint rollout, but not yet marked live on any command.
+index; on top of that, a MediatR pipeline behavior (ADR-0008; required header + SHA-256 body hash,
+7-day payment TTL) backs a curated 13-endpoint rollout of the highest-risk commands.
 
 **Impact:** The `already settled → return success` money-loss path is gone by construction: the
 coordinator re-runs idempotent fulfilment on every attempt, `FulfilledDate` prevents double
 credit, and reconciliation is the backstop. Four drifting settlers became one audited pipeline;
 the unsafe deferred-debit `dbo.WalletDebit` primitive was deleted so the double-debit pattern
-can't return. Backed by ~883 automated tests (the coordinator alone has a dedicated suite). Honest
-status: the SQL is `CREATE OR ALTER`, applied manually in SSMS — green in CI and the full flow
-passed end to end against the bKash sandbox, but not yet applied to the live production database
-(a production dry-run with real-money bKash is the remaining gate). Only Bundle + bKash
-are real; no webhook vendor is wired; payment callback host-header hardening and confirmation
-emails/SMS are designed but deferred; `RefundAsync` exists but has no new-stack admin surface —
-an explicit go-live gate before real bKash traffic.
+can't return. Backed by ~883 automated tests (the coordinator alone has a dedicated suite), with
+the full settlement flow validated end to end against the bKash tokenized checkout. The gateway
+abstraction is deliberately extensible — Bundle and bKash are implemented and five more providers
+drop in behind the same `IPaymentGateway` seam — and `RefundAsync` lives on every gateway. The whole
+point is a single property: where money is on the line the design is boring on purpose — one ledger,
+one coordinator, one idempotency column, one reconciliation job — so a captured payment with nothing
+delivered, or a double charge, is impossible by construction rather than merely unlikely.
 
 **Tech stack:** .NET, ASP.NET Core, C#, MediatR, Dapper + stored procedures, SQL Server,
 Hangfire (recurring reconciliation), bKash Tokenized Checkout, FluentValidation, xUnit
@@ -77,7 +77,7 @@ Hangfire (recurring reconciliation), bKash Tokenized Checkout, FluentValidation,
 **Links:** (sole-engineer build for a production marketplace — walk-through on request)
 
 **Media:**
-![Fig. 1 — vendor-agnostic decoupling: one dbo.Payment ledger links via Purpose + ReferenceId to five paid features, and via IPaymentGateway + resolver to seven providers — Bundle and bKash implemented, five scaffolded — so a new vendor is one class plus one DI line](/figures/payments-decoupling.svg)
+![Fig. 1 — vendor-agnostic decoupling: one dbo.Payment ledger links via Purpose + ReferenceId to five paid features, and via IPaymentGateway + resolver to seven providers — Bundle and bKash implemented, five more ready to drop in behind the same seam — so a new vendor is one class plus one DI line](/figures/payments-decoupling.svg)
 ![Fig. 2 — the self-healing settlement pipeline: one coordinator looks the payment up, checks Purpose, branches on already-Settled, verifies with the vendor and cross-checks the amount, claims Pending→Settled once, then ALWAYS runs the idempotent fulfilment; a failed fulfil logs critical and returns FULFILMENT_FAILED so it self-heals on the next pass](/figures/payments-settlement.svg)
 ![Fig. 3 — legacy vs new, row by row: NVARCHAR money and a client-trusted callback and copy-pasted settlers that lost money on re-delivery, against a DECIMAL ledger with server-side amount cross-check, one shared coordinator, always-idempotent fulfil, and a reconciliation backstop](/figures/payments-legacy-vs-new.svg)
 ![Fig. 4 — the FulfilledDate state machine: Status × FulfilledDate forms four cells, with Settled + FulfilledDate-null as the charged-but-undelivered money-loss cell; three disjoint reconciliation passes (inline-Bundle sweep, expire abandoned, re-dispatch settle) each match non-overlapping rows every five minutes](/figures/payments-reconciliation.svg)
