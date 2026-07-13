@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 420" role="img" aria-labelledby="mpp-t mpp-d">
+  <title id="mpp-t">The promotion parity gap: five paid boost tiers, only three materialized</title>
+  <desc id="mpp-d">The old system supports five paid promotion tiers: Show Up, Top Post, Between, Hurry Up, and Jump Up. The new listing stored procedures accept a single PromotionTypeId filter parameter that covers all five. But the response only materializes three result sets — Show Up, Top Post, and Between — served by the one list query. Hurry Up and Jump Up have the filter parameter but no result set and no query path, so a migration that felt complete would silently drop two revenue-generating promotion tiers: customers paying for a boost that never renders. This was a distinct parity finding, separate from the ranked catalog of old-system defects. Each tier is shown as a card with two checks: whether it has a result set and whether it has a query path. Three are complete; two are owed. Hover or focus any tier to read it.</desc>
+  <style>
+    .mpp-node{ cursor:pointer; transition:opacity .2s ease; }
+    .mpp-node:focus{ outline:none; }
+    .mpp-hit{ fill:transparent; }
+    svg:hover .mpp-node:not(:hover),
+    svg:focus-within .mpp-node:not(:focus-within){ opacity:.3; }
+    .mpp-box{ transition:stroke-width .2s ease; }
+    .mpp-node:hover .mpp-box,
+    .mpp-node:focus-within .mpp-box{ stroke-width:2.6; }
+    .mpp-note{ opacity:0; transition:opacity .18s ease; }
+    .mpp-node:hover .mpp-note,
+    .mpp-node:focus-within .mpp-note{ opacity:1; }
+    .mpp-hint{ opacity:.6; }
+    svg:hover .mpp-hint, svg:focus-within .mpp-hint{ opacity:0; transition:opacity .25s ease; }
+    @media (prefers-reduced-motion: reduce){ *{animation:none!important} }
+  </style>
+  <g style="font-family:var(--font-mono,'IBM Plex Mono',ui-monospace,monospace)" fill="var(--color-ink,#e9e7e0)" font-size="12">
+    <text x="340" y="26" text-anchor="middle" font-size="11" letter-spacing="1.1" fill="var(--color-q1,#9d8cff)">@PromotionTypeId accepts all five tiers &#8212; only three are built</text>
+
+    <!-- filter band -->
+    <g class="mpp-node" tabindex="0" role="group" aria-label="The filter contract accepts all five promotion types, so the input looks complete">
+      <title>@PromotionTypeId: one filter parameter for all five tiers</title>
+      <rect class="mpp-hit" x="60" y="42" width="560" height="34"/>
+      <rect class="mpp-box" x="64" y="46" width="552" height="26" rx="6" fill="var(--color-q1,#9d8cff)" fill-opacity="0.08" stroke="var(--color-q1,#9d8cff)" stroke-width="1.3" stroke-dasharray="4 3"/>
+      <text x="340" y="63" text-anchor="middle" font-size="9.5" fill="var(--color-q1,#9d8cff)">@PromotionTypeId &#8212; generalized for 5, so the input contract looks done</text>
+    </g>
+
+    <!-- five tier cards; x centers at 88,196,304,412,520 ... use width 108 spacing 116 -->
+    <!-- ShowUp -->
+    <g class="mpp-node" tabindex="0" role="group" aria-label="Show Up: complete — has a result set and a query path">
+      <title>Show Up: complete (result set + query path)</title>
+      <rect class="mpp-hit" x="32" y="92" width="112" height="150"/>
+      <rect class="mpp-box" x="34" y="96" width="108" height="142" rx="8" fill="var(--color-q0,#5fc9bf)" fill-opacity="0.10" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.5"/>
+      <text x="88" y="122" text-anchor="middle" font-size="11" fill="var(--color-q0,#5fc9bf)">Show Up</text>
+      <text x="88" y="158" text-anchor="middle" font-size="9">result set</text>
+      <text x="88" y="174" text-anchor="middle" font-size="13" fill="var(--color-q0,#5fc9bf)">&#10003;</text>
+      <text x="88" y="200" text-anchor="middle" font-size="9">query path</text>
+      <text x="88" y="216" text-anchor="middle" font-size="13" fill="var(--color-q0,#5fc9bf)">&#10003;</text>
+      <text class="mpp-note" x="88" y="232" text-anchor="middle" font-size="8" fill="var(--color-muted,#8a8f9c)">ships</text>
+    </g>
+    <!-- TopPost -->
+    <g class="mpp-node" tabindex="0" role="group" aria-label="Top Post: complete — has a result set and a query path">
+      <title>Top Post: complete (result set + query path)</title>
+      <rect class="mpp-hit" x="148" y="92" width="112" height="150"/>
+      <rect class="mpp-box" x="150" y="96" width="108" height="142" rx="8" fill="var(--color-q0,#5fc9bf)" fill-opacity="0.10" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.5"/>
+      <text x="204" y="122" text-anchor="middle" font-size="11" fill="var(--color-q0,#5fc9bf)">Top Post</text>
+      <text x="204" y="158" text-anchor="middle" font-size="9">result set</text>
+      <text x="204" y="174" text-anchor="middle" font-size="13" fill="var(--color-q0,#5fc9bf)">&#10003;</text>
+      <text x="204" y="200" text-anchor="middle" font-size="9">query path</text>
+      <text x="204" y="216" text-anchor="middle" font-size="13" fill="var(--color-q0,#5fc9bf)">&#10003;</text>
+      <text class="mpp-note" x="204" y="232" text-anchor="middle" font-size="8" fill="var(--color-muted,#8a8f9c)">ships</text>
+    </g>
+    <!-- Between -->
+    <g class="mpp-node" tabindex="0" role="group" aria-label="Between: complete — has a result set and a query path">
+      <title>Between: complete (result set + query path)</title>
+      <rect class="mpp-hit" x="264" y="92" width="112" height="150"/>
+      <rect class="mpp-box" x="266" y="96" width="108" height="142" rx="8" fill="var(--color-q0,#5fc9bf)" fill-opacity="0.10" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.5"/>
+      <text x="320" y="122" text-anchor="middle" font-size="11" fill="var(--color-q0,#5fc9bf)">Between</text>
+      <text x="320" y="158" text-anchor="middle" font-size="9">result set</text>
+      <text x="320" y="174" text-anchor="middle" font-size="13" fill="var(--color-q0,#5fc9bf)">&#10003;</text>
+      <text x="320" y="200" text-anchor="middle" font-size="9">query path</text>
+      <text x="320" y="216" text-anchor="middle" font-size="13" fill="var(--color-q0,#5fc9bf)">&#10003;</text>
+      <text class="mpp-note" x="320" y="232" text-anchor="middle" font-size="8" fill="var(--color-muted,#8a8f9c)">ships</text>
+    </g>
+    <!-- HurryUp (missing) -->
+    <g class="mpp-node" tabindex="0" role="group" aria-label="Hurry Up: owed — filter parameter exists but there is no result set and no query path, so it would silently disappear">
+      <title>Hurry Up: owed &#8212; filter param but no result set, no query path</title>
+      <rect class="mpp-hit" x="380" y="92" width="112" height="150"/>
+      <rect class="mpp-box" x="382" y="96" width="108" height="142" rx="8" fill="var(--color-error,#ef4444)" fill-opacity="0.12" stroke="var(--color-error,#ef4444)" stroke-width="1.7"/>
+      <text x="436" y="122" text-anchor="middle" font-size="11" fill="var(--color-error,#ef4444)">Hurry Up</text>
+      <text x="436" y="158" text-anchor="middle" font-size="9">result set</text>
+      <text x="436" y="174" text-anchor="middle" font-size="13" fill="var(--color-error,#ef4444)">&#10007;</text>
+      <text x="436" y="200" text-anchor="middle" font-size="9">query path</text>
+      <text x="436" y="216" text-anchor="middle" font-size="13" fill="var(--color-error,#ef4444)">&#10007;</text>
+      <text class="mpp-note" x="436" y="232" text-anchor="middle" font-size="8" fill="var(--color-error,#ef4444)">paid, never renders</text>
+    </g>
+    <!-- JumpUp (missing) -->
+    <g class="mpp-node" tabindex="0" role="group" aria-label="Jump Up: owed — filter parameter exists but there is no result set and no query path, so it would silently disappear">
+      <title>Jump Up: owed &#8212; filter param but no result set, no query path</title>
+      <rect class="mpp-hit" x="496" y="92" width="112" height="150"/>
+      <rect class="mpp-box" x="498" y="96" width="108" height="142" rx="8" fill="var(--color-error,#ef4444)" fill-opacity="0.12" stroke="var(--color-error,#ef4444)" stroke-width="1.7"/>
+      <text x="552" y="122" text-anchor="middle" font-size="11" fill="var(--color-error,#ef4444)">Jump Up</text>
+      <text x="552" y="158" text-anchor="middle" font-size="9">result set</text>
+      <text x="552" y="174" text-anchor="middle" font-size="13" fill="var(--color-error,#ef4444)">&#10007;</text>
+      <text x="552" y="200" text-anchor="middle" font-size="9">query path</text>
+      <text x="552" y="216" text-anchor="middle" font-size="13" fill="var(--color-error,#ef4444)">&#10007;</text>
+      <text class="mpp-note" x="552" y="232" text-anchor="middle" font-size="8" fill="var(--color-error,#ef4444)">paid, never renders</text>
+    </g>
+
+    <!-- audit callout -->
+    <g class="mpp-node" tabindex="0" role="group" aria-label="The parity finding: two paid tiers with a filter but no output would ship silently missing; a distinct finding, not a row in the old-defect catalog, and now the gate before an endpoint is called migrated">
+      <title>The parity finding &#8212; the gate before an endpoint is called migrated</title>
+      <rect class="mpp-hit" x="60" y="262" width="560" height="86"/>
+      <rect class="mpp-box" x="64" y="266" width="552" height="78" rx="8" fill="var(--color-surface,#12151d)" stroke="var(--color-q1,#9d8cff)" stroke-width="1.5"/>
+      <text x="340" y="290" text-anchor="middle" font-size="10.5" fill="var(--color-q1,#9d8cff)">the parity audit's headline finding</text>
+      <text x="340" y="310" text-anchor="middle" font-size="9.5" fill="var(--color-muted,#8a8f9c)">a &#8220;looks done&#8221; migration ships two paid tiers that render nothing &#8212; a revenue feature, silently gone</text>
+      <text x="340" y="328" text-anchor="middle" font-size="9.5" fill="var(--color-muted,#8a8f9c)">a distinct finding, not a row in the old-defect catalog &#8212; the gate: no endpoint is &#8220;migrated&#8221; until parity is proven</text>
+    </g>
+
+    <text x="340" y="374" text-anchor="middle" font-size="9.5" fill="var(--color-q0,#5fc9bf)">generalize the input contract, but verify every output the old behavior produced</text>
+
+    <text class="mpp-hint" x="668" y="26" text-anchor="end" font-size="9" fill="var(--color-muted,#8a8f9c)">hover a tier &#9656;</text>
+  </g>
+</svg>

@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 480" role="img" aria-labelledby="mss-t mss-d">
+  <title id="mss-t">The strangler seam: two shells, one MediatR core</title>
+  <desc id="mss-d">Two front-end shells sit at the top. On the left, the surviving old MVC Razor controller, being rewired to the seam; on the right, the new JSON API controller that the Flutter apps talk to. The API controller already calls a single _mediator.Send() into one Application core — that call is the strangler seam — and each MVC controller is migrated to call the same seam, one endpoint at a time. The core runs a MediatR pipeline: LoggingBehavior, then ValidationBehavior which fails fast with a structured 400 before the handler runs, then the Handler, which is the whole use case. Below the handler a repository interface declared in the Application layer is implemented in Infrastructure as a Dapper stored-procedure call, fully async with a default thirty-second timeout, reaching SQL Server. Once rewired, the MVC controller maps the returned DTO back onto its Razor ViewModel so the web page renders unchanged and its SEO URL is preserved. One business core, reached from two shells. Hover or focus any node to read it.</desc>
+  <style>
+    .mss-node{ cursor:pointer; transition:opacity .2s ease; }
+    .mss-node:focus{ outline:none; }
+    .mss-hit{ fill:transparent; }
+    svg:hover .mss-node:not(:hover),
+    svg:focus-within .mss-node:not(:focus-within){ opacity:.3; }
+    .mss-box{ transition:stroke-width .2s ease; }
+    .mss-node:hover .mss-box,
+    .mss-node:focus-within .mss-box{ stroke-width:2.4; }
+    .mss-note{ opacity:0; transition:opacity .18s ease; }
+    .mss-node:hover .mss-note,
+    .mss-node:focus-within .mss-note{ opacity:1; }
+    .mss-hint{ opacity:.6; }
+    svg:hover .mss-hint, svg:focus-within .mss-hint{ opacity:0; transition:opacity .25s ease; }
+    @media (prefers-reduced-motion: reduce){ *{animation:none!important} }
+  </style>
+  <defs>
+    <marker id="mss-ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 1 L9 5 L0 9 z" fill="var(--color-q1,#9d8cff)"/>
+    </marker>
+  </defs>
+  <g style="font-family:var(--font-mono,'IBM Plex Mono',ui-monospace,monospace)" fill="var(--color-ink,#e9e7e0)" font-size="12">
+    <text x="340" y="26" text-anchor="middle" font-size="11" letter-spacing="1.2" fill="var(--color-q1,#9d8cff)">one core, two shells &#183; the seam is a single _mediator.Send()</text>
+
+    <!-- SHELL: old MVC -->
+    <g class="mss-node" tabindex="0" role="group" aria-label="Old MVC Razor controller: the surviving web shell, being rewired to the seam one endpoint at a time">
+      <title>Old MVC Razor controller: the surviving web shell (being rewired)</title>
+      <rect class="mss-hit" x="48" y="48" width="252" height="70"/>
+      <rect class="mss-box" x="52" y="52" width="244" height="62" rx="8" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4" stroke-dasharray="5 3"/>
+      <text x="174" y="78" text-anchor="middle" font-size="11.5">old MVC &#183; Razor controller</text>
+      <text x="174" y="96" text-anchor="middle" font-size="9.5" fill="var(--color-muted,#8a8f9c)">being rewired &#183; keeps its SEO URLs</text>
+      <text class="mss-note" x="174" y="126" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">once rewired, maps DTO &#8594; ViewModel for Razor</text>
+    </g>
+
+    <!-- SHELL: new API -->
+    <g class="mss-node" tabindex="0" role="group" aria-label="New API controller: the JSON shell the Flutter apps talk to">
+      <title>New API controller: the JSON shell for the Flutter apps</title>
+      <rect class="mss-hit" x="380" y="48" width="252" height="70"/>
+      <rect class="mss-box" x="384" y="52" width="244" height="62" rx="8" fill="var(--color-surface,#12151d)" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.4"/>
+      <text x="506" y="78" text-anchor="middle" font-size="11.5" fill="var(--color-q0,#5fc9bf)">new API controller</text>
+      <text x="506" y="96" text-anchor="middle" font-size="9.5" fill="var(--color-muted,#8a8f9c)">thin &#183; returns JSON to mobile</text>
+      <text class="mss-note" x="506" y="126" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">no ViewModel &#8212; serializes the DTO directly</text>
+    </g>
+
+    <!-- converging arrows to the seam -->
+    <path d="M174 114 C174 150, 300 150, 330 176" stroke="var(--color-q1,#9d8cff)" stroke-width="1.6" fill="none" marker-end="url(#mss-ah)"/>
+    <path d="M506 114 C506 150, 380 150, 350 176" stroke="var(--color-q1,#9d8cff)" stroke-width="1.6" fill="none" marker-end="url(#mss-ah)"/>
+
+    <!-- SEAM label -->
+    <g class="mss-node" tabindex="0" role="group" aria-label="The strangler seam: both shells call the same _mediator.Send(), so migrating an endpoint is rewiring a controller, not rewriting a page">
+      <title>The strangler seam: both shells call the same _mediator.Send()</title>
+      <rect class="mss-hit" x="196" y="186" width="288" height="72"/>
+      <rect class="mss-box" x="200" y="190" width="280" height="64" rx="8" fill="var(--color-q1,#9d8cff)" fill-opacity="0.10" stroke="var(--color-q1,#9d8cff)" stroke-width="1.8"/>
+      <text x="340" y="216" text-anchor="middle" font-size="12" fill="var(--color-q1,#9d8cff)">_mediator.Send(query) &#8212; the seam</text>
+      <text x="340" y="236" text-anchor="middle" font-size="9.5" fill="var(--color-muted,#8a8f9c)">one Application core, reached from both shells</text>
+      <text class="mss-note" x="340" y="270" text-anchor="middle" font-size="9" fill="var(--color-q1,#9d8cff)">migrate an endpoint = rewire a controller, not rewrite a page</text>
+    </g>
+
+    <!-- pipeline chips -->
+    <path d="M340 258 V276" stroke="var(--color-q1,#9d8cff)" stroke-width="1.6" fill="none" marker-end="url(#mss-ah)"/>
+    <g font-size="10">
+      <g class="mss-node" tabindex="0" role="group" aria-label="LoggingBehavior: the first MediatR pipeline step">
+        <title>LoggingBehavior: first pipeline step</title>
+        <rect class="mss-hit" x="60" y="280" width="168" height="46"/>
+        <rect class="mss-box" x="64" y="284" width="160" height="38" rx="7" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.3"/>
+        <text x="144" y="307" text-anchor="middle" font-size="10">LoggingBehavior</text>
+      </g>
+      <g class="mss-node" tabindex="0" role="group" aria-label="ValidationBehavior: FluentValidation fails fast with a structured 400 before the handler runs">
+        <title>ValidationBehavior: fails fast with a 400 before the handler</title>
+        <rect class="mss-hit" x="256" y="280" width="168" height="46"/>
+        <rect class="mss-box" x="260" y="284" width="160" height="38" rx="7" fill="var(--color-surface,#12151d)" stroke="var(--color-q1,#9d8cff)" stroke-width="1.3"/>
+        <text x="340" y="303" text-anchor="middle" font-size="10" fill="var(--color-q1,#9d8cff)">ValidationBehavior</text>
+        <text class="mss-note" x="340" y="316" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">fail fast &#8594; 400</text>
+      </g>
+      <g class="mss-node" tabindex="0" role="group" aria-label="Handler: the whole use case, replacing the old pass-through service layer">
+        <title>Handler: the whole use case (no pass-through layer)</title>
+        <rect class="mss-hit" x="452" y="280" width="168" height="46"/>
+        <rect class="mss-box" x="456" y="284" width="160" height="38" rx="7" fill="var(--color-q0,#5fc9bf)" fill-opacity="0.12" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.4"/>
+        <text x="536" y="303" text-anchor="middle" font-size="10" fill="var(--color-q0,#5fc9bf)">Handler = use case</text>
+        <text class="mss-note" x="536" y="316" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">orchestrates, no logic in the controller</text>
+      </g>
+    </g>
+
+    <!-- repo interface + infra -->
+    <path d="M536 322 V348" stroke="var(--color-q1,#9d8cff)" stroke-width="1.4" fill="none" marker-end="url(#mss-ah)"/>
+    <g class="mss-node" tabindex="0" role="group" aria-label="Repository interface declared in Application, implemented in Infrastructure as a Dapper stored-procedure call, fully async with a default 30-second timeout">
+      <title>Repository interface (Application) &#8594; Dapper + SP (Infrastructure)</title>
+      <rect class="mss-hit" x="196" y="352" width="288" height="62"/>
+      <rect class="mss-box" x="200" y="356" width="280" height="54" rx="8" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4"/>
+      <text x="340" y="380" text-anchor="middle" font-size="10.5">IVehicleAdRepository &#8594; Dapper + SP</text>
+      <text x="340" y="398" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">interface in Application &#183; impl in Infrastructure</text>
+      <text class="mss-note" x="340" y="424" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">fully async &#183; CancellationToken &#183; 30s default timeout</text>
+    </g>
+
+    <!-- SQL cylinder -->
+    <path d="M340 414 V434" stroke="var(--color-q1,#9d8cff)" stroke-width="1.4" fill="none" marker-end="url(#mss-ah)"/>
+    <g class="mss-node" tabindex="0" role="group" aria-label="SQL Server: stored procedures over the denormalized AllPosts read model">
+      <title>SQL Server: stored procedures over the AllPosts read model</title>
+      <rect class="mss-hit" x="270" y="436" width="140" height="34"/>
+      <ellipse class="mss-box" cx="340" cy="446" rx="52" ry="7" fill="var(--color-surface,#12151d)" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.3"/>
+      <text x="340" y="466" text-anchor="middle" font-size="9.5" fill="var(--color-q0,#5fc9bf)">SQL Server &#183; stored procedures</text>
+    </g>
+
+    <text class="mss-hint" x="668" y="26" text-anchor="end" font-size="9" fill="var(--color-muted,#8a8f9c)">hover a node &#9656;</text>
+  </g>
+</svg>

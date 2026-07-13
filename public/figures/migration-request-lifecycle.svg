@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 470" role="img" aria-labelledby="mrl-t mrl-d">
+  <title id="mrl-t">One ad-detail request: old MVC vs new, by database round trips</title>
+  <desc id="mrl-d">A side-by-side of the same ad-detail request. On the left, the old MVC path: the request passes through a pass-through service layer and then makes three-to-four separate database round trips — first resolve the route slug to IDs, second fetch the vehicle by CategoryTablePostId, third fetch subcategory field-visibility for the Razor view, and a hidden fourth is a synchronous N+1 ShopName lookup inside the repository. The old detail stored procedure also runs with commandTimeout zero, an unbounded wait. On the right, the new path: both shells call one handler, which calls one stored procedure, dbo.VehicleAdGetDetail with the AllPostId, that atomically increments the click count on the primary key, joins everything, resolves the lookups, and returns a flat display-ready DTO in a single round trip with a default thirty-second timeout. Three-to-four round trips collapse to one. Hover or focus any step to read it.</desc>
+  <style>
+    .mrl-node{ cursor:pointer; transition:opacity .2s ease; }
+    .mrl-node:focus{ outline:none; }
+    .mrl-hit{ fill:transparent; }
+    svg:hover .mrl-node:not(:hover),
+    svg:focus-within .mrl-node:not(:focus-within){ opacity:.3; }
+    .mrl-box{ transition:stroke-width .2s ease; }
+    .mrl-node:hover .mrl-box,
+    .mrl-node:focus-within .mrl-box{ stroke-width:2.4; }
+    .mrl-note{ opacity:0; transition:opacity .18s ease; }
+    .mrl-node:hover .mrl-note,
+    .mrl-node:focus-within .mrl-note{ opacity:1; }
+    .mrl-hint{ opacity:.6; }
+    svg:hover .mrl-hint, svg:focus-within .mrl-hint{ opacity:0; transition:opacity .25s ease; }
+    @media (prefers-reduced-motion: reduce){ *{animation:none!important} }
+  </style>
+  <defs>
+    <marker id="mrl-ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 1 L9 5 L0 9 z" fill="var(--color-muted,#8a8f9c)"/>
+    </marker>
+    <marker id="mrl-ah2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 1 L9 5 L0 9 z" fill="var(--color-q0,#5fc9bf)"/>
+    </marker>
+  </defs>
+  <g style="font-family:var(--font-mono,'IBM Plex Mono',ui-monospace,monospace)" fill="var(--color-ink,#e9e7e0)" font-size="12">
+    <line x1="340" y1="52" x2="340" y2="440" stroke="var(--color-muted,#8a8f9c)" stroke-width="1" stroke-dasharray="3 5" opacity="0.5"/>
+
+    <!-- headers -->
+    <text x="176" y="30" text-anchor="middle" font-size="11.5" fill="var(--color-error,#ef4444)">OLD MVC &#183; 3&#8211;4 round trips</text>
+    <text x="508" y="30" text-anchor="middle" font-size="11.5" fill="var(--color-q0,#5fc9bf)">NEW &#183; 1 round trip</text>
+
+    <!-- ============ OLD column ============ -->
+    <g class="mrl-node" tabindex="0" role="group" aria-label="Old: pass-through service layer, one-line delegation that adds nothing">
+      <title>Pass-through service layer (adds nothing)</title>
+      <rect class="mrl-hit" x="40" y="48" width="272" height="40"/>
+      <rect class="mrl-box" x="44" y="52" width="264" height="32" rx="7" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.3" stroke-dasharray="4 3"/>
+      <text x="176" y="72" text-anchor="middle" font-size="10" fill="var(--color-muted,#8a8f9c)">controller &#8594; pass-through service &#8594; repository</text>
+    </g>
+
+    <g class="mrl-node" tabindex="0" role="group" aria-label="Round trip 1: resolve the route slug to AllPostId, CategoryId, CategoryTablePostId">
+      <title>Round trip 1: resolve the route slug to IDs</title>
+      <rect class="mrl-hit" x="40" y="98" width="272" height="44"/>
+      <rect class="mrl-box" x="44" y="102" width="264" height="36" rx="7" fill="var(--color-surface,#12151d)" stroke="var(--color-error,#ef4444)" stroke-width="1.4"/>
+      <text x="60" y="118" font-size="10" fill="var(--color-error,#ef4444)">RT 1</text>
+      <text x="176" y="118" text-anchor="middle" font-size="10">resolve slug &#8594; IDs</text>
+      <text x="176" y="132" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">route path &#8594; AllPostId + CategoryTablePostId</text>
+    </g>
+    <g class="mrl-node" tabindex="0" role="group" aria-label="Round trip 2: fetch the vehicle detail by CategoryTablePostId, not the primary key">
+      <title>Round trip 2: fetch detail by CategoryTablePostId</title>
+      <rect class="mrl-hit" x="40" y="146" width="272" height="44"/>
+      <rect class="mrl-box" x="44" y="150" width="264" height="36" rx="7" fill="var(--color-surface,#12151d)" stroke="var(--color-error,#ef4444)" stroke-width="1.4"/>
+      <text x="60" y="166" font-size="10" fill="var(--color-error,#ef4444)">RT 2</text>
+      <text x="176" y="166" text-anchor="middle" font-size="10">fetch detail SP</text>
+      <text x="176" y="180" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">by CategoryTablePostId &#183; commandTimeout: 0</text>
+    </g>
+    <g class="mrl-node" tabindex="0" role="group" aria-label="Round trip 3: fetch subcategory field-visibility for the Razor view">
+      <title>Round trip 3: subcategory field-visibility (Razor-only)</title>
+      <rect class="mrl-hit" x="40" y="194" width="272" height="44"/>
+      <rect class="mrl-box" x="44" y="198" width="264" height="36" rx="7" fill="var(--color-surface,#12151d)" stroke="var(--color-error,#ef4444)" stroke-width="1.4"/>
+      <text x="60" y="214" font-size="10" fill="var(--color-error,#ef4444)">RT 3</text>
+      <text x="176" y="214" text-anchor="middle" font-size="10">field visibility</text>
+      <text x="176" y="228" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">a genuine presentation concern</text>
+    </g>
+    <g class="mrl-node" tabindex="0" role="group" aria-label="Round trip 4, hidden: a synchronous N+1 ShopName lookup inside the repository">
+      <title>Round trip 4 (hidden): N+1 ShopName lookup in the repo</title>
+      <rect class="mrl-hit" x="40" y="242" width="272" height="46"/>
+      <rect class="mrl-box" x="44" y="246" width="264" height="38" rx="7" fill="var(--color-error,#ef4444)" fill-opacity="0.10" stroke="var(--color-error,#ef4444)" stroke-width="1.6" stroke-dasharray="5 3"/>
+      <text x="60" y="262" font-size="10" fill="var(--color-error,#ef4444)">RT 4</text>
+      <text x="176" y="262" text-anchor="middle" font-size="10" fill="var(--color-error,#ef4444)">hidden N+1 lookup</text>
+      <text x="176" y="277" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">GetValidShopNameForRoute, sync, inside the repo</text>
+    </g>
+    <path d="M176 138 V146 M176 186 V194 M176 234 V242" stroke="var(--color-error,#ef4444)" stroke-width="1.3" fill="none" marker-end="url(#mrl-ah)"/>
+
+    <!-- old DB cylinder -->
+    <g class="mrl-node" tabindex="0" role="group" aria-label="Old: every round trip is a separate hit on SQL Server, some inside a read transaction">
+      <title>SQL Server &#183; 3&#8211;4 separate hits, some inside a read transaction</title>
+      <rect class="mrl-hit" x="106" y="300" width="140" height="34"/>
+      <ellipse class="mrl-box" cx="176" cy="312" rx="54" ry="7" fill="var(--color-surface,#12151d)" stroke="var(--color-error,#ef4444)" stroke-width="1.3"/>
+      <text x="176" y="332" text-anchor="middle" font-size="9" fill="var(--color-error,#ef4444)">SQL Server &#183; 3&#8211;4 hits</text>
+    </g>
+
+    <!-- ============ NEW column ============ -->
+    <g class="mrl-node" tabindex="0" role="group" aria-label="New: both shells call one handler, GetVehicleAdDetailQuery, through the validation pipeline">
+      <title>Both shells &#8594; one handler (validated in the pipeline)</title>
+      <rect class="mrl-hit" x="372" y="98" width="272" height="60"/>
+      <rect class="mrl-box" x="376" y="102" width="264" height="52" rx="8" fill="var(--color-surface,#12151d)" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.4"/>
+      <text x="508" y="124" text-anchor="middle" font-size="10.5" fill="var(--color-q0,#5fc9bf)">one handler</text>
+      <text x="508" y="142" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">GetVehicleAdDetailQuery(allPostId)</text>
+    </g>
+    <path d="M508 154 V178" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.6" fill="none" marker-end="url(#mrl-ah2)"/>
+
+    <g class="mrl-node" tabindex="0" role="group" aria-label="New: one stored procedure does everything in a single round trip">
+      <title>Round trip 1 (only): dbo.VehicleAdGetDetail(@AllPostId)</title>
+      <rect class="mrl-hit" x="372" y="182" width="272" height="96"/>
+      <rect class="mrl-box" x="376" y="186" width="264" height="88" rx="8" fill="var(--color-q0,#5fc9bf)" fill-opacity="0.10" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.8"/>
+      <text x="508" y="206" text-anchor="middle" font-size="10.5" fill="var(--color-q0,#5fc9bf)">dbo.VehicleAdGetDetail(@AllPostId)</text>
+      <text x="508" y="226" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">atomic click++ on the primary key</text>
+      <text x="508" y="242" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">joins + resolves every lookup name</text>
+      <text x="508" y="258" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">returns a flat, display-ready DTO</text>
+      <text class="mrl-note" x="508" y="271" text-anchor="middle" font-size="8.5" fill="var(--color-q0,#5fc9bf)">no transaction around the read &#183; 30s default timeout</text>
+    </g>
+
+    <!-- new DB cylinder -->
+    <path d="M508 274 V292" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.4" fill="none" marker-end="url(#mrl-ah2)"/>
+    <g class="mrl-node" tabindex="0" role="group" aria-label="New: one hit on SQL Server">
+      <title>SQL Server &#183; one hit</title>
+      <rect class="mrl-hit" x="438" y="300" width="140" height="34"/>
+      <ellipse class="mrl-box" cx="508" cy="312" rx="52" ry="7" fill="var(--color-surface,#12151d)" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.3"/>
+      <text x="508" y="332" text-anchor="middle" font-size="9.5" fill="var(--color-q0,#5fc9bf)">SQL Server &#183; 1 hit</text>
+    </g>
+
+    <!-- footer takeaways -->
+    <text x="176" y="372" text-anchor="middle" font-size="9.5" fill="var(--color-muted,#8a8f9c)">field visibility stays an edge concern</text>
+    <text x="176" y="388" text-anchor="middle" font-size="9.5" fill="var(--color-muted,#8a8f9c)">in the new world &#8212; not pushed into the API</text>
+    <text x="508" y="372" text-anchor="middle" font-size="9.5" fill="var(--color-q0,#5fc9bf)">~67&#8211;75% fewer round trips</text>
+    <text x="508" y="388" text-anchor="middle" font-size="9.5" fill="var(--color-muted,#8a8f9c)">race deleted &#183; no read transaction &#183; no N+1</text>
+
+    <text x="340" y="428" text-anchor="middle" font-size="9.5" fill="var(--color-q1,#9d8cff)">same visitor, same page &#8212; the migration is invisible to the user and to Google</text>
+
+    <text class="mrl-hint" x="668" y="30" text-anchor="end" font-size="9" fill="var(--color-muted,#8a8f9c)">hover a step &#9656;</text>
+  </g>
+</svg>

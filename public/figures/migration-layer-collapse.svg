@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 440" role="img" aria-labelledby="mlc-t mlc-d">
+  <title id="mlc-t">Layer collapse: five pass-through layers become three that each do work</title>
+  <desc id="mlc-d">A side-by-side of the two architectures. On the left, the old five-layer MVC monolith stacked top to bottom: the Razor view, the view-centric area controller that builds ViewBags and pagers, the service layer which is pure one-line delegation and adds nothing, the repository where all the logic is crammed, and Dapper with stored procedures. On the right, the new three-layer slice: a thin shell that is either the API controller or the surviving MVC controller, the MediatR handler which is the whole use case with validation moved into the pipeline in front of it, and Dapper with stored procedures in Infrastructure. The pass-through service layer is deleted, and validation, which did not exist at all in the old system, now runs in the pipeline before the handler. Hover or focus any layer to read it.</desc>
+  <style>
+    .mlc-node{ cursor:pointer; transition:opacity .2s ease; }
+    .mlc-node:focus{ outline:none; }
+    .mlc-hit{ fill:transparent; }
+    svg:hover .mlc-node:not(:hover),
+    svg:focus-within .mlc-node:not(:focus-within){ opacity:.3; }
+    .mlc-box{ transition:stroke-width .2s ease; }
+    .mlc-node:hover .mlc-box,
+    .mlc-node:focus-within .mlc-box{ stroke-width:2.6; }
+    .mlc-note{ opacity:0; transition:opacity .18s ease; }
+    .mlc-node:hover .mlc-note,
+    .mlc-node:focus-within .mlc-note{ opacity:1; }
+    .mlc-hint{ opacity:.6; }
+    svg:hover .mlc-hint, svg:focus-within .mlc-hint{ opacity:0; transition:opacity .25s ease; }
+    @media (prefers-reduced-motion: reduce){ *{animation:none!important} }
+  </style>
+  <defs>
+    <marker id="mlc-ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 1 L9 5 L0 9 z" fill="var(--color-q1,#9d8cff)"/>
+    </marker>
+  </defs>
+  <g style="font-family:var(--font-mono,'IBM Plex Mono',ui-monospace,monospace)" fill="var(--color-ink,#e9e7e0)" font-size="12">
+    <text x="164" y="28" text-anchor="middle" font-size="11.5" fill="var(--color-muted,#8a8f9c)">OLD &#183; 5 layers, one pure pass-through</text>
+    <text x="516" y="28" text-anchor="middle" font-size="11.5" fill="var(--color-q0,#5fc9bf)">NEW &#183; 3 real layers</text>
+
+    <!-- OLD stack -->
+    <g class="mlc-node" tabindex="0" role="group" aria-label="Old layer 1: the Razor view">
+      <title>Razor view</title>
+      <rect class="mlc-hit" x="40" y="48" width="248" height="52"/>
+      <rect class="mlc-box" x="44" y="52" width="240" height="44" rx="7" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.3"/>
+      <text x="164" y="79" text-anchor="middle" font-size="10.5">Razor view</text>
+    </g>
+    <g class="mlc-node" tabindex="0" role="group" aria-label="Old layer 2: the view-centric area controller that builds ViewBags and pagers">
+      <title>Area controller &#8212; view-centric, builds ViewBags</title>
+      <rect class="mlc-hit" x="40" y="104" width="248" height="52"/>
+      <rect class="mlc-box" x="44" y="108" width="240" height="44" rx="7" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.3"/>
+      <text x="164" y="129" text-anchor="middle" font-size="10.5">area controller</text>
+      <text x="164" y="144" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">ViewBags, pagers, UI state</text>
+    </g>
+    <g class="mlc-node" tabindex="0" role="group" aria-label="Old layer 3: the service layer, pure one-line delegation that adds no value — this is the layer that gets deleted">
+      <title>Service layer &#8212; pass-through, adds nothing (deleted)</title>
+      <rect class="mlc-hit" x="40" y="160" width="248" height="52"/>
+      <rect class="mlc-box" x="44" y="164" width="240" height="44" rx="7" fill="var(--color-error,#ef4444)" fill-opacity="0.10" stroke="var(--color-error,#ef4444)" stroke-width="1.5" stroke-dasharray="5 3"/>
+      <text x="164" y="185" text-anchor="middle" font-size="10.5" fill="var(--color-error,#ef4444)">service &#8212; pass-through</text>
+      <text x="164" y="200" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">one-line delegation, zero logic</text>
+      <text class="mlc-note" x="164" y="212" text-anchor="middle" font-size="8" fill="var(--color-error,#ef4444)">deleted in the new design</text>
+    </g>
+    <g class="mlc-node" tabindex="0" role="group" aria-label="Old layer 4: the repository where all the logic is crammed">
+      <title>Repository &#8212; all the logic crammed here</title>
+      <rect class="mlc-hit" x="40" y="216" width="248" height="52"/>
+      <rect class="mlc-box" x="44" y="220" width="240" height="44" rx="7" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.3"/>
+      <text x="164" y="241" text-anchor="middle" font-size="10.5">repository &#8212; all logic</text>
+      <text x="164" y="256" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">business rules + data access mixed</text>
+    </g>
+    <g class="mlc-node" tabindex="0" role="group" aria-label="Old layer 5: Dapper and stored procedures">
+      <title>Dapper + stored procedures</title>
+      <rect class="mlc-hit" x="40" y="272" width="248" height="52"/>
+      <rect class="mlc-box" x="44" y="276" width="240" height="44" rx="7" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.3"/>
+      <text x="164" y="303" text-anchor="middle" font-size="10.5">Dapper + SP</text>
+    </g>
+
+    <!-- collapse arrow -->
+    <path d="M300 186 C332 186, 336 250, 368 250" stroke="var(--color-q1,#9d8cff)" stroke-width="1.6" fill="none" marker-end="url(#mlc-ah)"/>
+    <text x="336" y="176" text-anchor="middle" font-size="8.5" fill="var(--color-q1,#9d8cff)">collapse</text>
+
+    <!-- NEW stack -->
+    <g class="mlc-node" tabindex="0" role="group" aria-label="New layer 1: a thin shell, either the API controller or the surviving MVC controller">
+      <title>Thin shell &#8212; API controller or MVC controller</title>
+      <rect class="mlc-hit" x="392" y="70" width="248" height="60"/>
+      <rect class="mlc-box" x="396" y="74" width="240" height="52" rx="8" fill="var(--color-surface,#12151d)" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.4"/>
+      <text x="516" y="98" text-anchor="middle" font-size="10.5" fill="var(--color-q0,#5fc9bf)">thin shell</text>
+      <text x="516" y="114" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">API controller &#183; or MVC controller</text>
+    </g>
+    <path d="M516 130 V150" stroke="var(--color-q1,#9d8cff)" stroke-width="1.5" fill="none" marker-end="url(#mlc-ah)"/>
+    <g class="mlc-node" tabindex="0" role="group" aria-label="New layer 2: the MediatR handler is the whole use case, with validation moved into the pipeline in front of it">
+      <title>MediatR handler = the use case (validation in the pipeline)</title>
+      <rect class="mlc-hit" x="392" y="154" width="248" height="86"/>
+      <rect class="mlc-box" x="396" y="158" width="240" height="78" rx="8" fill="var(--color-q0,#5fc9bf)" fill-opacity="0.10" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.7"/>
+      <text x="516" y="182" text-anchor="middle" font-size="10.5" fill="var(--color-q0,#5fc9bf)">MediatR handler = use case</text>
+      <text x="516" y="202" text-anchor="middle" font-size="8.5" fill="var(--color-q1,#9d8cff)">+ ValidationBehavior in front</text>
+      <text x="516" y="218" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">calls a repository interface (Application)</text>
+      <text class="mlc-note" x="516" y="232" text-anchor="middle" font-size="8" fill="var(--color-q1,#9d8cff)">validation existed nowhere in the old system</text>
+    </g>
+    <path d="M516 240 V260" stroke="var(--color-q1,#9d8cff)" stroke-width="1.5" fill="none" marker-end="url(#mlc-ah)"/>
+    <g class="mlc-node" tabindex="0" role="group" aria-label="New layer 3: Dapper and stored procedures in Infrastructure, fully async with default timeouts">
+      <title>Dapper + SP (Infrastructure) &#8212; fully async, default timeouts</title>
+      <rect class="mlc-hit" x="392" y="264" width="248" height="56"/>
+      <rect class="mlc-box" x="396" y="268" width="240" height="48" rx="8" fill="var(--color-surface,#12151d)" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.4"/>
+      <text x="516" y="290" text-anchor="middle" font-size="10.5" fill="var(--color-q0,#5fc9bf)">Dapper + SP (Infrastructure)</text>
+      <text x="516" y="305" text-anchor="middle" font-size="8.5" fill="var(--color-muted,#8a8f9c)">fully async &#183; 30s default timeout</text>
+    </g>
+
+    <text x="340" y="356" text-anchor="middle" font-size="9.5" fill="var(--color-muted,#8a8f9c)">the handler IS the use case &#8212; no pass-through indirection, logic out of the repository</text>
+    <text x="340" y="374" text-anchor="middle" font-size="9.5" fill="var(--color-q0,#5fc9bf)">pass-through service deleted, logic out of the repository; validation and real async now present</text>
+    <text x="340" y="404" text-anchor="middle" font-size="9" fill="var(--color-q1,#9d8cff)">same shared AllPosts read model underneath &#8212; the access path changed, the storage did not</text>
+
+    <text class="mlc-hint" x="668" y="28" text-anchor="end" font-size="9" fill="var(--color-muted,#8a8f9c)">hover a layer &#9656;</text>
+  </g>
+</svg>
