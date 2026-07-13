@@ -96,6 +96,9 @@ export type CaseStudyCapability = { name: string; body: string };
  */
 export type CaseStudy = {
   slug: string;
+  /** Per-case-study overrides for the bespoke section display headings (frontmatter `headings:`);
+   * absent keys fall back to the layout's defaults so the first case study keeps its wording. */
+  headings: Record<string, string>;
   tagline: string;
   role: string;
   inOneMinuteHtml: string;

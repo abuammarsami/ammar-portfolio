@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460" role="img" aria-labelledby="pdec-t pdec-d">
+  <title id="pdec-t">One generic ledger, five paid features, seven vendors</title>
+  <desc id="pdec-d">A single dbo.Payment table is the money ledger for every paid feature. A Purpose integer plus a nullable ReferenceId link each payment back to the feature's own domain row: Boost to a BoostOrder, BundlePurchase to a balance credit with no domain table, Membership to a membership request, ProfileFee to a profile, Advertisement to an advertisement request. On the other side, the IPaymentGatewayResolver maps a provider and country to one IPaymentGateway implementation. Bundle, the internal balance debit, and bKash tokenized checkout are fully implemented; Nagad, Rocket, SSLCommerz, Stripe and PayHere are scaffolded as enum values only. Adding a vendor is one gateway class, one DI registration, and listing it under a country. Hover or focus a feature or a vendor to read it.</desc>
+  <style>
+    .pdec-node{ cursor:pointer; transition:opacity .2s ease; }
+    .pdec-node:focus{ outline:none; }
+    .pdec-hit{ fill:transparent; }
+    svg:hover .pdec-node:not(:hover),
+    svg:focus-within .pdec-node:not(:focus-within){ opacity:.28; }
+    .pdec-box{ transition:stroke-width .2s ease; }
+    .pdec-node:hover .pdec-box,
+    .pdec-node:focus-within .pdec-box{ stroke-width:2.2; }
+    .pdec-note{ opacity:0; transition:opacity .18s ease; }
+    .pdec-node:hover .pdec-note,
+    .pdec-node:focus-within .pdec-note{ opacity:1; }
+    .pdec-hint{ opacity:.6; }
+    svg:hover .pdec-hint, svg:focus-within .pdec-hint{ opacity:0; transition:opacity .25s ease; }
+    @media (prefers-reduced-motion: reduce){ *{animation:none!important} }
+  </style>
+  <g style="font-family:var(--font-mono,'IBM Plex Mono',ui-monospace,monospace)" fill="var(--color-ink,#e9e7e0)" font-size="12">
+    <text x="360" y="22" text-anchor="middle" font-size="11" letter-spacing="1.3" fill="var(--color-q1,#9d8cff)">Purpose + ReferenceId &#8592; dbo.Payment &#8594; IPaymentGateway</text>
+    <text x="136" y="44" text-anchor="middle" font-size="9.5" fill="var(--color-muted,#8a8f9c)">5 paid features</text>
+    <text x="584" y="44" text-anchor="middle" font-size="9.5" fill="var(--color-muted,#8a8f9c)">7 providers &#183; 2 live, 5 scaffolded</text>
+
+    <!-- connectors: features -> payment -->
+    <g stroke="var(--color-muted,#8a8f9c)" stroke-width="1.2" opacity="0.5">
+      <line x1="236" y1="90"  x2="280" y2="228"/>
+      <line x1="236" y1="158" x2="280" y2="238"/>
+      <line x1="236" y1="226" x2="280" y2="250"/>
+      <line x1="236" y1="294" x2="280" y2="262"/>
+      <line x1="236" y1="362" x2="280" y2="272"/>
+    </g>
+    <!-- connectors: payment -> gateways -->
+    <g stroke="var(--color-muted,#8a8f9c)" stroke-width="1.2" opacity="0.5">
+      <line x1="440" y1="238" x2="478" y2="64"/>
+      <line x1="440" y1="244" x2="478" y2="120"/>
+      <line x1="440" y1="250" x2="478" y2="176" stroke-dasharray="4 4"/>
+      <line x1="440" y1="256" x2="478" y2="232" stroke-dasharray="4 4"/>
+      <line x1="440" y1="256" x2="478" y2="288" stroke-dasharray="4 4"/>
+      <line x1="440" y1="262" x2="478" y2="344" stroke-dasharray="4 4"/>
+      <line x1="440" y1="268" x2="478" y2="400" stroke-dasharray="4 4"/>
+    </g>
+
+    <!-- CENTER: the ledger -->
+    <g class="pdec-node" tabindex="0" role="group" aria-label="dbo.Payment, the one generic money ledger shared by every feature">
+      <rect class="pdec-hit" x="278" y="198" width="164" height="104"/>
+      <rect class="pdec-box" x="280" y="200" width="160" height="100" rx="8" fill="var(--color-q1,#9d8cff)" fill-opacity="0.14" stroke="var(--color-q1,#9d8cff)" stroke-width="1.8"/>
+      <text x="360" y="238" text-anchor="middle" font-size="12" fill="var(--color-q1,#9d8cff)">dbo.Payment</text>
+      <text x="360" y="256" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">one ledger &#183; DECIMAL(18,2)</text>
+      <text x="360" y="270" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">Id &#183; PublicId &#183; pay_&#8230;</text>
+      <text class="pdec-note" x="360" y="316" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">status, idempotency, settlement, refunds live ONCE here</text>
+    </g>
+
+    <!-- LEFT features -->
+    <g class="pdec-node" tabindex="0" role="group" aria-label="Boost, purpose 1, links to a BoostOrder row">
+      <rect class="pdec-hit" x="34" y="70" width="204" height="40"/>
+      <rect class="pdec-box" x="36" y="72" width="200" height="36" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4"/>
+      <text x="136" y="95" text-anchor="middle" font-size="10.5">Boost = 1 &#8594; BoostOrder</text>
+      <text class="pdec-note" x="136" y="64" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">paid ad promotion</text>
+    </g>
+    <g class="pdec-node" tabindex="0" role="group" aria-label="BundlePurchase, purpose 2, credits the user balance, no domain table">
+      <rect class="pdec-hit" x="34" y="138" width="204" height="40"/>
+      <rect class="pdec-box" x="36" y="140" width="200" height="36" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4"/>
+      <text x="136" y="163" text-anchor="middle" font-size="10.5">BundlePurchase = 2 &#8594; credit</text>
+      <text class="pdec-note" x="136" y="132" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">no domain table &#8212; the row IS the order</text>
+    </g>
+    <g class="pdec-node" tabindex="0" role="group" aria-label="Membership, purpose 3, links to the membership request">
+      <rect class="pdec-hit" x="34" y="206" width="204" height="40"/>
+      <rect class="pdec-box" x="36" y="208" width="200" height="36" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4"/>
+      <text x="136" y="231" text-anchor="middle" font-size="10.5">Membership = 3 &#8594; request</text>
+      <text class="pdec-note" x="136" y="200" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">tier purchase / renewal</text>
+    </g>
+    <g class="pdec-node" tabindex="0" role="group" aria-label="ProfileFee, purpose 4, unlocks a professional profile">
+      <rect class="pdec-hit" x="34" y="274" width="204" height="40"/>
+      <rect class="pdec-box" x="36" y="276" width="200" height="36" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4"/>
+      <text x="136" y="299" text-anchor="middle" font-size="10.5">ProfileFee = 4 &#8594; profile</text>
+      <text class="pdec-note" x="136" y="330" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">the legacy 52-BDT CV-unlock gate</text>
+    </g>
+    <g class="pdec-node" tabindex="0" role="group" aria-label="Advertisement, purpose 5, links to an advertisement user request, approval-gated">
+      <rect class="pdec-hit" x="34" y="342" width="204" height="40"/>
+      <rect class="pdec-box" x="36" y="344" width="200" height="36" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4"/>
+      <text x="136" y="367" text-anchor="middle" font-size="10.5">Advertisement = 5 &#8594; request</text>
+      <text class="pdec-note" x="136" y="398" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">display banner &#183; admin publishes after paid</text>
+    </g>
+
+    <!-- RIGHT gateways (2 solid, 5 dashed) -->
+    <g class="pdec-node" tabindex="0" role="group" aria-label="Bundle gateway, internal balance debit, implemented">
+      <rect class="pdec-hit" x="476" y="48" width="212" height="32"/>
+      <rect class="pdec-box" x="478" y="50" width="208" height="28" rx="6" fill="var(--color-q0,#5fc9bf)" fill-opacity="0.14" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.6"/>
+      <text x="582" y="69" text-anchor="middle" font-size="10" fill="var(--color-q0,#5fc9bf)">Bundle &#183; internal balance</text>
+      <text class="pdec-note" x="582" y="42" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">URL-less &#8212; settles inline on create</text>
+    </g>
+    <g class="pdec-node" tabindex="0" role="group" aria-label="bKash tokenized checkout, implemented">
+      <rect class="pdec-hit" x="476" y="104" width="212" height="32"/>
+      <rect class="pdec-box" x="478" y="106" width="208" height="28" rx="6" fill="var(--color-q0,#5fc9bf)" fill-opacity="0.14" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.6"/>
+      <text x="582" y="125" text-anchor="middle" font-size="10" fill="var(--color-q0,#5fc9bf)">bKash &#183; tokenized checkout</text>
+      <text class="pdec-note" x="582" y="150" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">real 4-call flow &#183; execute&#8594;query fallback</text>
+    </g>
+    <g class="pdec-node" tabindex="0" role="group" aria-label="Nagad, scaffolded enum only">
+      <rect class="pdec-hit" x="476" y="160" width="212" height="32"/>
+      <rect class="pdec-box" x="478" y="162" width="208" height="28" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.3" stroke-dasharray="5 4"/>
+      <text x="582" y="181" text-anchor="middle" font-size="10" fill="var(--color-muted,#8a8f9c)">Nagad &#183; scaffolded</text>
+      <text class="pdec-note" x="582" y="206" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">enum value only &#8212; no gateway yet</text>
+    </g>
+    <g class="pdec-node" tabindex="0" role="group" aria-label="Rocket, scaffolded enum only">
+      <rect class="pdec-hit" x="476" y="216" width="212" height="32"/>
+      <rect class="pdec-box" x="478" y="218" width="208" height="28" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.3" stroke-dasharray="5 4"/>
+      <text x="582" y="237" text-anchor="middle" font-size="10" fill="var(--color-muted,#8a8f9c)">Rocket &#183; scaffolded</text>
+      <text class="pdec-note" x="582" y="262" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">enum value only &#8212; no gateway yet</text>
+    </g>
+    <g class="pdec-node" tabindex="0" role="group" aria-label="SSLCommerz, scaffolded enum only">
+      <rect class="pdec-hit" x="476" y="272" width="212" height="32"/>
+      <rect class="pdec-box" x="478" y="274" width="208" height="28" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.3" stroke-dasharray="5 4"/>
+      <text x="582" y="293" text-anchor="middle" font-size="10" fill="var(--color-muted,#8a8f9c)">SSLCommerz &#183; scaffolded</text>
+      <text class="pdec-note" x="582" y="318" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">IPN webhook vendor &#8212; ResolveCallbackReference ready</text>
+    </g>
+    <g class="pdec-node" tabindex="0" role="group" aria-label="Stripe, scaffolded enum only, UK expansion">
+      <rect class="pdec-hit" x="476" y="328" width="212" height="32"/>
+      <rect class="pdec-box" x="478" y="330" width="208" height="28" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.3" stroke-dasharray="5 4"/>
+      <text x="582" y="349" text-anchor="middle" font-size="10" fill="var(--color-muted,#8a8f9c)">Stripe &#183; scaffolded (UK)</text>
+      <text class="pdec-note" x="582" y="374" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">resolver picks it by country, not code branches</text>
+    </g>
+    <g class="pdec-node" tabindex="0" role="group" aria-label="PayHere, scaffolded enum only, Sri Lanka expansion">
+      <rect class="pdec-hit" x="476" y="384" width="212" height="32"/>
+      <rect class="pdec-box" x="478" y="386" width="208" height="28" rx="6" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.3" stroke-dasharray="5 4"/>
+      <text x="582" y="405" text-anchor="middle" font-size="10" fill="var(--color-muted,#8a8f9c)">PayHere &#183; scaffolded (LK)</text>
+      <text class="pdec-note" x="582" y="430" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">add a vendor = 1 class + 1 DI line</text>
+    </g>
+
+    <text class="pdec-hint" x="708" y="22" text-anchor="end" font-size="9" fill="var(--color-muted,#8a8f9c)">hover &#9656;</text>
+  </g>
+</svg>

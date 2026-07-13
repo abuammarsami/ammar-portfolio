@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 440" role="img" aria-labelledby="prec-t prec-d">
+  <title id="prec-t">FulfilledDate state machine and the three disjoint reconciliation passes</title>
+  <desc id="prec-d">A payment row has two independent axes: Status (Pending or Settled) and FulfilledDate (null or stamped). The four cells are: Pending with no FulfilledDate is a live or abandoned external checkout intent; Pending with FulfilledDate set is an inline-Bundle payment that fulfilled at create time but crashed before the settle label was written; Settled with no FulfilledDate is the money-loss cell — the user was charged but the feature was never delivered; Settled with FulfilledDate set is the terminal happy state. A Hangfire job runs every five minutes with three passes whose WHERE clauses never overlap. Pass A sweeps inline-Bundle fulfilled-but-Pending rows to Settled. Pass B expires abandoned intents past the thirty-minute TTL. Pass C re-dispatches the idempotent settle command for settled-but-unfulfilled rows, giving up after a hundred and sixty-eight hours. Because fulfilment stamps FulfilledDate exactly once, every re-run is safe. Hover or focus a cell or a pass to read it.</desc>
+  <style>
+    .prec-node{ cursor:pointer; transition:opacity .2s ease; }
+    .prec-node:focus{ outline:none; }
+    .prec-hit{ fill:transparent; }
+    svg:hover .prec-node:not(:hover),
+    svg:focus-within .prec-node:not(:focus-within){ opacity:.3; }
+    .prec-cell{ transition:stroke-width .2s ease; }
+    .prec-node:hover .prec-cell,
+    .prec-node:focus-within .prec-cell{ stroke-width:2.4; }
+    .prec-note{ opacity:0; transition:opacity .18s ease; }
+    .prec-node:hover .prec-note,
+    .prec-node:focus-within .prec-note{ opacity:1; }
+    .prec-hint{ opacity:.6; }
+    svg:hover .prec-hint, svg:focus-within .prec-hint{ opacity:0; transition:opacity .25s ease; }
+    @media (prefers-reduced-motion: reduce){ *{animation:none!important} }
+  </style>
+  <defs>
+    <marker id="prec-ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 1 L9 5 L0 9 z" fill="var(--color-q1,#9d8cff)"/>
+    </marker>
+  </defs>
+  <g style="font-family:var(--font-mono,'IBM Plex Mono',ui-monospace,monospace)" fill="var(--color-ink,#e9e7e0)" font-size="12">
+    <text x="340" y="24" text-anchor="middle" font-size="11" letter-spacing="1.3" fill="var(--color-q1,#9d8cff)">Status &#215; FulfilledDate &#183; reconciliation every 5 min, 3 disjoint passes</text>
+
+    <!-- column headers -->
+    <text x="300" y="66" text-anchor="middle" font-size="10.5" fill="var(--color-muted,#8a8f9c)">FulfilledDate IS NULL</text>
+    <text x="500" y="66" text-anchor="middle" font-size="10.5" fill="var(--color-muted,#8a8f9c)">FulfilledDate set</text>
+    <!-- row headers -->
+    <text x="188" y="154" text-anchor="end" font-size="10.5" fill="var(--color-muted,#8a8f9c)">Status</text>
+    <text x="188" y="168" text-anchor="end" font-size="10.5" fill="var(--color-muted,#8a8f9c)">Pending</text>
+    <text x="188" y="274" text-anchor="end" font-size="10.5" fill="var(--color-muted,#8a8f9c)">Status</text>
+    <text x="188" y="288" text-anchor="end" font-size="10.5" fill="var(--color-muted,#8a8f9c)">Settled</text>
+
+    <!-- pass-A arrow: (Pending,set) -> (Settled,set) -->
+    <path d="M500 216 V222" stroke="var(--color-q1,#9d8cff)" stroke-width="1.6" fill="none" marker-end="url(#prec-ah)"/>
+    <!-- pass-C arrow: (Settled,NULL) -> fulfil -> (Settled,set) -->
+    <path d="M406 274 H422" stroke="var(--color-q1,#9d8cff)" stroke-width="1.6" fill="none" marker-end="url(#prec-ah)"/>
+
+    <!-- CELL: Pending + NULL -->
+    <g class="prec-node" tabindex="0" role="group" aria-label="Pending, FulfilledDate null: external checkout intent, live or abandoned">
+      <rect class="prec-hit" x="204" y="84" width="192" height="112"/>
+      <rect class="prec-cell" x="206" y="86" width="188" height="108" rx="8" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4"/>
+      <text x="300" y="128" text-anchor="middle" font-size="11">external intent</text>
+      <text x="300" y="148" text-anchor="middle" font-size="9.5" fill="var(--color-muted,#8a8f9c)">created, awaiting vendor</text>
+      <text class="prec-note" x="300" y="176" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">live if fresh &#183; past 30-min TTL &#8594; Pass B</text>
+    </g>
+
+    <!-- CELL: Pending + set (inline-Bundle crash window) -->
+    <g class="prec-node" tabindex="0" role="group" aria-label="Pending, FulfilledDate set: inline-Bundle fulfilled at create but the settle label was not written">
+      <rect class="prec-hit" x="404" y="84" width="192" height="112"/>
+      <rect class="prec-cell" x="406" y="86" width="188" height="108" rx="8" fill="var(--color-surface,#12151d)" stroke="var(--color-q1,#9d8cff)" stroke-width="1.4"/>
+      <text x="500" y="122" text-anchor="middle" font-size="11">inline-Bundle</text>
+      <text x="500" y="140" text-anchor="middle" font-size="9.5" fill="var(--color-muted,#8a8f9c)">fulfilled, not yet</text>
+      <text x="500" y="153" text-anchor="middle" font-size="9.5" fill="var(--color-muted,#8a8f9c)">labelled Settled</text>
+      <text class="prec-note" x="500" y="176" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">crash between fulfil and settle &#8594; Pass A</text>
+    </g>
+
+    <!-- CELL: Settled + NULL (money-loss) -->
+    <g class="prec-node" tabindex="0" role="group" aria-label="Settled, FulfilledDate null: charged but feature not delivered, the money-loss cell">
+      <rect class="prec-hit" x="204" y="204" width="192" height="112"/>
+      <rect class="prec-cell" x="206" y="206" width="188" height="108" rx="8" fill="var(--color-error,#ef4444)" fill-opacity="0.12" stroke="var(--color-error,#ef4444)" stroke-width="1.6"/>
+      <text x="300" y="244" text-anchor="middle" font-size="11" fill="var(--color-error,#ef4444)">charged, undelivered</text>
+      <text x="300" y="264" text-anchor="middle" font-size="9.5" fill="var(--color-muted,#8a8f9c)">the bug C1 fixed</text>
+      <text class="prec-note" x="300" y="296" text-anchor="middle" font-size="9" fill="var(--color-error,#ef4444)">fulfil failed after the claim &#8594; Pass C re-dispatches</text>
+    </g>
+
+    <!-- CELL: Settled + set (terminal happy) -->
+    <g class="prec-node" tabindex="0" role="group" aria-label="Settled, FulfilledDate set: terminal happy state, money captured and feature delivered">
+      <rect class="prec-hit" x="404" y="204" width="192" height="112"/>
+      <rect class="prec-cell" x="406" y="206" width="188" height="108" rx="8" fill="var(--color-q0,#5fc9bf)" fill-opacity="0.14" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.6"/>
+      <text x="500" y="252" text-anchor="middle" font-size="11" fill="var(--color-q0,#5fc9bf)">done &#10003;</text>
+      <text x="500" y="272" text-anchor="middle" font-size="9.5" fill="var(--color-muted,#8a8f9c)">captured + delivered</text>
+      <text class="prec-note" x="500" y="296" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">terminal &#183; every pass leads here or stays put</text>
+    </g>
+
+    <!-- pass legend -->
+    <g font-size="9.5">
+      <g class="prec-node" tabindex="0" role="group" aria-label="Pass A: inline-Bundle sweep flips fulfilled-but-Pending rows to Settled">
+        <rect class="prec-hit" x="30" y="342" width="200" height="30"/>
+        <text x="34" y="356" font-size="10" fill="var(--color-q1,#9d8cff)">Pass A &#183; inline-Bundle sweep</text>
+        <text class="prec-note" x="34" y="370" font-size="9" fill="var(--color-muted,#8a8f9c)">one UPDATE Pending&#8594;Settled (ledger label only)</text>
+      </g>
+      <g class="prec-node" tabindex="0" role="group" aria-label="Pass B: expire abandoned external intents past the TTL">
+        <rect class="prec-hit" x="240" y="342" width="200" height="30"/>
+        <text x="244" y="356" font-size="10" fill="var(--color-q1,#9d8cff)">Pass B &#183; expire abandoned</text>
+        <text class="prec-note" x="244" y="370" font-size="9" fill="var(--color-muted,#8a8f9c)">Pending past 30-min TTL &#8594; Expired</text>
+      </g>
+      <g class="prec-node" tabindex="0" role="group" aria-label="Pass C: re-dispatch the idempotent settle command for settled-but-unfulfilled rows">
+        <rect class="prec-hit" x="450" y="342" width="210" height="30"/>
+        <text x="454" y="356" font-size="10" fill="var(--color-q1,#9d8cff)">Pass C &#183; re-dispatch settle</text>
+        <text class="prec-note" x="454" y="370" font-size="9" fill="var(--color-muted,#8a8f9c)">idempotent re-run &#183; give up after 168 h</text>
+      </g>
+    </g>
+
+    <text x="340" y="404" text-anchor="middle" font-size="9.5" fill="var(--color-muted,#8a8f9c)">disjoint WHERE clauses &#183; all windows use SYSUTCDATETIME() &#183; SkipConcurrentExecution is efficiency, not safety</text>
+    <text x="340" y="424" text-anchor="middle" font-size="9.5" fill="var(--color-q0,#5fc9bf)">idempotency is the real backstop &#8212; FulfilledDate is claimed exactly once</text>
+
+    <text class="prec-hint" x="668" y="24" text-anchor="end" font-size="9" fill="var(--color-muted,#8a8f9c)">hover a cell &#9656;</text>
+  </g>
+</svg>
