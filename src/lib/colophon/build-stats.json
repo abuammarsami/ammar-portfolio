@@ -1,6 +1,6 @@
 {
-  "commit": "21732ee",
-  "date": "2026-07-12",
+  "commit": "be92016",
+  "date": "2026-07-13",
   "routes": [
     {
       "route": "/",
@@ -19,6 +19,36 @@
       "gzBytes": 194341,
       "limitBytes": 200000,
       "chunks": 11
+    },
+    {
+      "route": "/work/payments-platform",
+      "gzBytes": 197069,
+      "limitBytes": 200000,
+      "chunks": 12
+    },
+    {
+      "route": "/work/mvc-to-api-migration",
+      "gzBytes": 197069,
+      "limitBytes": 200000,
+      "chunks": 12
+    },
+    {
+      "route": "/work/auth-architecture",
+      "gzBytes": 197069,
+      "limitBytes": 200000,
+      "chunks": 12
+    },
+    {
+      "route": "/work/async-image-pipeline",
+      "gzBytes": 197069,
+      "limitBytes": 200000,
+      "chunks": 12
+    },
+    {
+      "route": "/work/cv-builder",
+      "gzBytes": 197069,
+      "limitBytes": 200000,
+      "chunks": 12
     },
     {
       "route": "/deep-dives",
@@ -94,6 +124,42 @@
     },
     {
       "route": "/d3",
+      "gzBytes": 194341,
+      "limitBytes": 200000,
+      "chunks": 11
+    },
+    {
+      "route": "/deep-dives/quantum-machine-learning",
+      "gzBytes": 194341,
+      "limitBytes": 200000,
+      "chunks": 11
+    },
+    {
+      "route": "/deep-dives/bangla-pos-tagging",
+      "gzBytes": 194341,
+      "limitBytes": 200000,
+      "chunks": 11
+    },
+    {
+      "route": "/deep-dives/network-anomaly-detection",
+      "gzBytes": 194341,
+      "limitBytes": 200000,
+      "chunks": 11
+    },
+    {
+      "route": "/deep-dives/blood-cell-detection",
+      "gzBytes": 194341,
+      "limitBytes": 200000,
+      "chunks": 11
+    },
+    {
+      "route": "/deep-dives/multi-output-cnn",
+      "gzBytes": 194341,
+      "limitBytes": 200000,
+      "chunks": 11
+    },
+    {
+      "route": "/deep-dives/startup-success-prediction",
       "gzBytes": 194341,
       "limitBytes": 200000,
       "chunks": 11
