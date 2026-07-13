@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 380" role="img" aria-labelledby="cdg-t cdg-d">
-  <title id="cdg-t">Six ATS-clean CV designs behind one server-enforced gate</title>
+  <title id="cdg-t">Six CV designs behind one server-enforced gate</title>
   <desc id="cdg-d">Six CV designs, each with its own accent palette. Design 1, Classic, is a single-column ATS-clean layout in navy and is always free. The other five sit behind the 52-BDT Professional Profile gate: Design 2 Sidebar Left in slate, Design 3 Two-Column in emerald, Design 4 Header Banner in indigo, Design 5 Minimal in charcoal, and Design 6 Sidebar Right in burgundy. The gate is enforced inside the generator against the server-trusted IsProfessionalProfile flag, so requesting a locked design returns 403 rather than a free CV; the client only ever receives an isUnlocked flag for display. The accent swatches shown are the real per-design palette colours. Hover or focus any design to read it.</desc>
   <style>
     .cdg-node{ cursor:pointer; transition:opacity .2s ease; }

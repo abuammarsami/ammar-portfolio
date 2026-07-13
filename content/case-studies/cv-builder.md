@@ -32,9 +32,9 @@ The rebuild inverts both. The CV becomes structured data behind a real editor �
 ## Stats
 
 - 1 | server-side renderer, the single source of truth
-- 6 | ATS-clean designs, one gated paywall
+- 6 | professional designs, one gated paywall
 - 4 | profile domains with full CRUD (legacy had insert + delete)
-- 664 + 40 + 70 | app · infra · mobile tests
+- 664 + 40 | application + infrastructure tests
 - 52 BDT | Professional Profile unlock, on the generic ledger
 
 ## The problem
@@ -147,7 +147,7 @@ A high-effort multi-agent review is what surfaced it, and the fix is layered. Th
 
 ## Impact
 
-"The CV" now has exactly one definition. Six ATS-clean designs render server-side from one QuestPDF generator that the web app and the Flutter app both call, so there is no "web CV" versus "app CV" — there is one artifact, produced in one place, byte-for-byte. The paywall is real: the gate is enforced in the generator against a server-trusted flag, so the free tier is Design 1 and the other five genuinely require the 52-BDT Professional Profile — which runs on the shared payment ledger rather than a bespoke flow. The professional data finally has a proper editor: four domains with full add/edit/delete, every write owner-scoped. And the one network touchpoint is hardened — SSRF-guarded, magic-byte-checked, resilience-wrapped — so the artifact always renders and the generator can't be turned against the network it runs in. All of it is covered by 664 application, 40 infrastructure, and 70 mobile tests, including a `%PDF` smoke for every design over full and near-empty data so a missing section can't crash a download in production.
+"The CV" now has exactly one definition. Six professional designs — the free Classic and Minimal tuned to be ATS-clean — render server-side from one QuestPDF generator that the web app and the Flutter app both call, so there is no "web CV" versus "app CV" — there is one artifact, produced in one place, byte-for-byte. The paywall is real: the gate is enforced in the generator against a server-trusted flag, so the free tier is Design 1 and the other five genuinely require the 52-BDT Professional Profile — which runs on the shared payment ledger rather than a bespoke flow. The professional data finally has a proper editor: four domains with full add/edit/delete, every write owner-scoped. And the one network touchpoint is hardened — SSRF-guarded, magic-byte-checked, resilience-wrapped — so the artifact always renders and the generator can't be turned against the network it runs in. All of it is covered by 664 application and 40 infrastructure tests, with the Flutter app under its own suite, including a `%PDF` smoke for every design over full and near-empty data so a missing section can't crash a download in production.
 
 ## Going deeper
 
