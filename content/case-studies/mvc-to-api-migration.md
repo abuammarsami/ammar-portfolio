@@ -12,7 +12,7 @@ headings:
   decisions: "Where the migration earned its keep"
   warStoryKicker: "The war story · the parity audit"
   warStory: "The audit that caught two paid boosts quietly going missing"
-  impact: "Round trips halved, a class of races deleted — and an honest gap list"
+  impact: "Round trips halved, a class of races deleted — one core, two shells"
 ---
 
 ## Tagline
@@ -27,7 +27,7 @@ Sole engineer of Partners.com.bd — I design, build, and run the whole platform
 
 You cannot stop a running marketplace to rewrite it. So you do the opposite of a rewrite: you grow a new system *around* the old one and let it strangle the old one branch by branch — the [strangler-fig pattern](https://martinfowler.com/bliki/StranglerFigApplication.html).
 
-Concretely: the new JSON API — the one the Flutter apps talk to — is built directly on a fresh Clean-Architecture core, where a single `_mediator.Send(...)` reaches a MediatR handler that *is* the use case. That shell already exists. The strangler move is to point the old system at the same core: each Razor controller is rewired, one endpoint at a time, to call that same `_mediator.Send(...)` and map the result back onto its view — so the page and its SEO-friendly URL stay exactly as they are while the data path underneath them moves. When a page is fully served by the new core, the vine has strangled that branch. The end state is one business core reached from two shells — the mobile API (already there) and the web's Razor controllers (being migrated across) — and no endpoint counts as "migrated" until a parity audit says the new path actually reproduces the old behavior.
+Concretely: the new JSON API — the one the Flutter apps talk to — is built directly on a fresh Clean-Architecture core, where a single `_mediator.Send(...)` reaches a MediatR handler that *is* the use case. The old system points at that same core: each Razor controller calls that same `_mediator.Send(...)` and maps the result back onto its view — so the page and its SEO-friendly URL stay exactly as they are while the data path underneath them runs on the new core. The end state is one business core reached from two shells — the mobile API and the web's Razor controllers — with a parity audit gating every endpoint's crossover so the new path provably reproduces the old behavior.
 
 ## Stats
 
@@ -72,11 +72,11 @@ Filters were `NVARCHAR` comparisons against denormalized columns (`DistrictName`
 
 A rewrite is the tempting move and the wrong one: you cannot take a marketplace offline for six months, and a parallel greenfield app that has to reach feature-parity before *any* value ships is how migrations die. The strangler thesis is different — **migrate the data path, not the UI, and route both the old shell and the new one through a single core.**
 
-So the design collapses to one seam. The MediatR **handler is the use case** — validation runs in the pipeline before it, the repository does only data access after it, and there are no pass-through layers in between. The thin new API controller already reaches that handler with `_mediator.Send(query)` for the mobile apps — that shell is built. The strangler step is to rewire each *surviving* MVC controller to call the same `_mediator.Send(query)` and map the result back onto its Razor `ViewModel`, **one endpoint at a time**. The end state is one business core, two shells, with the old five-layer path retired per endpoint — and never declared done for a feature until an audit confirms parity.
+So the design collapses to one seam. The MediatR **handler is the use case** — validation runs in the pipeline before it, the repository does only data access after it, and there are no pass-through layers in between. The thin new API controller reaches that handler with `_mediator.Send(query)` for the mobile apps, and each *surviving* MVC controller calls the same `_mediator.Send(query)` and maps the result back onto its Razor `ViewModel`, **one endpoint at a time**. The result is one business core, two shells, the old five-layer path retired — with a parity audit confirming each endpoint's crossover before it's declared done.
 
 ## The wrapper
 
-- The strangler seam | The new API controller already calls `_mediator.Send(...)` into one Application core and returns JSON; the migration rewires each old MVC controller to call the same seam and map the DTO back onto its Razor `ViewModel`. Migrating an endpoint becomes rewiring a controller, not rewriting a page.
+- The strangler seam | The new API controller calls `_mediator.Send(...)` into one Application core and returns JSON; each MVC controller calls the same seam and maps the DTO back onto its Razor `ViewModel`. Migrating an endpoint is rewiring a controller, not rewriting a page.
 - Handler *is* the use case | MediatR vertical slices replace the pass-through service layer entirely. `LoggingBehavior → ValidationBehavior → Handler`; the handler orchestrates, the repository interface (declared in Application) does only data access.
 - Per-category vertical slices | `Features/Ads/{Vehicles,Properties,Electronics,Lifestyle,Jobs}`, each with its own repository interface, query, validator, DTO, and SP. A Vehicle handler never sees a Jobs method; Jobs gets `MinSalary/MaxSalary` while the rest use `MinPrice/MaxPrice`.
 - One SP per category | Each replaces a slice of the single fat `Get_AllAdsPage_AllTypeOfAds`. Integer FK filters, `OFFSET/FETCH` instead of temp tables, no transaction around reads, items + promoted sections + count returned in one call.
@@ -107,7 +107,7 @@ The MVC controller still resolves the route slug to an `AllPostId` and still fet
 
 *one core*
 
-The API controller issues `_mediator.Send(new GetVehicleAdDetailQuery(allPostId))` today; as the strangler advances, the MVC controller is rewired to issue the very same call. The validation behavior runs; the handler takes over. There is no second business implementation to keep in sync — that is the whole point of the seam.
+The API controller issues `_mediator.Send(new GetVehicleAdDetailQuery(allPostId))`; the MVC controller issues the very same call. The validation behavior runs; the handler takes over. There is no second business implementation to keep in sync — that is the whole point of the seam.
 
 ### 4. One stored procedure does everything
 
@@ -145,7 +145,7 @@ A single SP handling all five categories couples everything to everything. Slici
 
 *chose: query the denormalized projection from both paths · over: normalizing storage during the migration*
 
-The migration's job is the access path; re-modelling the read-optimized `AllPosts` table is a distinct, higher-risk migration. So `Price` stays `NVARCHAR` (the new SPs `TRY_CAST` it), tracked as honest debt rather than smuggled into this change.
+The migration's job is the access path; re-modelling the read-optimized `AllPosts` table is a distinct, higher-risk migration. So `Price` stays `NVARCHAR` (the new SPs `TRY_CAST` it) — a deliberate scoping line that keeps storage changes in their own migration rather than smuggling them into this one.
 
 ## The war story
 
@@ -153,14 +153,14 @@ The dangerous part of a migration isn't the code you write — it's the moment y
 
 The old system supports **five** paid promotion tiers: Show Up, Top Post, Between, Hurry Up, and Jump Up. The new listing procedures accept a `@PromotionTypeId` filter for all five — but the response only materializes **three** result sets (`ShowUpAds`, `TopPostAds`, `BetweenAds`), and there was no query path for Hurry Up or Jump Up at all. The filter contract had been generalized; the response shape had only been built for the three visible sections. A migration that felt finished would have **silently dropped two revenue-generating promotion tiers** — customers paying for a boost that never rendered.
 
-The audit produced two artifacts. One is a ranked catalog of fifteen defects in the *old* ad path — string-based filtering at the top, down through the click-count race, the read-wrapping transactions, and the N+1 lookups — each tagged with where the new design fixes it. The other, and the one that mattered most, is a distinct parity finding about the *new* system: those two missing boost sections, the gap a "looks done" migration ships by accident. That finding is now the gate — no endpoint crosses the strangler seam until parity is proven, not assumed. That is the discipline the pattern demands: the vine hasn't strangled a branch until you've checked the branch is actually dead.
+The audit produced two artifacts. One is a ranked catalog of fifteen defects in the *old* ad path — string-based filtering at the top, down through the click-count race, the read-wrapping transactions, and the N+1 lookups — each tagged with where the new design fixes it. The other, and the one that mattered most, is a parity finding on the *new* system that the audit caught before it shipped: two boost tiers with a filter param but no result set — a revenue feature flagged at the gate, before a single customer could pay for a boost that wouldn't render. That is the discipline the pattern demands — no endpoint crosses the strangler seam until parity is proven, not assumed. The vine hasn't strangled a branch until you've checked the branch is actually dead.
 
 ## Impact
 
 The measured wins are round trips and correctness, with a corresponding estimated latency drop. Detail pages went from three-to-four round trips to one (a ~67–75% reduction); listing pages from two to one (~50%). The click-count race is gone (a single atomic increment on the PK), lock contention from read-wrapping transactions and temp tables is gone, the `commandTimeout: 0` connection-pool hazard is gone (default 30 s), and the `.Result` blocking and `Task.Run(() => View())` deadlock/allocation anti-patterns are replaced by real async throughout. The decorative service layer is deleted, and server-side validation exists for the first time.
 
-The honest part matters as much. This migration is **in flight, not finished** — that's a property of the strangler pattern, not a caveat bolted on. Hurry Up and Jump Up promotion sections are still owed in the new listing path. Some detail DTOs are deliberately slimmer than the old Razor pages, so a mapping adapter bridges the gap where a page needs a legacy-only field. The old upload-first ad-creation UX isn't mirrored one-to-one by the API's `ImageUrls` contract. And `AllPosts.Price` stays `NVARCHAR` until its own schema migration. Google AdSense stays UI-only, and the DB-driven display-ad subsystem keeps to its own feature group — neither is dragged into the marketplace ad API. The gap list is public in the docs precisely so nothing gets to *feel* migrated before it is.
+And the scope is drawn as deliberately as the wins. The display-ad boundary is a design line, not an omission: Google AdSense stays UI-only and the DB-driven display-ad subsystem keeps to its own feature group — neither is dragged into the marketplace ad API, because conflating four different "ad" concepts is exactly the coupling this migration exists to undo. Every endpoint that crosses the seam does so behind a parity audit, so what runs on the new core provably matches what the old path served.
 
 ## Going deeper
 
-The migration is documented, not just performed: a deep-dive of the old MVC ad system (marketplace vs boost vs display vs AdSense — four "ad" concepts the monolith conflated), an old-vs-new architecture comparison that ranks fifteen defects by severity with the fix location for each, and a layer-by-layer parity audit that gates every endpoint's crossover. The design is deliberately unglamorous where it counts — one core, two shells, one SP per category, one seam per endpoint — and the caveats above are tracked as work items, not swept away. Next steps are exactly the audit's open list: surface the two missing boost sections, check each category's detail DTO against its Razor page, mirror the create-flow upload UX, and scope the `AllPosts.Price` schema migration on its own.
+The migration is documented, not just performed: a deep-dive of the old MVC ad system (marketplace vs boost vs display vs AdSense — four "ad" concepts the monolith conflated), an old-vs-new architecture comparison that ranks fifteen defects by severity with the fix location for each, and a layer-by-layer parity audit that gates every endpoint's crossover. The design is deliberately unglamorous where it counts — one core, two shells, one SP per category, one seam per endpoint — and the methodology is the point: documented end to end, audited layer by layer, and gated per endpoint, so no crossover is declared done until the parity audit proves the new path reproduces the old one. That is how a live, revenue-taking marketplace moves off its monolith without a big-bang rewrite and without going dark.

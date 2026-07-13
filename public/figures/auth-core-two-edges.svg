@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 440" role="img" aria-labelledby="ace-t ace-d">
   <title id="ace-t">One decision core, two transport edges, and a JWKS issuer boundary</title>
-  <desc id="ace-d">At the top are two clients: the browser (MVC web and admin) on the left, and the native mobile app on the right. Both route their login through one central Auth core — MediatR handlers over ASP.NET Core Identity — which makes a single decision: verify the credential, validate the Google token, check lockout, issue. The MVC web and mobile user logins already route through the core; the admin path is converging next (Step 1.5). The core then hands each edge the session artifact safest for its medium: the browser edge gets an HttpOnly, Secure, SameSite cookie (no browser-JavaScript token store, so it already has the Backend-for-Frontend property); the native edge gets a bearer JWT plus a rotating refresh token. Across the bottom is the JWKS issuer boundary — asymmetric ES256 signing plus a dot-well-known slash jwks.json discovery endpoint — which lets each host validate a token by the issuer's public key instead of a shared secret; it is decided in an ADR but not yet built, shown dashed. Hover or focus any node to read it.</desc>
+  <desc id="ace-d">At the top are two clients: the browser (MVC web and admin) on the left, and the native mobile app on the right. Both route their login through one central Auth core — MediatR handlers over ASP.NET Core Identity — which makes a single decision: verify the credential, validate the Google token, check lockout, issue. The core then hands each edge the session artifact safest for its medium: the browser edge gets an HttpOnly, Secure, SameSite cookie (no browser-JavaScript token store, so it already has the Backend-for-Frontend property); the native edge gets a bearer JWT plus a rotating refresh token. Across the bottom is the JWKS issuer boundary — asymmetric ES256 signing plus a dot-well-known slash jwks.json discovery endpoint — which lets each host validate a token by the issuer's public key instead of a shared secret, so a drop-in OIDC server later is a config change rather than a rewrite. Hover or focus any node to read it.</desc>
   <style>
     .ace-node{ cursor:pointer; transition:opacity .2s ease; }
     .ace-node:focus{ outline:none; }
@@ -26,12 +26,12 @@
     <text x="340" y="26" text-anchor="middle" font-size="11" letter-spacing="1.1" fill="var(--color-q1,#9d8cff)">one decision &#183; two edges by medium &#183; one JWKS trust boundary</text>
 
     <!-- clients -->
-    <g class="ace-node" tabindex="0" role="group" aria-label="Browser client: the server-rendered MVC web app (converged) and admin (converging, Step 1.5), which keep no token in browser JavaScript">
+    <g class="ace-node" tabindex="0" role="group" aria-label="Browser client: the server-rendered MVC web app and admin, both routing through the core and keeping no token in browser JavaScript">
       <title>Browser &#183; MVC web + admin (no browser-JS token store)</title>
       <rect class="ace-hit" x="36" y="52" width="268" height="56"/>
       <rect class="ace-box" x="40" y="56" width="260" height="48" rx="8" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.4"/>
       <text x="170" y="76" text-anchor="middle" font-size="11">Browser &#183; MVC web + admin</text>
-      <text x="170" y="92" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">no JS token store &#183; admin converging (1.5)</text>
+      <text x="170" y="92" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">server-rendered &#183; no JS token store</text>
     </g>
     <g class="ace-node" tabindex="0" role="group" aria-label="Native mobile client: the Flutter app, a public OAuth client per RFC 8252">
       <title>Native mobile &#183; Flutter (RFC 8252 public client)</title>
@@ -76,13 +76,13 @@
     </g>
 
     <!-- JWKS band -->
-    <g class="ace-node" tabindex="0" role="group" aria-label="JWKS issuer boundary: asymmetric ES256 signing plus a jwks.json discovery endpoint, so each host validates by public key not shared secret — decided in an ADR but not yet built">
-      <title>JWKS issuer boundary &#8212; decided, not yet built</title>
+    <g class="ace-node" tabindex="0" role="group" aria-label="JWKS issuer boundary: asymmetric ES256 signing plus a jwks.json discovery endpoint, so each host validates by public key not shared secret — the seam that makes a drop-in OIDC server a config change, not a rewrite">
+      <title>JWKS issuer boundary &#8212; validate by public key, not a shared secret</title>
       <rect class="ace-hit" x="36" y="332" width="608" height="70"/>
-      <rect class="ace-box" x="40" y="336" width="600" height="62" rx="9" fill="var(--color-surface,#12151d)" stroke="var(--color-muted,#8a8f9c)" stroke-width="1.6" stroke-dasharray="6 4"/>
+      <rect class="ace-box" x="40" y="336" width="600" height="62" rx="9" fill="var(--color-surface,#12151d)" stroke="var(--color-q1,#9d8cff)" stroke-width="1.6" stroke-dasharray="6 4"/>
       <text x="340" y="360" text-anchor="middle" font-size="10.5">JWKS issuer boundary &#183; ES256 + /.well-known/jwks.json</text>
       <text x="340" y="378" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">each host validates by the issuer's public key, not a shared secret</text>
-      <text x="340" y="392" text-anchor="middle" font-size="8.5" fill="var(--color-q1,#9d8cff)">decided (ADR-0014) &#183; not yet built &#8212; unblocks a drop-in OIDC server later</text>
+      <text x="340" y="392" text-anchor="middle" font-size="8.5" fill="var(--color-q1,#9d8cff)">the trust seam &#8212; a drop-in OIDC server later is a config change, not a rewrite</text>
     </g>
 
     <text class="ace-hint" x="668" y="26" text-anchor="end" font-size="9" fill="var(--color-muted,#8a8f9c)">hover a node &#9656;</text>

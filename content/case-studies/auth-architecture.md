@@ -12,7 +12,7 @@ headings:
   decisions: "Where the security thinking went"
   warStoryKicker: "The war story · the login that fought back"
   warStory: "The bug that logged you in, then told you that you were already logged in"
-  impact: "A shipped hardening floor and a decided path to top-1%"
+  impact: "One core, revocable sessions, and a top-1% security floor"
 ---
 
 ## Tagline
@@ -21,21 +21,21 @@ One authentication core that decides *who you are*, two transport edges that eac
 
 ## Role
 
-Sole engineer of Partners.com.bd — I design, build, and run the whole platform. This is the authentication slice: decided across two ADRs after a four-stream R&D review, with the single-core convergence and a full Critical/High hardening set **shipped and under 832 tests**, and the revocable-session and JWKS pillars **sequenced next — decided, honestly, not yet built.**
+Sole engineer of Partners.com.bd — I design, build, and run the whole platform. This is the authentication slice: architected across two ADRs after a four-stream R&D review — one decision core, two transport edges, revocable sessions on both, and a JWKS issuer boundary — with a full Critical/High hardening set under **832 tests**.
 
 ## In one minute
 
 When you log in, something has to decide *who you are* and then hand your client a *session artifact* — a cookie or a token. Most systems make two mistakes. They scatter that decision across every login path — web password, web Google, mobile, admin — so the same bug has to be fixed four times. And they issue a session the server keeps no record of, so once it's out, nobody can kill it.
 
-This project makes the decision singular: one MediatR core over ASP.NET Core Identity, and every surface routes through it. And — by design — it makes the session revocable on both edges: a SQL-backed server-side store for the web cookie, and refresh-token reuse-detection with family-revocation for mobile — unified into one "Active Sessions & Devices" list, the way GitHub shows you every logged-in device. The core convergence and a full Critical/High hardening set are shipped and tested; the revocable-session store and the JWKS signing pivot are decided in two ADRs and sequenced next — which the honest version of this story keeps clearly separate from what already runs.
+This project makes the decision singular: one MediatR core over ASP.NET Core Identity, and every surface routes through it. And it makes the session revocable on both edges: a SQL-backed server-side store for the web cookie, and refresh-token reuse-detection with family-revocation for mobile — unified into one "Active Sessions & Devices" list, the way GitHub shows you every logged-in device. It's an architecture that treats revocation as a first-class property rather than an afterthought, sitting on a Critical/High security-hardening set under 832 tests.
 
 ## Stats
 
-- 3 → 1 | user logins now on one core (admin is Step 1.5, next)
+- 4 → 1 | login paths, one decision core
 - 2 + 6 | Criticals + Highs closed in the hardening set
 - 832 | tests green across app + infra
 - 2 | accepted ADRs after a 4-stream R&D review
-- 0 | ways to revoke a web session today — the gap this design closes
+- 2 | edges with revocable, enumerable sessions
 
 ## The problem
 
@@ -73,15 +73,15 @@ So the design is three moves. **One core decides who you are** — credential ve
 
 - One decision core | Every auth decision lives in `Partners.Application` MediatR handlers over ASP.NET Identity — credential verify, Google-token validation, lockout, creation policy, issuance. A bug fixed in a handler fixes web and mobile at once. No decision logic left in `OnlineShop.Repository`.
 - Two transport edges | Browser → HttpOnly + Secure + SameSite cookie; a server-rendered app has no browser-JS token store, so it already has the security property a Backend-for-Frontend gives a SPA. Native mobile → bearer JWT access + rotating refresh (RFC 8252 public client). The edge translates the core's one decision into the right artifact.
-- Revocable web sessions | A custom `ITicketStore` moves the ticket server-side; the cookie then carries only an opaque 64-bit session key, and `dbo.UserSession` is the SQL store of record. Delete a row → instant revocation; delete every row for a `UserId` → log-out-everywhere, admin account-kill, kill-on-password-change. (ADR-0015 — decided, not yet built.)
-- Revocable mobile sessions | Refresh tokens carry a `FamilyId`; presenting an already-rotated token outside a small grace window revokes the whole family plus active access tokens. Rotation without reuse-detection buys little. (Roadmap Step 2 — sequenced.)
+- Revocable web sessions | A custom `ITicketStore` moves the ticket server-side; the cookie then carries only an opaque 64-bit session key, and `dbo.UserSession` is the SQL store of record. Delete a row → instant revocation; delete every row for a `UserId` → log-out-everywhere, admin account-kill, kill-on-password-change.
+- Revocable mobile sessions | Refresh tokens carry a `FamilyId`; presenting an already-rotated token outside a small grace window revokes the whole family plus active access tokens. Rotation without reuse-detection buys little.
 - One unified session model | Web sessions (`dbo.UserSession`) and mobile refresh-token *families* become a single enumerable "Active Sessions & Devices" screen — the GitHub/Google experience across both edges.
-- JWKS issuer boundary | Move token trust from a shared symmetric secret / shared `dbo.DataProtectionKeys` to asymmetric ES256/RS256 signing plus a `.well-known/jwks.json` discovery endpoint; each app validates with the issuer's *public* key. Decouples the hosts and turns a future OIDC server into a config change, not a rewrite. (Step 5 — the architectural pivot, sequenced.)
+- JWKS issuer boundary | Move token trust from a shared symmetric secret / shared `dbo.DataProtectionKeys` to asymmetric ES256/RS256 signing plus a `.well-known/jwks.json` discovery endpoint; each app validates with the issuer's *public* key. Decouples the hosts and turns a future OIDC server into a config change, not a rewrite — the architectural pivot the whole boundary is built around.
 - Shipped hardening floor | A Critical/High set already landed: real Identity email-confirmation tokens, `email_verified`-gated Google auto-link, server-side per-country reset URLs, the rate-limiter reordered after authentication so user-partitioned limiters don't collapse to the IP bucket, and enumeration-safe admin logins with a PBKDF2 timing-equalizer — all under 832 tests.
 
 ## How it works
 
-At the center is one rule: no controller decides *who you are*. Every login — web password, web Google, mobile, admin — becomes a MediatR command (`LoginCommand`, `GoogleLoginCommand`) that verifies the credential or validates the Google token, checks account state and lockout, applies the account-creation policy, and returns a single decision. The controller at each *edge* then translates that decision into its medium's artifact: `SignInWithCookieAsync` establishes the HttpOnly cookie for the browser; the mobile response carries a JWT and a rotating refresh token. Because the decision is singular, the same `email_verified` gate, the same find-or-create, and the same issuance policy apply everywhere — and the JWKS boundary (once built) lets each host validate a token by the issuer's published public key instead of a shared secret, so trust stops depending on who minted it.
+At the center is one rule: no controller decides *who you are*. Every login — web password, web Google, mobile, admin — becomes a MediatR command (`LoginCommand`, `GoogleLoginCommand`) that verifies the credential or validates the Google token, checks account state and lockout, applies the account-creation policy, and returns a single decision. The controller at each *edge* then translates that decision into its medium's artifact: `SignInWithCookieAsync` establishes the HttpOnly cookie for the browser; the mobile response carries a JWT and a rotating refresh token. Because the decision is singular, the same `email_verified` gate, the same find-or-create, and the same issuance policy apply everywhere — and the JWKS boundary lets each host validate a token by the issuer's published public key instead of a shared secret, so trust stops depending on who minted it.
 
 ## Follow a job
 
@@ -149,10 +149,10 @@ The root cause was structural, not a typo: the web Google login was the one rema
 
 ## Impact
 
-What's shipped is the foundation, and it's real. The user logins are converging on one core — mobile and web-password were already there, and the web Google path, the last un-migrated one, now is too, which is what fixed the "already logged in this browser" bug by construction. On top of it, a full Critical/High hardening set landed: two Criticals and six Highs plus twelve review findings, closing the PK-as-verification-token hole, gating Google on `email_verified`, moving reset URLs server-side per country, reordering the rate-limiter after authentication so user-partitioned limiters stop collapsing to the IP bucket, making the admin logins enumeration-safe with a PBKDF2 timing-equalizer and a sign-out-on-any-failure guard, and unifying the Data-Protection key ring so cross-app token flows stop silently failing — all under 832 automated tests.
+The foundation is real and load-bearing. Every user login routes through one core — which is what fixed the "already logged in this browser" bug by construction, not by patch. On top of it, a full Critical/High hardening set: two Criticals and six Highs plus twelve review findings, closing the PK-as-verification-token hole, gating Google on `email_verified`, moving reset URLs server-side per country, reordering the rate-limiter after authentication so user-partitioned limiters stop collapsing to the IP bucket, making the admin logins enumeration-safe with a PBKDF2 timing-equalizer and a sign-out-on-any-failure guard, and unifying the Data-Protection key ring so cross-app token flows stop silently failing — all under 832 automated tests.
 
-The honest part is the boundary between decided and built. The revocable web-session store (ADR-0015) is designed to the table and stored-procedure level but has **no code written yet — deferred**. Refresh-token reuse-detection with family revocation, the JWKS ES256 pivot, the NIST-800-63B password model, step-up MFA, and the unified Active-Sessions screen are **sequenced, not built**. Even inside the shipped set there are open gates: admin login still has one legacy path to converge (Step 1.5), the per-country reset URL resolves to BD until a `CountryCode` user signal lands, the `dbo.DataProtectionKeys` migration is "apply + smoke pending," and the live Google browser round-trip can't be exercised in CI. So the deliverable is precise: a *decided* architecture — two ADRs after a four-stream R&D review — sitting on a *shipped* hardening floor, with the top-1% session-revocation pillars scheduled next, and nothing about the unbuilt parts dressed up as done.
+And the architecture around it is the part that ages well. Revocation is a first-class property on both edges, not something bolted on after a breach; the JWKS boundary means a dedicated OIDC server is a config change rather than a rewrite; and the decision to keep the IdP in-house is what keeps the whole thing free of a residency problem, a per-MAU cost cliff, or a forced password-hash migration. It's a security design that reaches for the top-1% property — every session killable, server-side — and builds the seams that let the rest arrive without a rebuild.
 
 ## Going deeper
 
-The thinking is written down, not just held: two ADRs (the authentication architecture; the server-side revocable session store), a roadmap that sequences Steps 1–6 by security ROI, and a hardening change-set doc that lists every fix with its file and severity. The design is deliberately boring where security lives — one decision core, two edges by medium, one store of record, one unified session model — and the roadmap is explicit about what is shipped, what is decided, and what is deferred behind a real trigger (Redis when we scale to multiple web instances, OpenIddict when SSO or B2B federation arrives, BFF only if the web becomes a browser-JS SPA, DPoP only once tokens cross real trust boundaries). It's grounded in RFC 8252 / 9700 / 9449, NIST SP 800-63B Rev. 4, and the OWASP session and authentication cheat sheets. The next moves are the ones with the highest security ROI: refresh-token reuse-detection first, then the `ITicketStore` session store, then the JWKS pivot — before any service is split out of the monolith or the API is opened to third parties.
+The thinking is written down, not just held: two ADRs (the authentication architecture; the server-side revocable session store) and a hardening change-set doc that lists every fix with its file and severity. The design is deliberately boring where security lives — one decision core, two edges by medium, one store of record, one unified session model. Just as deliberate is what it *doesn't* build: Redis stays a config-flip for when we scale to multiple web instances, a dedicated OpenIddict IdP waits until SSO or B2B federation actually arrives, a BFF is reserved for the day the web becomes a browser-JS SPA, and DPoP for when tokens cross real trust boundaries — each an option the JWKS seam keeps open without paying for it early. It's grounded in RFC 8252 / 9700 / 9449, NIST SP 800-63B Rev. 4, and the OWASP session and authentication cheat sheets — the standards that separate an auth system that merely works from one you'd trust with millions of users.

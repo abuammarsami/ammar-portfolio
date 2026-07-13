@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 470" role="img" aria-labelledby="agc-t agc-d">
   <title id="agc-t">The converged Google login: two token types, one shared handler</title>
-  <desc id="agc-d">Two clients arrive with two different Google artifacts. The web implicit flow yields an access token; the native mobile app yields an ID token. Both reach one shared GoogleLoginCommand handler — the same handler the mobile API already used. The handler validates whichever artifact was supplied: the web access token is validated through Google's tokeninfo endpoint with an audience check against the web client ID, which closes an access-token substitution or confused-deputy vector that the legacy userinfo-only path lacked; the mobile ID token path is unchanged. Then email_verified must be true before any account match or create, the shared find-or-create and token issuance run, and finally each edge issues its own artifact — an HttpOnly cookie for web, a JWT plus refresh for mobile. This path is shipped as roadmap Step 1 and is what fixed the already-logged-in bug. Hover or focus any step to read it.</desc>
+  <desc id="agc-d">Two clients arrive with two different Google artifacts. The web implicit flow yields an access token; the native mobile app yields an ID token. Both reach one shared GoogleLoginCommand handler — the same handler the mobile API already used. The handler validates whichever artifact was supplied: the web access token is validated through Google's tokeninfo endpoint with an audience check against the web client ID, which closes an access-token substitution or confused-deputy vector that the legacy userinfo-only path lacked; the mobile ID token path is unchanged. Then email_verified must be true before any account match or create, the shared find-or-create and token issuance run, and finally each edge issues its own artifact — an HttpOnly cookie for web, a JWT plus refresh for mobile. This convergence onto one handler is what fixed the already-logged-in bug. Hover or focus any step to read it.</desc>
   <style>
     .agc-node{ cursor:pointer; transition:opacity .2s ease; }
     .agc-node:focus{ outline:none; }
@@ -23,7 +23,7 @@
     </marker>
   </defs>
   <g style="font-family:var(--font-mono,'IBM Plex Mono',ui-monospace,monospace)" fill="var(--color-ink,#e9e7e0)" font-size="12">
-    <text x="340" y="24" text-anchor="middle" font-size="11" letter-spacing="1.1" fill="var(--color-q1,#9d8cff)">two Google artifacts, one handler &#183; shipped as roadmap Step 1</text>
+    <text x="340" y="24" text-anchor="middle" font-size="11" letter-spacing="1.1" fill="var(--color-q1,#9d8cff)">two Google artifacts, one shared handler &#183; one decision</text>
 
     <!-- clients -->
     <g class="agc-node" tabindex="0" role="group" aria-label="Web input: the implicit flow yields an access token, not an ID token">
