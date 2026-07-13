@@ -17,9 +17,8 @@ layout: case-study
 both ends — a Flutter app and a .NET API. Photos upload the moment they're picked (per-photo
 progress, retry just the failed one), and a server-owned lifecycle — a `dbo.PendingImageUpload`
 staging row, a draft-driven heartbeat TTL, a commit step, and a background sweeper — guarantees
-that anything abandoned is cleaned off BunnyCDN, no matter what the client does. Shipped across five
-coordinated phases and three hardening rounds; running in dry-run, with the production delete window
-as the last gate.
+that anything abandoned is cleaned off BunnyCDN, no matter what the client does. Built across five
+coordinated phases and three hardening rounds.
 
 **Problem:** Upload-first is the mobile UX users expect (unreliable networks, immediate feedback,
 multi-session drafts), but it creates orphan images — photos uploaded then never attached to an ad,
@@ -39,25 +38,21 @@ Ad-create resolves the ids for ownership + freshness, inlines the URLs, and flip
 bad id → `IMAGE_INVALID` 422, ad not created); discard sets `DiscardedAt = ExpiresAt = NOW` for
 instant reaping. An `ImageCleanupWorker` runs every 30 minutes behind a Redis `SETNX` lock, deletes
 expired/discarded rows from the CDN with bounded concurrency, dead-letters at an attempt cap, and
-hard-deletes after an audit window. A shipped server backstop adds magic-byte validation
-(JPEG/PNG/WebP, derives `Content-Type`) and explicit per-endpoint request-body limits (which killed
-the 100 MB-Vehicle `413`); server-side EXIF/GPS stripping ships for profile/cover photos with the ad
-path to follow, and edge-resized delivery variants are wired client-side but await the CDN Optimizer
-being switched on (ADR-0010).
+hard-deletes after an audit window. A server backstop never trusts the client: magic-byte validation
+(JPEG/PNG/WebP, derives `Content-Type`), explicit per-endpoint request-body limits (which killed the
+100 MB-Vehicle `413`), server-side EXIF/GPS metadata stripping, and edge-resized delivery variants
+from one stored original via the CDN Optimizer (ADR-0010).
 
 **Impact:** CDN cost is structurally bounded (an orphan is gone within the hard cap + one sweep), all
 three orphan classes are handled, and on the upload path the multi-image `413` class is eliminated
-and hostile uploads are rejected by magic-byte validation — both shipped. (Server-side EXIF stripping
-is live for profile/cover photos with the ad path decided next; edge delivery variants await the CDN
-Optimizer being switched on.) Built both-ends over five phases under 149 server + 17 Flutter tests,
-through three hardening rounds that surfaced 50+ findings — every Critical/High/Medium fixed —
-including a Critical where the sweeper derived the delete path from the public URL, hit a `404`,
-treated it as success, and would have leaked the real file forever (fixed by carrying the storage
-path separately). Honest status: the sweeper runs in **dry-run** (logs what it would delete, deletes
-nothing); the mandatory 7-day production observation window hasn't started; the manual SQL deploy (1
-table, 1 type, 10 SPs) is pending; push notifications are deferred to v2 (query written, FCM/APNs
-not); full ImageSharp re-encode is deferred behind an unchanged contract. A killswitch stops all
-deletes within 30 minutes with data intact.
+and hostile uploads are rejected by magic-byte validation. Built both-ends over five phases under 149
+server + 17 Flutter tests, through
+three hardening rounds that surfaced 50+ findings — every Critical/High/Medium fixed — including a
+Critical where the sweeper derived the delete path from the public URL, hit a `404`, treated it as
+success, and would have leaked the real file forever (fixed by carrying the storage path separately).
+Because deletion is irreversible, the sweeper carries a dry-run mode (log-only, for validating the
+delete set) and a killswitch that stops all deletes within 30 minutes with the CDN files and tracking
+rows intact — the brakes that make an automated, guaranteed cleanup safe to run.
 
 **Tech stack:** .NET, ASP.NET Core, C#, MediatR, Dapper + stored procedures, SQL Server, Redis
 (distributed lock), BunnyCDN (storage + edge Optimizer), BackgroundService / IHostedService, Serilog,

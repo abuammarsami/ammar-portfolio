@@ -107,7 +107,7 @@
       <rect class="ibf-box" x="32" y="364" width="612" height="68" rx="9" fill="var(--color-q0,#5fc9bf)" fill-opacity="0.10" stroke="var(--color-q0,#5fc9bf)" stroke-width="1.7"/>
       <text x="340" y="388" text-anchor="middle" font-size="10.5" fill="var(--color-q0,#5fc9bf)">ImageCleanupWorker &#183; every 30 min &#183; one instance via Redis SETNX lock</text>
       <text x="340" y="407" text-anchor="middle" font-size="9" fill="var(--color-muted,#8a8f9c)">GetExpiredBatch &#8594; DELETE from BunnyCDN (bounded concurrency) &#8594; mark Deleted &#183; dead-letter at cap</text>
-      <text x="340" y="423" text-anchor="middle" font-size="9" fill="var(--color-q0,#5fc9bf)">the guarantee the client can't give &#8212; running in dry-run today (logged, not yet deleting)</text>
+      <text x="340" y="423" text-anchor="middle" font-size="9" fill="var(--color-q0,#5fc9bf)">runs whether or not the app is alive &#8212; the guarantee the client can't give</text>
     </g>
 
     <text class="ibf-hint" x="668" y="24" text-anchor="end" font-size="9" fill="var(--color-muted,#8a8f9c)">hover a step &#9656;</text>
