@@ -6,3 +6,4 @@
  */
 export const AUTOPILOT_EVENT = "ammar:autopilot";
 export const INTERVIEW_EVENT = "ammar:interview";
+export const PALETTE_EVENT = "ammar:palette";

@@ -73,6 +73,14 @@ export function PaletteUi({ onClose }: { onClose: () => void }) {
       }))
     : [];
   const filtered = [...commands.filter((c) => c.label.includes(query.toLowerCase().trim())), ...contentHits];
+  // the async search index can shrink the list under a stale index — clamp, don't trust `active` raw
+  const activeIdx = filtered.length > 0 ? Math.min(active, filtered.length - 1) : 0;
+
+  // keyboard navigation must follow into the overflow region of the list
+  const listRef = useRef<HTMLUListElement | null>(null);
+  useEffect(() => {
+    listRef.current?.children[activeIdx]?.scrollIntoView({ block: "nearest" });
+  }, [activeIdx]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -113,7 +121,7 @@ export function PaletteUi({ onClose }: { onClose: () => void }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 pt-[18vh] backdrop-blur-[2px]"
+      className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 px-4 pt-[12vh] backdrop-blur-[2px] sm:pt-[18vh]"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -135,9 +143,9 @@ export function PaletteUi({ onClose }: { onClose: () => void }) {
               setActive(0);
             }}
             onKeyDown={(e) => {
-              if (e.key === "ArrowDown") { e.preventDefault(); setActive((a) => Math.min(a + 1, filtered.length - 1)); }
-              if (e.key === "ArrowUp") { e.preventDefault(); setActive((a) => Math.max(a - 1, 0)); }
-              if (e.key === "Enter") exec(filtered[active]);
+              if (e.key === "ArrowDown") { e.preventDefault(); setActive(Math.min(activeIdx + 1, filtered.length - 1)); }
+              if (e.key === "ArrowUp") { e.preventDefault(); setActive(Math.max(activeIdx - 1, 0)); }
+              if (e.key === "Enter") exec(filtered[activeIdx]);
             }}
             placeholder="type a command…"
             aria-label="Search commands"
@@ -145,16 +153,18 @@ export function PaletteUi({ onClose }: { onClose: () => void }) {
           />
           <kbd className="text-xs text-muted">esc</kbd>
         </div>
-        <ul className="max-h-72 overflow-y-auto py-1 font-mono text-sm">
+        <ul ref={listRef} className="max-h-72 overflow-y-auto py-1 font-mono text-sm">
           {filtered.length === 0 && <li className="px-4 py-2 text-muted">no matching command</li>}
           {filtered.map((c, i) => (
             <li key={c.id}>
+              {/* pointerMOVE, not enter: keyboard-scrolling the list under a
+                  stationary cursor must not steal the active row back */}
               <button
                 type="button"
                 onClick={() => exec(c)}
-                onPointerEnter={() => setActive(i)}
+                onPointerMove={() => setActive(i)}
                 className={`flex w-full items-baseline justify-between px-4 py-2 text-left ${
-                  i === active ? "bg-q0/10 text-q0" : "text-ink"
+                  i === activeIdx ? "bg-q0/10 text-q0" : "text-ink"
                 }`}
               >
                 <span>{c.label}</span>

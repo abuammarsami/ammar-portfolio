@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PaletteTrigger } from "@/components/palette/palette-trigger";
 import { LensPill } from "./lens-pill";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -39,12 +40,7 @@ export function Nav() {
           >
             cv
           </Link>
-          <kbd
-            className="hidden shrink-0 rounded-sm border rule-hair px-1.5 py-0.5 font-mono text-xs text-muted md:inline"
-            title="Command palette"
-          >
-            ⌘K
-          </kbd>
+          <PaletteTrigger />
           <span className="shrink-0">
             <LensPill />
           </span>

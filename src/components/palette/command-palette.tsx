@@ -3,6 +3,8 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 
+import { PALETTE_EVENT } from "@/lib/agent/autopilot-event";
+
 // The palette body lives in its own chunk — the eager cost of ⌘K on every
 // page is just this opener (per-route budget headroom is thin; plan-0005).
 const PaletteUi = dynamic(() => import("./palette-ui").then((m) => m.PaletteUi), { ssr: false });
@@ -18,8 +20,13 @@ export function CommandPalette() {
         setOpen((o) => !o);
       }
     };
+    const onEvent = () => setOpen((o) => !o); // nav trigger (mobile has no shortcut)
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener(PALETTE_EVENT, onEvent);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener(PALETTE_EVENT, onEvent);
+    };
   }, []);
 
   if (!open) return null;
