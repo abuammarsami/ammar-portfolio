@@ -131,7 +131,15 @@ export default async function CvPage() {
             {LINKS.email} · github.com/abuammarsami · linkedin.com/in/abu-ammar · {HOST}
           </p>
         </div>
-        <PrintButton />
+        <div className="flex shrink-0 flex-col items-end gap-2 print:hidden">
+          <PrintButton />
+          <a
+            href="/resume.pdf"
+            className="rounded-sm border rule-hair px-3 py-1.5 font-mono text-sm text-q0 transition-colors hover:text-q1"
+          >
+            resume.pdf ↓
+          </a>
+        </div>
       </header>
 
       {/* recruiter/engineer ordering: experience first */}

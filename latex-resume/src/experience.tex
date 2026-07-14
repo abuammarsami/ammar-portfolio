@@ -6,59 +6,48 @@
     {Partners Online (Bangladesh \& UK)}{March 2026 -- Present}
     {Operation Manager, Web \& App Development}{Dhaka, Bangladesh|Remote}
     \resumeItemListStart
-        \resumeItem{Lead Web \& App Development for \textbf{Partners.com.bd} — Bangladesh's marketplace + business-social platform, expanding into the UK — owning \textbf{backend architecture, database, cloud infrastructure, deployment, scalability, and security} across BD and UK operations.}
+        \resumeItem{Own the platform behind \textbf{Partners.com.bd} — Bangladesh's marketplace + business-social platform expanding into the UK — end to end: \textbf{backend architecture, database, cloud infrastructure, deployment, scalability, and security} across BD and UK operations.}
 
-        \resumeItem{Design and build the product's rebuild end to end: a \textbf{.NET (Clean Architecture) API}, three \textbf{Flutter} apps (General, Executive, City), and a legacy \evwork{mvc-to-api-migration}{\textbf{MVC $\rightarrow$ API strangler migration}} retiring the monolith without downtime.}
+        \resumeItem{Cut detail-page round trips \textbf{from 3--4 to 1 ($\sim$70\% fewer)} by leading the legacy \evwork{mvc-to-api-migration}{\textbf{MVC $\rightarrow$ API strangler migration}} to a \textbf{Clean Architecture .NET API} — retiring the monolith with zero downtime while three \textbf{Flutter} apps (General, Executive, City) ship on top of it.}
 
-        \resumeItem{Designed and built the \evwork{payments-platform}{\textbf{payments platform}}: one generic money ledger serving every paid feature, a vendor-agnostic \textbf{IPaymentGateway} abstraction with country-aware resolution, and a self-healing settlement coordinator with a Hangfire reconciliation backstop.}
+        \resumeItem{Closed the double-settlement money-loss path \textbf{by construction}: one generic \evwork{payments-platform}{\textbf{payment ledger}} serving every paid feature, a vendor-agnostic \textbf{IPaymentGateway} abstraction with country-aware resolution, and a self-healing settlement coordinator backstopped by Hangfire reconciliation.}
 
-        \resumeItem{Shipped a transactional \evwork{background-job-system}{\textbf{background-job system}} (dedicated \textbf{Hangfire} worker, SQL outbox, dead-letter queue, idempotency) and a document-driven agent workflow (open-sourced as the \textbf{d3} Claude Code skill) that keeps the codebase AI-navigable.}
+        \resumeItem{Made background work crash-safe — \textbf{no job silently lost or double-run} — with a transactional \evwork{background-job-system}{\textbf{SQL outbox + dedicated Hangfire worker}}, dead-letter queue, idempotency keys, and least-privilege SQL principals.}
+
+        \resumeItem{Bounded CDN storage cost structurally with an \evwork{async-image-pipeline}{\textbf{async image pipeline}} whose server-owned lifecycle guarantees every orphaned upload is swept without client cooperation; open-sourced the team's document-driven agent workflow as the \textbf{d3} Claude Code skill.}
     \resumeItemListEnd
 
     \resumeSubheading
     {Masjid Solutions}{December 2023 -- May 2026}
     {Software Engineer}{Indianapolis, Indiana, USA|Remote}
     \resumeItemListStart
-         \resumeItem{Engineered backend solutions using \textbf{.NET (MVC \& Core)}, \textbf{SQL Server}, \textbf{Dapper}, \textbf{LINQ}, \textbf{Repository Pattern}, and \textbf{Entity Framework} to deliver scalable applications for Islamic schools, memberships, events, and donation management.}
-    
-    \resumeItem{Designed and automated \evwork{data-import-automation}{\textbf{data import pipelines}}, transforming raw Excel data into validated SQL Server schemas — reducing onboarding time for new schools and memberships by 60\%.}
-    
-    \resumeItem{Architected and maintained \textbf{CI/CD pipelines} with Bitbucket, Jenkins, IIS, and rollback-ready backup strategies — enabling safe, zero-downtime deployments across \textbf{dev, beta, staging, and production}.}
-    
-    \resumeItem{Built a \evwork{remote-kiosk-management}{\textbf{Remote Kiosk Device Management System}} with REST APIs for live monitoring (battery, Wi-Fi, uptime) and remote control (reboot, screenshot) of donation kiosks, improving support response time.}
-    
-    \resumeItem{Developed \evwork{kioskvisionai}{\textbf{KioskVisionAI}}, a distributed \textbf{.NET 9 Aspire} app on Azure, integrating \textbf{Azure Blob Storage, Queues, and Vision AI} with GitHub Actions for automated deployments and intelligent kiosk monitoring.}
-    
-    \resumeItem{Leveraged \textbf{.NET Aspire} for orchestration, observability, and service discovery in distributed kiosk management microservices.}
-    
-    \resumeItem{Integrated \evwork{ach-payment-integration}{\textbf{Stripe} and \textbf{Authorize.Net} ACH payments}, extending the donation platform with secure recurring transactions for schools, events, and memberships.}
+        \resumeItem{Owned payment rails supporting \textbf{millions of dollars in annual donation volume for 20,000+ users}: \evwork{ach-payment-integration}{\textbf{Stripe + Authorize.Net ACH recurring billing}}, and \textbf{Apple Pay / Google Pay} via Stripe Payment Intents — tokenized wallet flows that improved mobile donation conversion.}
 
-      \resumeItem{Integrated \textbf{Apple Pay and Google Pay} via Stripe Payment Intents, implementing tokenized wallet payment flows that accelerated mobile checkout and improved donation conversion across one-time and recurring payments.}
-    
-    \resumeItem{Implemented \textbf{Twilio Lookup API}-based data enrichment to merge duplicate donor records, significantly improving data quality and reporting accuracy.}
-    
-    \resumeItem{Contributed to \textbf{monolith-to-microservices migration} with .NET Core, applying \textbf{Clean + Onion Architecture}, repository patterns, and domain-driven principles for maintainability and scalability.}
-    
-    \resumeItem{Enhanced \textbf{frontend features} with .cshtml, HTML5, CSS3, JavaScript (ES6+), and Alpine.js to ensure seamless user experience integration with backend services.}
+        \resumeItem{Cut onboarding time for new schools and memberships by \textbf{60\%} with automated \evwork{data-import-automation}{\textbf{data-import pipelines}} transforming raw Excel into validated SQL Server schemas.}
 
-        
+        \resumeItem{Sustained \textbf{200+ zero-downtime production deployments per year} across \textbf{dev, beta, staging, and production} by architecting CI/CD on Bitbucket, Jenkins, and IIS with rollback-ready backup strategies.}
+
+        \resumeItem{Put \textbf{120+ donation kiosks across 60+ U.S. organizations} under intelligent watch by building \evwork{kioskvisionai}{\textbf{KioskVisionAI}} — a distributed \textbf{.NET 9 Aspire} app on Azure (\textbf{Blob Storage, Queues, Vision AI}) with GitHub Actions continuous delivery.}
+
+        \resumeItem{Improved support response time with a \evwork{remote-kiosk-management}{\textbf{Remote Kiosk Device Management System}}: REST APIs for live health (battery, Wi-Fi, uptime) and remote control (reboot, screenshot).}
+
+        \resumeItem{Eliminated manual CRM entry by building an automated \evwork{salesforce-sync-platform}{\textbf{Salesforce synchronization platform}} — daily jobs, custom field mappings, retries, error recovery — and improved donor data quality by merging duplicates via \textbf{Twilio Lookup} enrichment.}
+
+        \resumeItem{Engineered across \textbf{.NET (MVC \& Core), SQL Server, Dapper, LINQ, Entity Framework}; contributed to the \textbf{monolith-to-microservices migration} with \textbf{Clean + Onion architecture} and domain-driven principles.}
     \resumeItemListEnd
 
     \resumeSubheading
     {Masjid Solutions}{October 2023 -- November 2023}
     {SQA Engineer}{Indianapolis, Indiana, USA|Remote}
     \resumeItemListStart
-        \resumeItem{Developed and maintained a Data-driven UI Automation Project using C\#, NUnit.NET, Selenium, Serilog, Extent Report, and Jenkins to automate test cases in CI/CD pipelines, ensuring product quality and reliability.}
-        \resumeItem{Utilized CSV files to drive test cases, enhancing test coverage and efficiency.}
-        \resumeItem{Implemented automated testing for a critical module using Selenium, reducing regression bugs by 30\% and ensuring a more stable release cycle.}
+        \resumeItem{Reduced regression bugs by \textbf{30\%} on a critical module by building a data-driven UI automation suite (\textbf{C\#, NUnit, Selenium, Serilog, Extent Reports}) running in Jenkins CI — CSV-driven cases widened coverage without new code per scenario.}
     \resumeItemListEnd
 
     \resumeSubheading
     {A1QA Pure-play software testing company}{November 2022 -- July 2023}
     {QA Automation Engineer}{Colorado, USA|Remote}
     \resumeItemListStart
-        \resumeItem{Developed numerous automated test scenarios using TestNG framework with Maven integration using Selenium WebDriver.}
-        \resumeItem{Contributed in implementing data-driven testing with CSV files for regression and priority-based automated tests after every build/release.}
+        \resumeItem{Shipped automated regression and priority-based test suites run on every build/release — \textbf{TestNG + Maven + Selenium WebDriver} with CSV-driven data testing.}
     \resumeItemListEnd
 
 \resumeSubHeadingListEnd
