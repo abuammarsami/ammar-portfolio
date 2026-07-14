@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, IBM_Plex_Sans, STIX_Two_Text } from "next/font/google";
 import { ThemeProvider } from "next-themes";
+import { AskLauncher } from "@/components/agent/ask-launcher";
 import { WebmcpProvider } from "@/components/agent/webmcp-provider";
 import { CommandPalette } from "@/components/palette/command-palette";
 import { FooterTerminal } from "@/components/ui/footer-terminal";
@@ -128,6 +129,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
           </footer>
           <CommandPalette />
+          <AskLauncher />
           <WebmcpProvider />
         </ThemeProvider>
       </body>

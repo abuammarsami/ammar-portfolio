@@ -1,3 +1,4 @@
+import { STAGE_DONE_EVENT } from "@/lib/agent/autopilot-event";
 import { getHeroSnapshot, requestHeroData } from "@/lib/agent/hero-bridge";
 import { applyLens, currentLens, type Lens } from "@/lib/agent/lens";
 import { claimStage, releaseStage } from "@/lib/agent/stage-lock";
@@ -192,5 +193,6 @@ export async function runTour(navigate: (path: string) => void, opts: { interest
     bar?.remove();
     running = false;
     releaseStage("autopilot");
+    window.dispatchEvent(new Event(STAGE_DONE_EVENT));
   }
 }

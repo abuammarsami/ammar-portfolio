@@ -1,8 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 import { PALETTE_EVENT } from "@/lib/agent/autopilot-event";
+
+const never = () => () => {};
+const isApple = () => /Mac|iPhone|iPad|iPod/i.test(navigator.platform || navigator.userAgent);
 
 /**
  * Nav trigger for the command palette: a platform-aware kbd hint on
@@ -10,12 +13,9 @@ import { PALETTE_EVENT } from "@/lib/agent/autopilot-event";
  * is no keyboard shortcut to discover.
  */
 export function PaletteTrigger() {
-  // SSR renders the Mac glyph for everyone; non-Mac swaps the label after
-  // mount (text-only change, no layout shift worth guarding against)
-  const [mac, setMac] = useState(true);
-  useEffect(() => {
-    setMac(/Mac|iPhone|iPad|iPod/i.test(navigator.platform || navigator.userAgent));
-  }, []);
+  // SSR renders the Mac glyph for everyone; non-Mac swaps the label on
+  // hydration (text-only change, no layout shift worth guarding against)
+  const mac = useSyncExternalStore(never, isApple, () => true);
   const open = () => window.dispatchEvent(new Event(PALETTE_EVENT));
   return (
     <>
