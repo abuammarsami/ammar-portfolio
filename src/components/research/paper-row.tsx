@@ -61,6 +61,11 @@ export function PaperRow({ paper }: { paper: Paper }) {
             [try it live]
           </Link>
         )}
+        {paper.related.writeup && (
+          <Link href={`/deep-dives/${paper.related.writeup}`} className="text-q1 hover:underline">
+            [full writeup]
+          </Link>
+        )}
       </p>
     </article>
   );

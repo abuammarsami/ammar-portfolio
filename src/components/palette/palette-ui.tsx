@@ -143,8 +143,9 @@ export function PaletteUi({ onClose }: { onClose: () => void }) {
               setActive(0);
             }}
             onKeyDown={(e) => {
-              if (e.key === "ArrowDown") { e.preventDefault(); setActive(Math.min(activeIdx + 1, filtered.length - 1)); }
-              if (e.key === "ArrowUp") { e.preventDefault(); setActive(Math.max(activeIdx - 1, 0)); }
+              const max = filtered.length - 1;
+              if (e.key === "ArrowDown") { e.preventDefault(); setActive((a) => Math.min(a + 1, max)); }
+              if (e.key === "ArrowUp") { e.preventDefault(); setActive((a) => Math.max(Math.min(a, max) - 1, 0)); }
               if (e.key === "Enter") exec(filtered[activeIdx]);
             }}
             placeholder="type a command…"
