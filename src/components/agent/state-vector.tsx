@@ -10,7 +10,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import { LENS_EVENT, LENS_STORAGE_KEY, type Lens, currentLens, isLens } from "@/lib/agent/lens";
+import { LENS_EVENT, currentLens, storedLens } from "@/lib/agent/lens";
 import {
   type Amplitudes,
   SUPERPOSITION,
@@ -21,15 +21,6 @@ import {
 
 const COLLAPSE_MS = 600;
 
-/** The lens the visitor explicitly measured (persisted by applyLens), or null while unobserved. */
-function measuredLens(): Lens | null {
-  try {
-    const v = localStorage.getItem(LENS_STORAGE_KEY);
-    return isLens(v) ? v : null;
-  } catch {
-    return null; // storage unavailable — treat as unmeasured until an event fires
-  }
-}
 
 export function StateVector({ kets }: { kets: readonly [string, string] }) {
   // SSR and first client render always show the superposition — no hydration mismatch.
@@ -61,7 +52,8 @@ export function StateVector({ kets }: { kets: readonly [string, string] }) {
     };
 
     // A returning visitor's stored lens already measured the state — snap, don't dance.
-    show(amplitudesForLens(measuredLens()), false);
+    // storedLens() is null while unobserved (visitor never explicitly chose a lens).
+    show(amplitudesForLens(storedLens()), false);
     const onLens = () => show(amplitudesForLens(currentLens()), true);
     window.addEventListener(LENS_EVENT, onLens);
     return () => {

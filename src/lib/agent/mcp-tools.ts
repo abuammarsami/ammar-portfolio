@@ -1,6 +1,5 @@
 import { composeCircuit } from "@/lib/agent/compose-circuit";
 import { buildCorpus } from "@/lib/agent/corpus";
-import { getResumeManifest } from "@/lib/resume-manifest";
 import { getLessons, getPaper, getPapers, getProjects, visiblePapers, visibleProjects } from "@/lib/content/loader";
 import { LINKS, SITE_URL } from "@/lib/site";
 
@@ -21,11 +20,8 @@ export const TOOLS = [
 
 export async function callTool(name: string, args: Record<string, unknown>): Promise<string> {
   switch (name) {
-    case "get_resume": {
-      const manifest = getResumeManifest();
-      const header = `[resume build ${manifest.version}, ${manifest.builtAt} — pdf: ${SITE_URL}/resume.pdf, verify: ${SITE_URL}/verify]`;
-      return `${header}\n\n${await buildCorpus()}`;
-    }
+    case "get_resume":
+      return buildCorpus();
     case "list_projects": {
       const projects = visibleProjects(await getProjects());
       return JSON.stringify(

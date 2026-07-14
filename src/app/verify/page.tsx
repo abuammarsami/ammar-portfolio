@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getVerifyPage } from "@/lib/content/loader";
 import { getResumeManifest } from "@/lib/resume-manifest";
 
 export const dynamic = "force-static";
@@ -9,19 +10,24 @@ export const metadata: Metadata = {
     "Provenance for resume.pdf: the CI build version, sha256 checksum, and how to verify the PDF (and its embedded machine-readable resume.json) yourself.",
 };
 
+const prose =
+  "mt-4 max-w-2xl font-serif leading-relaxed [&>p+p]:mt-4 [&_strong]:text-q0 [&_a]:text-q1 [&_a]:underline [&_a]:underline-offset-2 [&_a]:decoration-q1/50 [&_a:hover]:decoration-q1 [&_code]:font-mono [&_code]:text-sm [&_code]:text-q1 [&_ol]:list-decimal [&_ol]:pl-5 [&_li+li]:mt-3";
+
 /**
  * /verify (ADR-0016): the provenance page for public/resume.pdf. The PDF and
  * its manifest are written only by the resume CI workflow; this page renders
  * the manifest so anyone holding a copy of the PDF can check it against the
  * canonical build — hash in the footer, sha256 of the bytes, embedded JSON.
+ * Prose comes from content/verify.md; the computed facts stay here.
  */
-export default function VerifyPage() {
+export default async function VerifyPage() {
   const manifest = getResumeManifest();
-  const builtAt = new Date(manifest.builtAt).toISOString().replace(".000Z", "Z");
+  const sections = await getVerifyPage();
+  const byHeading = new Map(sections.map((s) => [s.heading, s.bodyHtml]));
 
   const facts: [string, string][] = [
     ["build version", manifest.version],
-    ["built at", builtAt],
+    ["built at", manifest.builtAt],
     ["size", `${manifest.sizeBytes.toLocaleString("en-US")} bytes`],
     ["source commit", manifest.commit],
   ];
@@ -31,15 +37,18 @@ export default function VerifyPage() {
       <header className="mt-12">
         <p className="font-mono text-xs text-muted">verify · written by CI, never by hand</p>
         <h1 className="mt-3 font-serif text-4xl leading-tight">Verify this resume</h1>
-        <p className="mt-4 max-w-2xl font-serif leading-relaxed">
-          The resume PDF on this site is compiled from LaTeX source in CI — the same pipeline that writes this
-          manifest. If the copy you hold matches the numbers below, it is the canonical build, unmodified.
-        </p>
+        <div className={prose} dangerouslySetInnerHTML={{ __html: byHeading.get("Intro") ?? "" }} />
       </header>
 
       <h2 className="mt-10 border-b rule-hair pb-1 font-mono text-sm tracking-wide text-muted uppercase">
         Current build
       </h2>
+      {manifest.version === "draft" && (
+        <p className="mt-4 max-w-2xl font-serif leading-relaxed text-muted">
+          The automated resume pipeline hasn&apos;t produced its first stamped build yet — the numbers below describe
+          the placeholder draft. The footer-hash and embedded-attachment checks apply from the first CI build onward.
+        </p>
+      )}
       <dl className="mt-4 max-w-2xl space-y-2 font-mono text-sm">
         {facts.map(([label, value]) => (
           <div key={label} className="flex items-baseline justify-between gap-4 border-b rule-hair pb-2">
@@ -57,19 +66,7 @@ export default function VerifyPage() {
       <h2 className="mt-10 border-b rule-hair pb-1 font-mono text-sm tracking-wide text-muted uppercase">
         How to verify
       </h2>
-      <ol className="mt-4 max-w-2xl list-decimal space-y-3 pl-5 font-serif leading-relaxed">
-        <li>
-          The build hash printed in the PDF footer must equal the <strong className="text-q0">build version</strong>{" "}
-          shown above.
-        </li>
-        <li>
-          <code className="font-mono text-sm text-q1">shasum -a 256 resume.pdf</code> must equal the sha256 above.
-        </li>
-        <li>
-          <code className="font-mono text-sm text-q1">pdfdetach -saveall resume.pdf</code> extracts the embedded
-          machine-readable <code className="font-mono text-sm text-q1">resume.json</code>.
-        </li>
-      </ol>
+      <div className={prose} dangerouslySetInnerHTML={{ __html: byHeading.get("How to verify") ?? "" }} />
 
       <p className="mt-10 border-t rule-hair pt-4 font-mono text-xs leading-relaxed text-muted">
         <a href={manifest.pdf} className="text-q0 hover:underline">

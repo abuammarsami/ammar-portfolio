@@ -46,6 +46,11 @@ export const COLOPHON_SECTIONS = ["Intro", "Principles", "Template"] as const;
 
 export type ColophonSection = { heading: (typeof COLOPHON_SECTIONS)[number]; bodyHtml: string };
 
+/** Required headings of verify.md — the /verify resume-provenance page (ADR-0016). */
+export const VERIFY_SECTIONS = ["Intro", "How to verify"] as const;
+
+export type VerifySection = { heading: (typeof VERIFY_SECTIONS)[number]; bodyHtml: string };
+
 /** Required headings of agents.md — the /agents machine-interface page (ADR-0009). */
 export const AGENTS_SECTIONS = [
   "Tagline",

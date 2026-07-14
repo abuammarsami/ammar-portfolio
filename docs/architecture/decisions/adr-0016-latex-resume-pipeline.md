@@ -29,10 +29,10 @@ recruiter holding a downloaded copy to check it against the canonical build.
 
 ## Decision
 
-1. **`latex_resume/` in this repo is the canonical resume source** (`.tex`).
+1. **`latex-resume/` in this repo is the canonical resume source** (`.tex`).
    The PDF is never edited or exported by hand.
 2. **CI compiles it.** `.github/workflows/build-resume.yml` is path-filtered to
-   `latex_resume/**` and compiles via `xu-cheng/latex-action@v3`, then
+   `latex-resume/**` and compiles via `xu-cheng/latex-action@v3`, then
    bot-commits ONLY `public/resume.pdf` + `public/resume-manifest.json`. The
    workflow is loop-safe: its path filter ignores `public/`, so its own commit
    never retriggers it.
@@ -62,9 +62,9 @@ recruiter holding a downloaded copy to check it against the canonical build.
 
 - `public/resume.pdf` and `public/resume-manifest.json` become **bot-owned
   files** — hand edits are forbidden and are caught by the drift test.
-- Resume edits are plain-text PRs in `latex_resume/`, reviewable like code.
+- Resume edits are plain-text PRs in `latex-resume/`, reviewable like code.
 - The embedded JSON Resume is only as fresh as the last Vercel deploy at the
   time the CI build curled `/resume.json` — a content change deployed after
-  the last resume build isn't inside the PDF until `latex_resume/` next
+  the last resume build isn't inside the PDF until `latex-resume/` next
   changes (acceptable: the PDF footer hash + `/verify` date make the vintage
   explicit).

@@ -30,7 +30,7 @@ content/          # ALL site copy lives here as markdown — the only place cont
 content/papers/   # the research library (ADR-0008): one .md per real paper/thesis
 docs/             # architecture (ADRs), plans, guides, reference — YAML frontmatter on every doc
 papers/           # UNTRACKED raw manuscript archive — never publish; curated copies go to public/papers
-latex_resume/     # LaTeX resume source (canonical); public/resume.pdf + public/resume-manifest.json are CI-bot-owned — never hand-edit (ADR-0016)
+latex-resume/     # LaTeX resume source (canonical); public/resume.pdf + public/resume-manifest.json are CI-bot-owned — never hand-edit (ADR-0016)
 public/           # resume.pdf, photos, favicon; public/papers/ = reviewed PDFs only
 src/app/          # Next App Router routes (all force-static); .well-known/ = agent card
 src/components/   # hero/ quantum/ paper/ ui/ agent/ (palette/ stretch)

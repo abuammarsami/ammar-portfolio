@@ -69,13 +69,14 @@
 \usepackage[scale=0.93]{plex-sans}
 \usepackage[scale=0.88]{plex-mono}
 
-% Site accent tokens (--q0/--q1 light-theme values from src/styles/globals.css)
-\definecolor{qzero}{HTML}{0D6F66}
-\definecolor{qone}{HTML}{5F49C9}
-
 % Quantum-circuit signature + arXiv sidebar
 \usepackage{tikz}
 \usetikzlibrary{quantikz2}
+
+% Site accent tokens (--q0/--q1 light-theme values from src/styles/globals.css)
+% Declared after tikz so xcolor (HTML color model) is guaranteed loaded.
+\definecolor{qzero}{HTML}{0D6F66}
+\definecolor{qone}{HTML}{5F49C9}
 
 \pagestyle{fancy}
 \fancyhf{} % clear all header and footer fields

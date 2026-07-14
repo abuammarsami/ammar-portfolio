@@ -1,21 +1,26 @@
 name: build-resume
 
-# Compiles latex_resume/ into public/resume.pdf + public/resume-manifest.json.
+# Compiles latex-resume/ into public/resume.pdf + public/resume-manifest.json.
 # Loop-safe: the bot commit touches only public/**, which the paths filter ignores.
 on:
   push:
     branches: [main]
     paths:
-      - "latex_resume/**"
+      - "latex-resume/**"
       - ".github/workflows/build-resume.yml"
   pull_request:
     paths:
-      - "latex_resume/**"
+      - "latex-resume/**"
       - ".github/workflows/build-resume.yml"
   workflow_dispatch:
 
 permissions:
   contents: write
+
+# Serialize runs: concurrent bot commits to public/resume.pdf would conflict
+concurrency:
+  group: build-resume-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -24,16 +29,17 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Fetch machine-readable JSON resume from live site
-        # Non-fatal: resume.tex guards the embed with \IfFileExists
+        # Fatal on failure: /verify promises the attachment, so a PDF without it
+        # must never ship. Transient outage? Re-run via workflow_dispatch.
         run: |
-          curl -fsSL https://ammar-portfolio-zeta.vercel.app/resume.json \
-            -o latex_resume/resume.json \
-            || echo "::warning::resume.json unavailable — PDF will ship without the embedded attachment"
+          curl -fsSL --retry 3 --retry-delay 10 \
+            https://ammar-portfolio-zeta.vercel.app/resume.json \
+            -o latex-resume/resume.json
 
       - name: Stamp build info (workspace only, never committed)
         run: |
           SHORT=${GITHUB_SHA::7}
-          cat > latex_resume/build-info.tex <<EOF
+          cat > latex-resume/build-info.tex <<EOF
           \newcommand{\BuildHash}{${SHORT}}
           \newcommand{\BuildDate}{$(date -u +%Y-%m-%d)}
           \newcommand{\VerifyURL}{https://ammar-portfolio-zeta.vercel.app/verify}
@@ -42,13 +48,13 @@ jobs:
       - name: Compile resume.pdf
         uses: xu-cheng/latex-action@v3
         with:
-          working_directory: latex_resume
+          working_directory: latex-resume
           root_file: resume.tex
 
       - name: Sanity checks (ATS text layer, attachment, footer stamp)
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils
-          cd latex_resume
+          cd latex-resume
           pdftotext resume.pdf - | head -5
           pdftotext resume.pdf - | grep -q "Ammar" || { echo "::error::PDF text layer missing"; exit 1; }
           pdftotext resume.pdf - | grep -q "build ${GITHUB_SHA::7}" || { echo "::error::build stamp missing from footer"; exit 1; }
@@ -58,7 +64,7 @@ jobs:
 
       - name: Write resume-manifest.json
         run: |
-          cd latex_resume
+          cd latex-resume
           jq -n \
             --arg version "${GITHUB_SHA::7}" \
             --arg commit "$GITHUB_SHA" \
@@ -75,18 +81,21 @@ jobs:
         with:
           name: resume
           path: |
-            latex_resume/resume.pdf
-            latex_resume/resume-manifest.json
+            latex-resume/resume.pdf
+            latex-resume/resume-manifest.json
 
       - name: Commit PDF + manifest to public/
         if: github.event_name != 'pull_request'
         run: |
-          cp latex_resume/resume.pdf public/resume.pdf
-          cp latex_resume/resume-manifest.json public/resume-manifest.json
+          cp latex-resume/resume.pdf public/resume.pdf
+          cp latex-resume/resume-manifest.json public/resume-manifest.json
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add public/resume.pdf public/resume-manifest.json
           git diff --cached --quiet && { echo "No changes to commit"; exit 0; }
+          # The stamp step dirtied tracked files (build-info.tex); restore them
+          # or `git pull --rebase` refuses to run on an unclean worktree.
+          git checkout -- latex-resume/
           git commit -m "chore(resume): rebuild pdf from ${GITHUB_SHA::7}"
           git pull --rebase origin "${GITHUB_REF_NAME}"
           git push origin "HEAD:${GITHUB_REF_NAME}"
