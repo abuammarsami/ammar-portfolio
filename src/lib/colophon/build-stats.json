@@ -1,208 +1,208 @@
 {
-  "commit": "23a6633",
+  "commit": "b23de69",
   "date": "2026-07-14",
   "routes": [
     {
       "route": "/",
-      "gzBytes": 199972,
+      "gzBytes": 199324,
       "limitBytes": 200000,
       "chunks": 12
     },
     {
       "route": "/learn",
-      "gzBytes": 203448,
+      "gzBytes": 203786,
       "limitBytes": 350000,
       "chunks": 12
     },
     {
       "route": "/work",
-      "gzBytes": 194362,
+      "gzBytes": 193714,
       "limitBytes": 200000,
       "chunks": 11
     },
     {
       "route": "/work/payments-platform",
-      "gzBytes": 197090,
+      "gzBytes": 196442,
       "limitBytes": 200000,
       "chunks": 12
     },
     {
       "route": "/work/mvc-to-api-migration",
-      "gzBytes": 197090,
+      "gzBytes": 196442,
       "limitBytes": 200000,
       "chunks": 12
     },
     {
       "route": "/work/auth-architecture",
-      "gzBytes": 197090,
+      "gzBytes": 196442,
       "limitBytes": 200000,
       "chunks": 12
     },
     {
       "route": "/work/async-image-pipeline",
-      "gzBytes": 197090,
+      "gzBytes": 196442,
       "limitBytes": 200000,
       "chunks": 12
     },
     {
       "route": "/work/cv-builder",
-      "gzBytes": 197090,
+      "gzBytes": 196442,
       "limitBytes": 200000,
       "chunks": 12
     },
     {
       "route": "/deep-dives",
-      "gzBytes": 194823,
+      "gzBytes": 194175,
       "limitBytes": 200000,
       "chunks": 12
     },
     {
       "route": "/deep-dives/why-background-jobs",
-      "gzBytes": 194362,
+      "gzBytes": 193714,
       "limitBytes": 200000,
       "chunks": 11
     },
     {
       "route": "/deep-dives/the-worker-host",
-      "gzBytes": 194362,
+      "gzBytes": 193714,
       "limitBytes": 200000,
       "chunks": 11
     },
     {
       "route": "/deep-dives/the-job-contract",
-      "gzBytes": 194362,
+      "gzBytes": 193714,
       "limitBytes": 200000,
       "chunks": 11
     },
     {
       "route": "/deep-dives/the-outbox",
-      "gzBytes": 194362,
+      "gzBytes": 193714,
       "limitBytes": 200000,
       "chunks": 11
     },
     {
       "route": "/deep-dives/when-jobs-fail",
-      "gzBytes": 194362,
+      "gzBytes": 193714,
       "limitBytes": 200000,
       "chunks": 11
     },
     {
       "route": "/deep-dives/security-and-observability",
-      "gzBytes": 194362,
+      "gzBytes": 193714,
       "limitBytes": 200000,
       "chunks": 11
     },
     {
       "route": "/deep-dives/production-patterns",
-      "gzBytes": 194362,
+      "gzBytes": 193714,
       "limitBytes": 200000,
       "chunks": 11
     },
     {
       "route": "/deep-dives/claude-md-cleanup",
-      "gzBytes": 194362,
+      "gzBytes": 193714,
       "limitBytes": 200000,
       "chunks": 11
     },
     {
       "route": "/deep-dives/nested-claude-md",
-      "gzBytes": 194362,
+      "gzBytes": 193714,
       "limitBytes": 200000,
       "chunks": 11
     },
     {
       "route": "/deep-dives/the-hash-workflow",
-      "gzBytes": 194362,
+      "gzBytes": 193714,
       "limitBytes": 200000,
       "chunks": 11
     },
     {
       "route": "/deep-dives/document-driven-development",
-      "gzBytes": 194362,
+      "gzBytes": 193714,
       "limitBytes": 200000,
       "chunks": 11
     },
     {
       "route": "/d3",
-      "gzBytes": 194362,
+      "gzBytes": 193714,
       "limitBytes": 200000,
       "chunks": 11
     },
     {
       "route": "/deep-dives/quantum-machine-learning",
-      "gzBytes": 194362,
+      "gzBytes": 193714,
       "limitBytes": 200000,
       "chunks": 11
     },
     {
       "route": "/deep-dives/bangla-pos-tagging",
-      "gzBytes": 194362,
+      "gzBytes": 193714,
       "limitBytes": 200000,
       "chunks": 11
     },
     {
       "route": "/deep-dives/network-anomaly-detection",
-      "gzBytes": 194362,
+      "gzBytes": 193714,
       "limitBytes": 200000,
       "chunks": 11
     },
     {
       "route": "/deep-dives/blood-cell-detection",
-      "gzBytes": 194362,
+      "gzBytes": 193714,
       "limitBytes": 200000,
       "chunks": 11
     },
     {
       "route": "/deep-dives/multi-output-cnn",
-      "gzBytes": 194362,
+      "gzBytes": 193714,
       "limitBytes": 200000,
       "chunks": 11
     },
     {
       "route": "/deep-dives/startup-success-prediction",
-      "gzBytes": 194362,
+      "gzBytes": 193714,
       "limitBytes": 200000,
       "chunks": 11
     },
     {
       "route": "/research",
-      "gzBytes": 196408,
+      "gzBytes": 195760,
       "limitBytes": 200000,
       "chunks": 12
     },
     {
       "route": "/agents",
-      "gzBytes": 197424,
+      "gzBytes": 196798,
       "limitBytes": 200000,
       "chunks": 12
     },
     {
       "route": "/hire",
-      "gzBytes": 194362,
+      "gzBytes": 193714,
       "limitBytes": 200000,
       "chunks": 11
     },
     {
       "route": "/playground",
-      "gzBytes": 194824,
+      "gzBytes": 195189,
       "limitBytes": 200000,
       "chunks": 12
     },
     {
       "route": "/cv",
-      "gzBytes": 194674,
+      "gzBytes": 194026,
       "limitBytes": 200000,
       "chunks": 12
     },
     {
       "route": "/colophon",
-      "gzBytes": 195292,
+      "gzBytes": 194644,
       "limitBytes": 200000,
       "chunks": 12
     },
     {
       "route": "/research/quantum-machine-learning-thesis",
-      "gzBytes": 194865,
+      "gzBytes": 194217,
       "limitBytes": 200000,
       "chunks": 12
     }
