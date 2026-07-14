@@ -129,7 +129,7 @@ export default async function HomePage() {
                   <FigKioskVision />
                 </div>
                 <figcaption className="mt-2 text-center font-mono text-xs text-muted">
-                  Fig. 1 — 120+ kiosks · Azure Vision AI · automated recovery
+                  Fig. 1 — 200+ kiosks · Azure Vision AI · automated recovery
                 </figcaption>
               </figure>
             </div>

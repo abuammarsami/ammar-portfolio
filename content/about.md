@@ -10,9 +10,9 @@ Backend & AI systems engineer. I ship payment rails, distributed platforms — a
 ## Hero subheading
 I build and run Partners.com.bd — a live marketplace and business-social platform across
 Bangladesh and the UK: its .NET API, Flutter apps, and legacy MVC→API migration. Before
-that, at Masjid Solutions, payment infrastructure moving millions of dollars a year and
-AI-powered kiosk monitoring across 120+ devices on Azure. MS CS researcher in quantum
-machine learning.
+that, at Masjid Solutions, wallet and ACH payments on a platform moving millions of
+dollars a year and AI-powered kiosk monitoring across 200+ devices on Azure. MS CS
+researcher in quantum machine learning.
 
 ## Hero subheading (professor)
 My undergraduate thesis explored quantum machine learning — variational circuits and
@@ -22,11 +22,11 @@ I bring a production engineer's discipline to research code.
 
 ## Hero subheading (engineer)
 I own the .NET API, Flutter apps, and MVC→API migration behind Partners.com.bd — a live
-marketplace across Bangladesh and the UK. Before that at Masjid Solutions: payment rails
-(Stripe, ACH, wallets) moving millions a year for 20,000+ users, Azure Vision AI across
-120+ kiosks, roughly 200 releases a year through CI/CD I architected — DDD and vertical
-slices throughout. The hero beside this text is a quantum classifier I wrote from scratch;
-drag the data points.
+marketplace across Bangladesh and the UK. Before that at Masjid Solutions: the Apple
+Pay / Google Pay and Authorize.Net ACH stack on rails moving millions a year for 20,000+
+users, Azure Vision AI across 200+ kiosks, and 7–8 production releases a week through
+CI/CD I architected — DDD and vertical slices throughout. The hero beside this text is a
+quantum classifier I wrote from scratch; drag the data points.
 
 ## About me narrative
 I work where production engineering meets machine learning research — connecting business
@@ -38,12 +38,14 @@ Partners.com.bd. I design and run the platform end to end — a .NET API, the Fl
 and a legacy MVC→API migration — deploying constantly and designing with DDD, vertical
 slice, and clean architecture principles so the systems stay healthy long after they ship.
 
-Before that, at Masjid Solutions, I owned systems across their full lifecycle: payment
-infrastructure (Stripe, ACH, Apple Pay, Google Pay) supporting millions of dollars in
-annual volume for 20,000+ users; KioskVisionAI, which watches 120+ donation kiosks across
+Before that, at Masjid Solutions, I built systems across their full lifecycle: on a
+payment platform supporting millions of dollars in annual volume for 20,000+ users, the
+Apple Pay / Google Pay wallet stack and Authorize.Net ACH billing end to end, plus the
+operations layer around them — reporting, alerting, automated failed-payment alerts, and
+scheduled donation summaries; KioskVisionAI, which watches 200+ donation kiosks across
 60+ U.S. organizations with Azure Vision AI; and an automated Salesforce synchronization
-platform that eliminated manual CRM entry — roughly 200+ releases a year through CI/CD
-pipelines I architected.
+platform that eliminated manual CRM entry. Every product line shipped through CI/CD I
+architected — 7–8 zero-downtime production deployments a week.
 
 The research thread runs in parallel: my undergraduate thesis explored quantum machine
 learning — variational circuits, encoding methods, hybrid classical-quantum models on
