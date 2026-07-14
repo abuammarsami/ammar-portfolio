@@ -1,9 +1,9 @@
 {
-  "version": "draft",
-  "commit": "unknown",
-  "builtAt": "2026-07-04T00:00:00Z",
-  "sha256": "e379dc9f8ae26e35dd73bc0eecfc42ee7f789d2e9286ef4295d91f1b5db4484c",
-  "sizeBytes": 125553,
-  "source": "https://github.com/abuammarsami/ammar-portfolio",
+  "version": "fb1c1a1",
+  "commit": "fb1c1a10846c6aabfa8637719329a7e50c04e385",
+  "builtAt": "2026-07-14T07:08:55Z",
+  "sha256": "aefa83fc3098fe0831e5541d2f2786ffa2b5577469333b2419a7225597f4cf76",
+  "sizeBytes": 773071,
+  "source": "https://github.com/abuammarsami/ammar-portfolio/commit/fb1c1a10846c6aabfa8637719329a7e50c04e385",
   "pdf": "/resume.pdf"
 }
