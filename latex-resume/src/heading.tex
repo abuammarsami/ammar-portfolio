@@ -1,0 +1,17 @@
+%----------HEADING----------%
+% QR pinned to the top-right page corner (out of the content flow):
+% scan -> paste a job description -> AI fit report grounded in the live portfolio.
+% Single query param on purpose: the qrcode package chokes on '&' in some setups.
+\begin{tikzpicture}[remember picture, overlay]
+  \node[anchor=north east, align=center]
+    at ([xshift=-0.3in, yshift=-0.3in]current page.north east)
+    {\qrcode[height=0.5in, level=M]{https://ammar-portfolio-zeta.vercel.app/agents?utm_source=resume-qr}\\[2pt]
+     {\tiny\color{gray}AI fit report}};
+\end{tikzpicture}%
+\begin{center}
+    \textbf{\Huge \scshape Md. Abu Ammar} \\ \vspace{1pt}
+    \seticon{faPhone} \ \small +8801731786464 \quad
+    \href{mailto:abuammarsami@gmail.com}{\seticon{faEnvelope} \underline{abuammarsami@gmail.com}} \quad
+    \href{https://www.linkedin.com/in/abu-ammar/}{\seticon{faLinkedin} \underline{linkedin.com/in/abu-ammar/}} \quad
+    \href{https://github.com/abuammarsami}{\seticon{faGithub} \underline{github.com/abuammarsami}}
+\end{center}

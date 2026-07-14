@@ -1,0 +1,54 @@
+%-------------------------%
+% Custom commands
+\newcommand{\resumeItem}[1]{
+  \item\small{
+    {#1 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubSubheading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \textit{\small#1} & \textit{\small #2} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \small#1 & #2 \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+
+\definecolor{Black}{RGB}{0, 0, 0}
+\newcommand{\seticon}[1]{\textcolor{Black}{\csname #1\endcsname}}
+
+% Evidence links (proof over claims): each links to a live case study or paper,
+% UTM-tagged so Vercel Analytics shows which resume lines recruiters click.
+% The UTM suffix is tokenized with literal catcodes for & and _ so \href works
+% inside tabular*/macro arguments (raw & = alignment tab, _ = subscript there).
+\begingroup
+  \catcode`\&=12
+  \catcode`\_=12
+  \gdef\utmsuffix{?utm_source=resume-pdf&utm_medium=pdf}
+\endgroup
+\newcommand{\evlink}[2]{\href{#1\utmsuffix}{\underline{#2}}}
+\newcommand{\evwork}[2]{\evlink{https://ammar-portfolio-zeta.vercel.app/work/#1}{#2}}
+\newcommand{\evresearch}[2]{\evlink{https://ammar-portfolio-zeta.vercel.app/research/#1}{#2}}

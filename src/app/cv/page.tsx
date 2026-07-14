@@ -131,7 +131,26 @@ export default async function CvPage() {
             {LINKS.email} · github.com/abuammarsami · linkedin.com/in/abu-ammar · {HOST}
           </p>
         </div>
-        <PrintButton />
+        <div className="flex shrink-0 flex-col items-end gap-2 print:hidden">
+          <PrintButton />
+          {/* lens-aware download: professor lens gets the academic ordering */}
+          <span className="lens-not-professor">
+            <a
+              href="/resume.pdf"
+              className="rounded-sm border rule-hair px-3 py-1.5 font-mono text-sm text-q0 transition-colors hover:text-q1"
+            >
+              resume.pdf ↓
+            </a>
+          </span>
+          <span className="lens-professor">
+            <a
+              href="/resume-academic.pdf"
+              className="rounded-sm border rule-hair px-3 py-1.5 font-mono text-sm text-q0 transition-colors hover:text-q1"
+            >
+              academic cv.pdf ↓
+            </a>
+          </span>
+        </div>
       </header>
 
       {/* recruiter/engineer ordering: experience first */}
@@ -157,8 +176,12 @@ export default async function CvPage() {
         for the academic ordering, or download the{" "}
         <a href="/resume.pdf" className="text-q0 hover:underline">
           one-page resume.pdf
+        </a>{" "}
+        (
+        <a href="/verify" className="text-q0 hover:underline">
+          verify
         </a>
-        .
+        ).
       </p>
     </main>
   );

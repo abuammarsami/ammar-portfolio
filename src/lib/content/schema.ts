@@ -36,7 +36,7 @@ export const PROJECT_OPTIONAL_SECTIONS = ["Links", "Media"] as const;
 export type ProjectSection = (typeof PROJECT_SECTIONS)[number] | (typeof PROJECT_OPTIONAL_SECTIONS)[number];
 
 /** Required headings of about.md. */
-export const ABOUT_SECTIONS = ["Hero tagline", "Hero subheading", "About me narrative"] as const;
+export const ABOUT_SECTIONS = ["Hero tagline", "Hero subheading", "About me narrative", "State vector"] as const;
 
 /** Optional per-lens hero subheadings (plan-0005); absent variants fall back to the base. */
 export const ABOUT_LENS_SECTIONS = ["Hero subheading (professor)", "Hero subheading (engineer)"] as const;
@@ -45,6 +45,11 @@ export const ABOUT_LENS_SECTIONS = ["Hero subheading (professor)", "Hero subhead
 export const COLOPHON_SECTIONS = ["Intro", "Principles", "Template"] as const;
 
 export type ColophonSection = { heading: (typeof COLOPHON_SECTIONS)[number]; bodyHtml: string };
+
+/** Required headings of verify.md — the /verify resume-provenance page (ADR-0016). */
+export const VERIFY_SECTIONS = ["Intro", "How to verify"] as const;
+
+export type VerifySection = { heading: (typeof VERIFY_SECTIONS)[number]; bodyHtml: string };
 
 /** Required headings of agents.md — the /agents machine-interface page (ADR-0009). */
 export const AGENTS_SECTIONS = [
@@ -122,6 +127,8 @@ export type About = {
   /** Per-lens hero subheadings; every key resolved (missing variants = base subheading). */
   subheadings: { recruiter: string; professor: string; engineer: string };
   narrativeHtml: string;
+  /** The two ket labels of the "## State vector" section: [engineering basis state, research basis state]. */
+  stateVector: [string, string];
   /** Optional "## Education" section (plan-0006, /cv); null when absent. */
   educationHtml: string | null;
 };

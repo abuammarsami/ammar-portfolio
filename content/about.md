@@ -52,6 +52,11 @@ distillation, multi-output CNNs, ensemble methods.
 
 My mission: continuously improve systems, automate the repetitive, and innovate at scale.
 
+## State vector
+
+- backend engineer
+- QML researcher
+
 ## Education
 
 - **MS in Computer Science**, North South University — expected Nov 2026

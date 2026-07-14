@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getAbout, getColophonPage, getExperience, getHirePage, getProjects, getSkills, getTestimonials, parseProjectFigures, parseTestimonials, splitHeadingSections, splitLabelSections } from "./loader";
+import { getAbout, getColophonPage, getExperience, getHirePage, getProjects, getSkills, getTestimonials, getVerifyPage, parseProjectFigures, parseTestimonials, splitHeadingSections, splitLabelSections } from "./loader";
 import { projectFrontmatterSchema } from "./schema";
 
 describe("splitLabelSections", () => {
@@ -147,6 +147,11 @@ describe("real content/ files", () => {
     expect(about.narrativeHtml).toContain("<p>");
   });
 
+  it("loads the two state-vector kets for the About flourish", async () => {
+    const about = await getAbout();
+    expect(about.stateVector).toEqual(["backend engineer", "QML researcher"]);
+  });
+
   it("resolves every lens subheading, falling back to the base when a variant is absent", async () => {
     const about = await getAbout();
     expect(about.subheadings.recruiter).toBe(about.subheading);
@@ -180,6 +185,12 @@ describe("real content/ files", () => {
   it("loads colophon.md sections in order (plan-0006)", async () => {
     const sections = await getColophonPage();
     expect(sections.map((s) => s.heading)).toEqual(["Intro", "Principles", "Template"]);
+    for (const s of sections) expect(s.bodyHtml).toContain("<");
+  });
+
+  it("loads verify.md sections in order (ADR-0016)", async () => {
+    const sections = await getVerifyPage();
+    expect(sections.map((s) => s.heading)).toEqual(["Intro", "How to verify"]);
     for (const s of sections) expect(s.bodyHtml).toContain("<");
   });
 

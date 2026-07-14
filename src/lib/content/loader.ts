@@ -13,9 +13,11 @@ import {
   projectFrontmatterSchema,
   simpleFrontmatterSchema,
   COLOPHON_SECTIONS,
+  VERIFY_SECTIONS,
   type About,
   type AgentsSection,
   type ColophonSection,
+  type VerifySection,
   type ExperienceRole,
   type HirePage,
   type Lesson,
@@ -401,6 +403,21 @@ export function visiblePapers(papers: Paper[]): Paper[] {
 
 // ---------------------------------------------------------------- about
 
+/** Parse the "## State vector" list into exactly two ket labels (the About flourish's basis states). */
+function parseStateVectorKets(section: string | undefined): [string, string] {
+  const items = (section ?? "")
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.startsWith("- "))
+    .map((line) => line.slice(2).trim())
+    .filter(Boolean);
+  if (items.length !== 2) {
+    missing("about.md", `"## State vector" section with exactly two list items (got ${items.length})`);
+    return ["", ""];
+  }
+  return [items[0]!, items[1]!];
+}
+
 export async function getAbout(): Promise<About> {
   const parsed = read("about.md");
   if (!parsed) {
@@ -411,6 +428,7 @@ export async function getAbout(): Promise<About> {
       subheading: "",
       subheadings: { recruiter: "", professor: "", engineer: "" },
       narrativeHtml: "",
+      stateVector: ["", ""],
       educationHtml: null,
     };
   }
@@ -431,6 +449,7 @@ export async function getAbout(): Promise<About> {
       engineer: sections.get("Hero subheading (engineer)") || subheading,
     },
     narrativeHtml: await markdownToHtml(sections.get("About me narrative") ?? ""),
+    stateVector: parseStateVectorKets(sections.get("State vector")),
     educationHtml: sections.get("Education") ? await markdownToHtml(sections.get("Education")!) : null,
   };
 }
@@ -474,6 +493,29 @@ export async function getColophonPage(): Promise<ColophonSection[]> {
     const block = sections.get(heading);
     if (!block) {
       missing("colophon.md", `"## ${heading}" section`);
+      continue;
+    }
+    out.push({ heading, bodyHtml: await markdownToHtml(block) });
+  }
+  return out;
+}
+
+// ---------------------------------------------------------------- verify
+
+/** content/verify.md → /verify prose sections, in VERIFY_SECTIONS order (ADR-0016). */
+export async function getVerifyPage(): Promise<VerifySection[]> {
+  const parsed = read("verify.md");
+  if (!parsed) {
+    missing("verify.md", "file");
+    return [];
+  }
+  simpleFrontmatterSchema.parse(parsed.data ?? {});
+  const sections = splitHeadingSections(stripComments(parsed.body));
+  const out: VerifySection[] = [];
+  for (const heading of VERIFY_SECTIONS) {
+    const block = sections.get(heading);
+    if (!block) {
+      missing("verify.md", `"## ${heading}" section`);
       continue;
     }
     out.push({ heading, bodyHtml: await markdownToHtml(block) });

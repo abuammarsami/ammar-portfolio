@@ -33,13 +33,12 @@ export function Nav() {
               </Link>
             ))}
           </div>
-          {/* plain <a>: next/link would RSC-prefetch the PDF and 404 in console */}
-          <a
-            href="/resume.pdf"
+          <Link
+            href="/cv"
             className="shrink-0 font-mono text-sm text-muted transition-colors hover:text-q1"
           >
-            cv↓
-          </a>
+            cv
+          </Link>
           <kbd
             className="hidden shrink-0 rounded-sm border rule-hair px-1.5 py-0.5 font-mono text-xs text-muted md:inline"
             title="Command palette"

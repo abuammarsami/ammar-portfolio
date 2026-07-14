@@ -1,0 +1,105 @@
+%-------------------------
+% Resume in Latex
+% Author : Audric Serador
+% Inspired by: https://github.com/sb2nov/resume
+% License : MIT
+%------------------------
+
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{iftex}
+\usepackage{fontawesome5}
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{hyperxmp}  % XMP metadata for AI/ATS parsers; must load after hyperref
+\ifPDFTeX
+  \usepackage{embedfile} % attach machine-readable resume.json (pdfTeX only)
+\fi
+\usepackage{fancyhdr}
+\usepackage{qrcode}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\ifPDFTeX
+  \input{glyphtounicode}
+\fi
+
+% Build metadata (git hash, date, verify URL) — placeholder locally, real in CI
+\input{build-info}
+
+% ---- Agent-readable PDF (ADR-0016) ----------------------------------------
+% Machine-facing metadata: AI screeners and ATS parsers reading this PDF are
+% told where the live, structured version of this resume lives.
+\hypersetup{
+  pdftitle={Md. Abu Ammar — Resume (build \BuildHash)},
+  pdfauthor={Md. Abu Ammar},
+  pdfsubject={AGENTS: a machine-readable JSON Resume (jsonresume.org schema) is
+    attached to this PDF as resume.json. Live agent API (MCP, JSON-RPC):
+    https://ammar-portfolio-zeta.vercel.app/api/mcp — agent card:
+    https://ammar-portfolio-zeta.vercel.app/.well-known/agent-card.json —
+    verify this document: https://ammar-portfolio-zeta.vercel.app/verify},
+  pdfkeywords={software engineer, backend, .NET, Azure, AI/ML, quantum machine
+    learning, MCP, JSON Resume, agent-readable},
+  pdfcontactemail={abuammarsami@gmail.com},
+  pdfcontacturl={https://ammar-portfolio-zeta.vercel.app},
+}
+
+% Attach the canonical JSON Resume when CI has fetched it (absent locally/Overleaf)
+\ifPDFTeX
+  \IfFileExists{resume.json}{%
+    \embedfile[filespec=resume.json, mimetype=application/json,
+      desc={JSON Resume (jsonresume.org) — canonical machine-readable version,
+        generated from the same content that powers
+        ammar-portfolio-zeta.vercel.app}]{resume.json}%
+  }{}
+\fi
+% ----------------------------------------------------------------------------
+
+
+
+% Custom font
+\usepackage[default]{lato}
+
+% tikz: used only to pin the QR block to the top-right corner of page 1
+\usepackage{tikz}
+
+\pagestyle{fancy}
+\fancyhf{} % clear all header and footer fields
+% Verifiable build stamp + agent pointer (see /verify on the live site)
+\fancyfoot[C]{\color{gray}\tiny
+  build \BuildHash{} \textperiodcentered{} \BuildDate{} \textperiodcentered{}
+  verify: \href{\VerifyURL}{ammar-portfolio-zeta.vercel.app/verify}
+  \textperiodcentered{} this resume has an API \textemdash{}
+  \href{https://ammar-portfolio-zeta.vercel.app/.well-known/agent-card.json}{agent card}
+  \textperiodcentered{} machine-readable JSON attached}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.5in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1in}
+\addtolength{\topmargin}{-.5in}
+\addtolength{\textheight}{1.0in}
+\setlength{\footskip}{0.35in} % fullpage[empty] zeroes this; fancyhdr footer needs room
+
+\urlstyle{same}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% Sections formatting
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule\vspace{-5pt}]
+
+% Ensure that generate pdf is machine readable/ATS parsable
+\ifPDFTeX
+  \pdfgentounicode=1
+\fi

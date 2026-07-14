@@ -1,4 +1,5 @@
 import { getAbout, getExperience, getLessons, getPapers, getProjects, getSkills, getStats, visiblePapers, visibleProjects } from "@/lib/content/loader";
+import { tryGetResumeManifest } from "@/lib/resume-manifest";
 import { LINKS, SITE_URL } from "@/lib/site";
 
 function strip(html: string): string {
@@ -70,7 +71,16 @@ export async function buildCorpus(): Promise<string> {
     getPapers().then(visiblePapers),
   ]);
 
+  // Resume provenance (ADR-0016), stamped at the corpus altitude so
+  // /llms-full.txt, /api/fit, and MCP get_resume all carry it. Omitted when
+  // the manifest is unavailable (e.g. untraced file in a serverless bundle).
+  const manifest = tryGetResumeManifest();
+  const provenance = manifest
+    ? [`[resume build ${manifest.version}, ${manifest.builtAt} — pdf: ${SITE_URL}/resume.pdf, verify: ${SITE_URL}/verify]`, ""]
+    : [];
+
   const lines: string[] = [
+    ...provenance,
     "# Md. Abu Ammar — Backend & AI Systems Engineer",
     "",
     `Site: ${SITE_URL} · GitHub: ${LINKS.github} · LinkedIn: ${LINKS.linkedin} · Email: ${LINKS.email}`,

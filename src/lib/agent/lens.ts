@@ -19,6 +19,20 @@ export function isLens(v: unknown): v is Lens {
   return typeof v === "string" && (LENSES as readonly string[]).includes(v);
 }
 
+/**
+ * The lens the visitor explicitly chose (persisted by applyLens), or null if
+ * they never measured one — null means "still in superposition", distinct
+ * from the DEFAULT_LENS fallback of currentLens. Storage failures read as null.
+ */
+export function storedLens(): Lens | null {
+  try {
+    const v = localStorage.getItem(LENS_STORAGE_KEY);
+    return isLens(v) ? v : null;
+  } catch {
+    return null;
+  }
+}
+
 export function currentLens(): Lens {
   if (typeof document === "undefined") return DEFAULT_LENS;
   const v = document.documentElement.dataset.lens;
