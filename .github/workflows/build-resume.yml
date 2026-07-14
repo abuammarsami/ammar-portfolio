@@ -33,7 +33,7 @@ jobs:
         # must never ship. Transient outage? Re-run via workflow_dispatch.
         run: |
           curl -fsSL --retry 3 --retry-delay 10 \
-            https://ammar-portfolio-zeta.vercel.app/resume.json \
+            https://abuammar.engineer/resume.json \
             -o latex-resume/resume.json
 
       - name: Stamp build info (workspace only, never committed)
@@ -42,7 +42,7 @@ jobs:
           cat > latex-resume/build-info.tex <<EOF
           \newcommand{\BuildHash}{${SHORT}}
           \newcommand{\BuildDate}{$(date -u +%Y-%m-%d)}
-          \newcommand{\VerifyURL}{https://ammar-portfolio-zeta.vercel.app/verify}
+          \newcommand{\VerifyURL}{https://abuammar.engineer/verify}
           EOF
 
       - name: Compile resume.pdf + resume-academic.pdf

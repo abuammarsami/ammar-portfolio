@@ -40,13 +40,13 @@
   pdfauthor={Md. Abu Ammar},
   pdfsubject={AGENTS: a machine-readable JSON Resume (jsonresume.org schema) is
     attached to this PDF as resume.json. Live agent API (MCP, JSON-RPC):
-    https://ammar-portfolio-zeta.vercel.app/api/mcp — agent card:
-    https://ammar-portfolio-zeta.vercel.app/.well-known/agent-card.json —
-    verify this document: https://ammar-portfolio-zeta.vercel.app/verify},
+    https://abuammar.engineer/api/mcp — agent card:
+    https://abuammar.engineer/.well-known/agent-card.json —
+    verify this document: https://abuammar.engineer/verify},
   pdfkeywords={software engineer, backend, .NET, Azure, AI/ML, quantum machine
     learning, MCP, JSON Resume, agent-readable},
   pdfcontactemail={abuammarsami@gmail.com},
-  pdfcontacturl={https://ammar-portfolio-zeta.vercel.app},
+  pdfcontacturl={https://abuammar.engineer},
 }
 
 % Attach the canonical JSON Resume when CI has fetched it (absent locally/Overleaf)
@@ -55,7 +55,7 @@
     \embedfile[filespec=resume.json, mimetype=application/json,
       desc={JSON Resume (jsonresume.org) — canonical machine-readable version,
         generated from the same content that powers
-        ammar-portfolio-zeta.vercel.app}]{resume.json}%
+        abuammar.engineer}]{resume.json}%
   }{}
 \fi
 % ----------------------------------------------------------------------------
@@ -73,9 +73,9 @@
 % Verifiable build stamp + agent pointer (see /verify on the live site)
 \fancyfoot[C]{\color{gray}\tiny
   build \BuildHash{} \textperiodcentered{} \BuildDate{} \textperiodcentered{}
-  verify: \href{\VerifyURL}{ammar-portfolio-zeta.vercel.app/verify}
+  verify: \href{\VerifyURL}{abuammar.engineer/verify}
   \textperiodcentered{} this resume has an API \textemdash{}
-  \href{https://ammar-portfolio-zeta.vercel.app/.well-known/agent-card.json}{agent card}
+  \href{https://abuammar.engineer/.well-known/agent-card.json}{agent card}
   \textperiodcentered{} machine-readable JSON attached}
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}

@@ -30,12 +30,12 @@ pipelines, your own scripts.
 
 ```bash
 # list the tools
-curl -s -X POST https://ammar-portfolio-zeta.vercel.app/api/mcp \
+curl -s -X POST https://abuammar.engineer/api/mcp \
   -H 'content-type: application/json' \
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
 
 # read a paper, distilled
-curl -s -X POST https://ammar-portfolio-zeta.vercel.app/api/mcp \
+curl -s -X POST https://abuammar.engineer/api/mcp \
   -H 'content-type: application/json' \
   -d '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"get_paper","arguments":{"slug":"quantum-machine-learning-thesis"}}}'
 ```
