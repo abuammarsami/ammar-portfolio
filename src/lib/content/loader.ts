@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
+import { cache } from "react";
 import { markdownToHtml } from "./markdown";
 import {
   ABOUT_SECTIONS,
@@ -255,8 +256,12 @@ export async function getCaseStudy(slug: string): Promise<CaseStudy | null> {
 
 // ---------------------------------------------------------------- deep dives (ADR-0014)
 
-/** All deep-dive chapters (content/deep-dives/*.md, excluding _series files), sorted by series then order. */
-export async function getDeepDives(): Promise<DeepDive[]> {
+/**
+ * All deep-dive chapters (content/deep-dives/*.md, excluding _series files), sorted by
+ * series then order. React-cache'd: papers validate their writeup links against this
+ * corpus and every deep-dive route re-reads it, so one render per request, not ~10.
+ */
+export const getDeepDives = cache(async (): Promise<DeepDive[]> => {
   const dir = path.join(CONTENT_DIR, "deep-dives");
   if (!fs.existsSync(dir)) return [];
   const files = fs.readdirSync(dir).filter((f) => f.endsWith(".md") && !f.startsWith("_"));
@@ -280,7 +285,7 @@ export async function getDeepDives(): Promise<DeepDive[]> {
   return chapters.sort((a, b) =>
     a.series === b.series ? a.order - b.order : (a.series ?? "").localeCompare(b.series ?? ""),
   );
-}
+});
 
 /** Standalone deep-dives (no `series`), featured first, then newest by date. */
 export function standaloneDeepDives(chapters: DeepDive[]): DeepDive[] {
@@ -367,6 +372,16 @@ export async function getPapers(): Promise<Paper[]> {
     }
     if (fm.related.lesson && !fs.existsSync(path.join(CONTENT_DIR, "learn", `${fm.related.lesson}.md`))) {
       missing(rel, `existing related.lesson (content/learn/${fm.related.lesson}.md not found)`);
+    }
+    if (fm.related.writeup) {
+      const dd = (await getDeepDives()).find((d) => d.slug === fm.related.writeup);
+      if (!dd) {
+        missing(rel, `existing related.writeup (content/deep-dives/${fm.related.writeup}.md not found)`);
+      } else if (visibleDeepDives([dd]).length === 0) {
+        // a drafted writeup must not ship 404 links from /research — drop the
+        // link for this build instead of failing it
+        fm.related.writeup = null;
+      }
     }
 
     const sections = splitLabelSections(stripComments(parsed.body));

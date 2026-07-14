@@ -33,8 +33,6 @@ function el(tag: string, css: string): HTMLElement {
 export async function runTour(navigate: (path: string) => void, opts: { interest?: string } = {}): Promise<void> {
   if (running || !claimStage("autopilot")) return; // never fight interview mode for the stage
   running = true;
-  // the ✦ ask launcher (zero-JS server chrome) yields the stage to the tour
-  document.querySelector("[data-ask]")?.classList.add("hidden");
 
   // everything the finally block tears down — assigned inside the try so a
   // setup throw can't wedge `running` or leak half-built stage pieces
@@ -194,6 +192,5 @@ export async function runTour(navigate: (path: string) => void, opts: { interest
     bar?.remove();
     running = false;
     releaseStage("autopilot");
-    document.querySelector("[data-ask]")?.classList.remove("hidden");
   }
 }

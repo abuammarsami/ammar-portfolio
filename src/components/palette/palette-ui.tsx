@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { applyLens, LENSES } from "@/lib/agent/lens";
 import { AUTOPILOT_EVENT, INTERVIEW_EVENT } from "@/lib/agent/autopilot-event";
@@ -39,6 +39,9 @@ export function PaletteUi({ onClose }: { onClose: () => void }) {
     };
   }, []);
 
+  // memoized so arrow-key / pointer active-row renders don't re-score the
+  // whole search index (router and setTheme are referentially stable)
+  const filtered = useMemo<Command[]>(() => {
   const commands: Command[] = [
     { id: "learn", label: "goto learn", hint: "qubit → QML, interactive", run: () => router.push("/learn") },
     { id: "playground", label: "goto playground", hint: "build a real 2-qubit circuit", run: () => router.push("/playground") },
@@ -72,9 +75,11 @@ export function PaletteUi({ onClose }: { onClose: () => void }) {
         run: () => router.push(e.path),
       }))
     : [];
-  const filtered = [...commands.filter((c) => c.label.includes(query.toLowerCase().trim())), ...contentHits];
-  // the async search index can shrink the list under a stale index — clamp, don't trust `active` raw
-  const activeIdx = filtered.length > 0 ? Math.min(active, filtered.length - 1) : 0;
+  return [...commands.filter((c) => c.label.includes(query.toLowerCase().trim())), ...contentHits];
+  }, [query, index, resolvedTheme, router, setTheme]);
+  // the async search index can shrink the list (or empty it, or ArrowDown may
+  // have run against an empty list) — clamp both ends, never trust `active` raw
+  const activeIdx = Math.max(0, Math.min(active, filtered.length - 1));
 
   // keyboard navigation must follow into the overflow region of the list
   const listRef = useRef<HTMLUListElement | null>(null);
@@ -143,9 +148,10 @@ export function PaletteUi({ onClose }: { onClose: () => void }) {
               setActive(0);
             }}
             onKeyDown={(e) => {
-              const max = filtered.length - 1;
-              if (e.key === "ArrowDown") { e.preventDefault(); setActive((a) => Math.min(a + 1, max)); }
-              if (e.key === "ArrowUp") { e.preventDefault(); setActive((a) => Math.max(Math.min(a, max) - 1, 0)); }
+              // activeIdx is the one source of truth (clamped above); keydown is a
+              // discrete event so React flushes between presses — no staleness
+              if (e.key === "ArrowDown") { e.preventDefault(); setActive(Math.max(0, Math.min(activeIdx + 1, filtered.length - 1))); }
+              if (e.key === "ArrowUp") { e.preventDefault(); setActive(Math.max(activeIdx - 1, 0)); }
               if (e.key === "Enter") exec(filtered[activeIdx]);
             }}
             placeholder="type a command…"

@@ -128,7 +128,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
           </footer>
           {/* the one always-available door into interview mode — zero-JS server
-              chrome; CommandPalette binds it and stage events hide/show it */}
+              chrome; CommandPalette binds the click, stage-lock hides it while
+              a stage surface (interview bar, autopilot tour) is on. Without JS
+              these controls can't serve — the noscript rule removes them. */}
+          <noscript>
+            <style>{`[data-ask],[data-pal]{display:none}`}</style>
+          </noscript>
           <button
             type="button"
             data-ask

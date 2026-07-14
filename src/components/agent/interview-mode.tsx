@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 
 import { parseActionLine } from "@/lib/agent/chat-actions";
-import { INTERVIEW_ASSISTANT_MAX, INTERVIEW_USER_MAX, type InterviewTurn } from "@/lib/agent/interview";
+import { INTERVIEW_ASSISTANT_MAX, INTERVIEW_TURNS_KEPT, INTERVIEW_USER_MAX, type InterviewTurn } from "@/lib/agent/interview";
 import { claimStage, releaseStage } from "@/lib/agent/stage-lock";
-import { recognitionCtor, speak } from "@/components/ui/voice-controller";
+import { recognitionCtor, speak, type SpeechRecognitionLike } from "@/components/ui/voice-controller";
 import { AnswerBlocks } from "./answer-blocks";
 
 /**
@@ -23,11 +23,11 @@ import { AnswerBlocks } from "./answer-blocks";
 let open = false;
 
 export function openInterview(navigate: (path: string) => void): void {
+  // captured before claimStage hides the ✦ launcher (hiding blurs it), so
+  // closing can hand focus back to whatever opened the bar
+  const opener = document.activeElement as HTMLElement | null;
   if (open || !claimStage("interview")) return; // one bar; autopilot may hold the stage
   open = true;
-  // the ✦ ask launcher is zero-JS server chrome — the stage owns the bottom
-  // of the screen while it runs, so this module toggles the launcher itself
-  document.querySelector("[data-ask]")?.classList.add("hidden");
   const host = document.createElement("div");
   document.body.append(host);
   const root = createRoot(host);
@@ -37,16 +37,16 @@ export function openInterview(navigate: (path: string) => void): void {
     host.remove();
     releaseStage("interview");
     open = false;
-    document.querySelector("[data-ask]")?.classList.remove("hidden");
   };
-  root.render(<InterviewBar navigate={navigate} onClose={close} />);
+  root.render(<InterviewBar navigate={navigate} onClose={close} opener={opener} />);
 }
 
 /** One display exchange — full text for the transcript; the API history is derived clamped. */
-type Exchange = { q: string; a: string; done: boolean };
+type Exchange = { q: string; a: string; done: boolean; stopped?: boolean };
 
-/** Exchanges kept as model context: 5 pairs + the new question = 11 turns ≤ INTERVIEW_TURNS_MAX. */
-const CONTEXT_EXCHANGES = 5;
+// exactly the context the server keeps: parseChatBody slices to
+// INTERVIEW_TURNS_KEPT turns, so sending more is upload-only-to-discard
+const CONTEXT_EXCHANGES = Math.floor((INTERVIEW_TURNS_KEPT - 1) / 2);
 
 const STARTERS = [
   "What has he shipped to production?",
@@ -57,16 +57,62 @@ const STARTERS = [
 
 function toApiMessages(log: Exchange[], q: string): InterviewTurn[] {
   const history = log
-    .filter((x) => x.done && x.a)
+    // stopped exchanges hold partial text the model never actually said — don't replay them
+    .filter((x) => x.done && x.a && !x.stopped)
     .slice(-CONTEXT_EXCHANGES)
     .flatMap((x): InterviewTurn[] => [
       { role: "user", content: x.q },
-      { role: "assistant", content: x.a.slice(0, INTERVIEW_ASSISTANT_MAX) || "…" },
+      { role: "assistant", content: x.a.slice(0, INTERVIEW_ASSISTANT_MAX) },
     ]);
   return [...history, { role: "user", content: q }];
 }
 
-function InterviewBar({ navigate, onClose }: { navigate: (path: string) => void; onClose: () => void }) {
+/** Completed rows bail out of re-renders — only the streaming row re-parses per chunk. */
+const ExchangeRow = memo(function ExchangeRow({
+  x,
+  index,
+  first,
+  streaming,
+  copied,
+  onCopy,
+}: {
+  x: Exchange;
+  index: number;
+  first: boolean;
+  streaming: boolean;
+  copied: boolean;
+  onCopy: (index: number, text: string) => void;
+}) {
+  return (
+    <div className={first ? "" : "mt-4 border-t border-muted/15 pt-3"}>
+      <p className="font-mono text-xs text-q1">» {x.q}</p>
+      {x.a && (
+        <div className="mt-1 [&>p:first-child]:mt-1">
+          <AnswerBlocks text={x.a} />
+        </div>
+      )}
+      {streaming && <span className="ml-1 inline-block h-3.5 w-2 animate-pulse bg-q0/70" aria-hidden />}
+      {x.done && x.a && (
+        <button
+          onClick={() => onCopy(index, x.a)}
+          className="mt-1.5 font-mono text-[11px] text-muted/80 hover:text-ink"
+        >
+          {copied ? "copied ✓" : "⧉ copy"}
+        </button>
+      )}
+    </div>
+  );
+});
+
+function InterviewBar({
+  navigate,
+  onClose,
+  opener,
+}: {
+  navigate: (path: string) => void;
+  onClose: () => void;
+  opener: HTMLElement | null;
+}) {
   const [log, setLog] = useState<Exchange[]>([]);
   const [question, setQuestion] = useState("");
   const [phase, setPhase] = useState<"idle" | "streaming" | "listening">("idle");
@@ -74,24 +120,23 @@ function InterviewBar({ navigate, onClose }: { navigate: (path: string) => void;
   const [copied, setCopied] = useState(-1);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const recRef = useRef<SpeechRecognitionLike | null>(null);
   const stateRef = useRef({ log, phase });
   stateRef.current = { log, phase };
   const micSupported = typeof window !== "undefined" && Boolean(recognitionCtor());
-
-  const openerRef = useRef<HTMLElement | null>(null);
 
   // every exit path — Escape AND the ✕ button — ends here, so keyboard
   // users get their focus back either way
   const end = () => {
     abortRef.current?.abort();
+    recRef.current?.abort();
     onClose();
-    openerRef.current?.focus?.();
+    opener?.focus?.();
   };
   const endRef = useRef(end);
   endRef.current = end;
 
   useEffect(() => {
-    openerRef.current = document.activeElement as HTMLElement | null;
     inputRef.current?.focus();
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") endRef.current();
@@ -100,6 +145,7 @@ function InterviewBar({ navigate, onClose }: { navigate: (path: string) => void;
     return () => {
       window.removeEventListener("keydown", onKey);
       abortRef.current?.abort();
+      recRef.current?.abort();
     };
   }, []);
 
@@ -141,7 +187,7 @@ function InterviewBar({ navigate, onClose }: { navigate: (path: string) => void;
       });
       if (!res.ok || !res.body) {
         setNote(await res.text());
-        patchLast({ done: true });
+        patchLast({ done: true, stopped: true });
         setPhase("idle");
         return;
       }
@@ -170,8 +216,9 @@ function InterviewBar({ navigate, onClose }: { navigate: (path: string) => void;
       setPhase("idle");
       if (viaVoice && final) speak(final);
     } catch {
-      setNote("stopped");
-      patchLast({ done: true });
+      // abort = the visitor pressed stop; anything else is a transport failure
+      setNote(ac.signal.aborted ? "stopped" : "connection hiccup — check your network and try again");
+      patchLast({ done: true, stopped: true });
       setPhase("idle");
     }
   };
@@ -181,6 +228,7 @@ function InterviewBar({ navigate, onClose }: { navigate: (path: string) => void;
     if (!Ctor || stateRef.current.phase === "streaming") return;
     if ("speechSynthesis" in window) speechSynthesis.cancel();
     const rec = new Ctor();
+    recRef.current = rec; // ending the bar must also release the mic
     rec.lang = "en-US";
     rec.interimResults = false;
     rec.maxAlternatives = 1;
@@ -202,11 +250,15 @@ function InterviewBar({ navigate, onClose }: { navigate: (path: string) => void;
     rec.start();
   };
 
-  const copyAnswer = async (i: number, a: string) => {
-    await navigator.clipboard.writeText(a);
-    setCopied(i);
-    setTimeout(() => setCopied(-1), 1500);
-  };
+  const copyAnswer = useCallback(async (i: number, a: string) => {
+    try {
+      await navigator.clipboard.writeText(a);
+      setCopied(i);
+      setTimeout(() => setCopied(-1), 1500);
+    } catch {
+      /* clipboard unavailable (permission / insecure context) — silently skip */
+    }
+  }, []);
 
   return (
     <div
@@ -256,25 +308,15 @@ function InterviewBar({ navigate, onClose }: { navigate: (path: string) => void;
             className="mt-3 max-h-[42dvh] overflow-y-auto font-serif text-sm leading-relaxed sm:max-h-80"
           >
             {log.map((x, i) => (
-              <div key={i} className={i > 0 ? "mt-4 border-t border-muted/15 pt-3" : ""}>
-                <p className="font-mono text-xs text-q1">» {x.q}</p>
-                {x.a && (
-                  <div className="mt-1 [&>p:first-child]:mt-1">
-                    <AnswerBlocks text={x.a} />
-                  </div>
-                )}
-                {!x.done && i === log.length - 1 && (
-                  <span className="ml-1 inline-block h-3.5 w-2 animate-pulse bg-q0/70" aria-hidden />
-                )}
-                {x.done && x.a && (
-                  <button
-                    onClick={() => void copyAnswer(i, x.a)}
-                    className="mt-1.5 font-mono text-[11px] text-muted/80 hover:text-ink"
-                  >
-                    {copied === i ? "copied ✓" : "⧉ copy"}
-                  </button>
-                )}
-              </div>
+              <ExchangeRow
+                key={i}
+                x={x}
+                index={i}
+                first={i === 0}
+                streaming={!x.done && i === log.length - 1}
+                copied={copied === i}
+                onCopy={copyAnswer}
+              />
             ))}
             {note && <p className="mt-2 font-mono text-xs text-muted">{note}</p>}
           </div>
@@ -284,8 +326,8 @@ function InterviewBar({ navigate, onClose }: { navigate: (path: string) => void;
           className="mt-3 flex items-center gap-2 font-mono text-sm"
           onSubmit={(e) => {
             e.preventDefault();
-            if (phase === "streaming") abortRef.current?.abort();
-            else void ask(question, false);
+            // Enter never kills an in-flight answer — stopping is only the ■ button
+            if (phase !== "streaming") void ask(question, false);
           }}
         >
           <input
@@ -295,15 +337,23 @@ function InterviewBar({ navigate, onClose }: { navigate: (path: string) => void;
             placeholder={phase === "listening" ? "listening…" : "ask a question — e.g. what has he shipped to production?"}
             className="min-w-0 flex-1 border border-muted/30 bg-bg/60 px-3 py-2 focus:border-q0 focus:outline-none"
           />
-          <button
-            type="submit"
-            disabled={phase !== "streaming" && question.trim().length === 0}
-            className={`border px-4 py-2 disabled:cursor-not-allowed disabled:opacity-40 ${
-              phase === "streaming" ? "border-muted/40 text-muted hover:text-ink" : "border-q0/60 text-q0 hover:bg-q0/10"
-            }`}
-          >
-            {phase === "streaming" ? "■ stop" : "ask"}
-          </button>
+          {phase === "streaming" ? (
+            <button
+              type="button"
+              onClick={() => abortRef.current?.abort()}
+              className="border border-muted/40 px-4 py-2 text-muted hover:text-ink"
+            >
+              ■ stop
+            </button>
+          ) : (
+            <button
+              type="submit"
+              disabled={question.trim().length === 0}
+              className="border border-q0/60 px-4 py-2 text-q0 hover:bg-q0/10 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              ask
+            </button>
+          )}
           {micSupported && (
             <button
               type="button"

@@ -8,8 +8,6 @@ import { INTERVIEW_EVENT } from "@/lib/agent/autopilot-event";
 // eager cost of ⌘K on every page is just this opener, without even the
 // next/dynamic runtime (per-route budget headroom is thin; plan-0005).
 type PaletteUiComponent = ComponentType<{ onClose: () => void }>;
-let paletteModule: Promise<{ PaletteUi: PaletteUiComponent }> | null = null;
-const loadPaletteUi = () => (paletteModule ??= import("./palette-ui"));
 
 /**
  * Hand-rolled ⌘K palette — mono, keyboard-first, ~zero dependencies.
@@ -23,7 +21,12 @@ export function CommandPalette() {
 
   useEffect(() => {
     const toggle = () => {
-      void loadPaletteUi().then((m) => setUi(() => m.PaletteUi));
+      // successful loads are memoized by the module system; a FAILED chunk
+      // fetch is deliberately not cached, so the next open retries it
+      void import("./palette-ui").then(
+        (m) => setUi(() => m.PaletteUi),
+        () => {},
+      );
       setOpen((o) => !o);
     };
     const onKey = (e: KeyboardEvent) => {
