@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 
-import { STAGE_DONE_EVENT } from "@/lib/agent/autopilot-event";
 import { parseActionLine } from "@/lib/agent/chat-actions";
 import { INTERVIEW_ASSISTANT_MAX, INTERVIEW_USER_MAX, type InterviewTurn } from "@/lib/agent/interview";
 import { claimStage, releaseStage } from "@/lib/agent/stage-lock";
@@ -26,6 +25,9 @@ let open = false;
 export function openInterview(navigate: (path: string) => void): void {
   if (open || !claimStage("interview")) return; // one bar; autopilot may hold the stage
   open = true;
+  // the ✦ ask launcher is zero-JS server chrome — the stage owns the bottom
+  // of the screen while it runs, so this module toggles the launcher itself
+  document.querySelector("[data-ask]")?.classList.add("hidden");
   const host = document.createElement("div");
   document.body.append(host);
   const root = createRoot(host);
@@ -35,7 +37,7 @@ export function openInterview(navigate: (path: string) => void): void {
     host.remove();
     releaseStage("interview");
     open = false;
-    window.dispatchEvent(new Event(STAGE_DONE_EVENT));
+    document.querySelector("[data-ask]")?.classList.remove("hidden");
   };
   root.render(<InterviewBar navigate={navigate} onClose={close} />);
 }
