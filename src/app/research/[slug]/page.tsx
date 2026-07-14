@@ -5,7 +5,7 @@ import { BibtexBlock } from "@/components/paper/bibtex-block";
 import { SectionHeading } from "@/components/paper/section-heading";
 import { TagChip } from "@/components/ui/tag-chip";
 import { Vt } from "@/components/ui/vt";
-import { getPaper, getPapers, visiblePapers } from "@/lib/content/loader";
+import { getDeepDive, getPaper, getPapers, visiblePapers } from "@/lib/content/loader";
 import { LINKS, SITE_URL } from "@/lib/site";
 
 export const dynamic = "force-static";
@@ -46,6 +46,7 @@ export default async function PaperPage({ params }: { params: Promise<{ slug: st
   const { slug } = await params;
   const paper = await getPaper(slug);
   if (!paper) notFound();
+  const writeup = paper.related.writeup ? await getDeepDive(paper.related.writeup) : null;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -92,6 +93,22 @@ export default async function PaperPage({ params }: { params: Promise<{ slug: st
           />
         </div>
 
+        {/* the paper page is the distilled record; the deep-dive is the full story —
+            surface it where a reader decides how deep to go */}
+        {writeup && (
+          <Link
+            href={`/deep-dives/${writeup.slug}`}
+            className="group mt-4 block rounded-sm border-l-2 border-q1/60 bg-surface/60 px-5 py-4"
+          >
+            <p className="font-mono text-xs text-muted">
+              full writeup · {writeup.readingMinutes} min read
+            </p>
+            <p className="mt-1 font-serif leading-snug text-ink transition-colors group-hover:text-q1">
+              {writeup.title} <span aria-hidden>→</span>
+            </p>
+          </Link>
+        )}
+
         <p className="mt-4 flex flex-wrap gap-4 font-mono text-sm">
           {paper.pdf ? (
             <a href={`/papers/${paper.slug}.pdf`} className="text-q0 hover:underline">
@@ -115,6 +132,11 @@ export default async function PaperPage({ params }: { params: Promise<{ slug: st
           {paper.related.lesson && (
             <Link href={`/learn#${paper.related.lesson}`} className="text-q1 hover:underline">
               [try the idea live]
+            </Link>
+          )}
+          {writeup && (
+            <Link href={`/deep-dives/${writeup.slug}`} className="text-q1 hover:underline">
+              [full writeup]
             </Link>
           )}
         </p>

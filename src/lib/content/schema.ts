@@ -219,8 +219,10 @@ export const paperFrontmatterSchema = z.object({
     .object({
       project: z.string().nullable().default(null),
       lesson: z.string().nullable().default(null),
+      /** slug of the long-form deep-dive telling this paper's full story. */
+      writeup: z.string().nullable().default(null),
     })
-    .default({ project: null, lesson: null }),
+    .default({ project: null, lesson: null, writeup: null }),
   featured: z.boolean().default(false),
   status: contentStatus,
 });

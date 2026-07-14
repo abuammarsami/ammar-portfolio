@@ -20,6 +20,7 @@ export type SpeechRecognitionLike = {
   onerror: (() => void) | null;
   onend: (() => void) | null;
   start(): void;
+  abort(): void;
 };
 type SpeechRecognitionCtor = new () => SpeechRecognitionLike;
 

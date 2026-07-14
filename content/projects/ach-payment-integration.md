@@ -22,11 +22,14 @@ processors, without compromising compliance or reliability.
 **Approach:** Implemented ACH workflows on both Stripe and Authorize.Net APIs for
 one-time and recurring transactions covering schools, events, and memberships. Added
 Apple Pay and Google Pay through Stripe Payment Intents with tokenized wallet flows.
-Hardened the pipeline for retries, webhooks, and reconciliation.
+Hardened the pipeline for retries, webhooks, and reconciliation, and built the
+operations layer around it: payment reporting and alerting, automated failed-payment
+alerts, and scheduled donation summaries to admins and configured roles.
 
-**Impact:** Payment rails supporting **millions of dollars in annual volume for 20,000+
-users** — secure recurring revenue for every client, faster mobile checkout, and improved
-donation conversion across one-time and recurring payments.
+**Impact:** The wallet + ACH stack I built end to end runs inside a donation platform
+moving **millions of dollars in annual volume for 20,000+ users** — secure recurring
+revenue for every client, faster mobile checkout, and improved donation conversion
+across one-time and recurring payments.
 
 **Tech stack:** .NET Core, Stripe API (Payment Intents, ACH), Authorize.Net API,
 SQL Server, webhooks

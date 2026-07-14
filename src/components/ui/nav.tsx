@@ -39,12 +39,28 @@ export function Nav() {
           >
             cv
           </Link>
-          <kbd
-            className="hidden shrink-0 rounded-sm border rule-hair px-1.5 py-0.5 font-mono text-xs text-muted md:inline"
+          {/* palette triggers are server HTML — CommandPalette binds them on mount
+              and swaps the shortcut label per platform ("/" has zero JS headroom) */}
+          <button
+            type="button"
+            data-pal
             title="Command palette"
+            className="hidden shrink-0 cursor-pointer rounded-sm border rule-hair px-1.5 py-0.5 font-mono text-xs text-muted transition-colors hover:text-ink md:inline-block"
           >
-            ⌘K
-          </kbd>
+            <span data-pal-key>⌘K</span>
+            <span className="sr-only"> — open command palette</span>
+          </button>
+          <button
+            type="button"
+            data-pal
+            aria-label="Search and commands"
+            className="shrink-0 -m-1.5 p-1.5 text-muted transition-colors hover:text-ink md:hidden"
+          >
+            <svg width="17" height="17" viewBox="0 0 17 17" aria-hidden="true" fill="none">
+              <circle cx="7" cy="7" r="5" stroke="currentColor" strokeWidth="1.5" />
+              <line x1="11" y1="11" x2="15.5" y2="15.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+          </button>
           <span className="shrink-0">
             <LensPill />
           </span>

@@ -21,7 +21,7 @@ export async function GET() {
       email: LINKS.email,
       url: SITE_URL,
       summary:
-        "Backend & AI systems engineer: payment infrastructure (millions of dollars/yr, 20k+ users), AI-powered kiosk monitoring (120+ devices), .NET Aspire distributed platforms on Azure. Quantum ML researcher (MS CS, North South University).",
+        "Backend & AI systems engineer: payment infrastructure (millions of dollars/yr, 20k+ users), AI-powered kiosk monitoring (200+ devices), .NET Aspire distributed platforms on Azure. Quantum ML researcher (MS CS, North South University).",
       location: { city: "Dhaka", countryCode: "BD" },
       profiles: [
         { network: "GitHub", username: "abuammarsami", url: LINKS.github },

@@ -27,16 +27,20 @@ status: active
 ## Masjid Solutions — Software Engineer
 *December 2023 – May 2026 · Indianapolis, Indiana, USA (Remote)*
 
-- Owned payment rails supporting **millions of dollars in annual donation volume for
-  20,000+ users**: Stripe + Authorize.Net ACH recurring billing, and Apple Pay / Google
-  Pay via Stripe Payment Intents — tokenized wallet flows that improved mobile donation
-  conversion.
+- On the team behind a donation platform moving **millions of dollars a year for
+  20,000+ users**, built the wallet-payment stack end to end — **Apple Pay / Google Pay
+  via Stripe Payment Intents**, tokenized flows that improved mobile donation
+  conversion — plus **Authorize.Net ACH** one-time and recurring billing.
+- Closed the loop on payment operations: reporting and alerting, an **automated
+  failed-payment alert system** that surfaces silent recurring failures, and scheduled
+  **donation summaries delivered to admins and configured roles**.
 - Cut onboarding time for new schools and memberships by **60%** with automated
-  data-import pipelines transforming raw Excel into validated SQL Server schemas.
-- Sustained **200+ zero-downtime production deployments per year** across dev, beta,
-  staging, and production by architecting CI/CD on Bitbucket, Jenkins, and IIS with
-  rollback-ready backup strategies.
-- Put **120+ donation kiosks across 60+ U.S. organizations** under intelligent watch by
+  data-import pipelines transforming raw Excel into validated SQL Server schemas, and
+  built **custom membership-registration forms** organizations configure themselves.
+- Architected CI/CD for **every product line** (Bitbucket, Jenkins, IIS): **7–8
+  zero-downtime production deployments a week** (350+ a year), dev environments cycling
+  20+ deploys weekly, all on rollback-ready backup strategies.
+- Put **200+ donation kiosks across 60+ U.S. organizations** under intelligent watch by
   building KioskVisionAI — a distributed .NET 9 Aspire app on Azure (Blob Storage,
   Queues, Vision AI) with GitHub Actions continuous delivery.
 - Improved support response time with a Remote Kiosk Device Management System: REST APIs

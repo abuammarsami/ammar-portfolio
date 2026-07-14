@@ -5,7 +5,7 @@ export const dynamic = "force-static";
 export async function GET() {
   const body = `# Md. Abu Ammar — Backend & AI Systems Engineer
 
-> Payment infrastructure ($MM+/yr, 20k+ users), AI kiosk monitoring (120+ devices,
+> Payment infrastructure ($MM+/yr, 20k+ users), AI kiosk monitoring (200+ devices,
 > Azure Vision AI), .NET Aspire distributed platforms — and quantum ML research.
 
 This site is agent-readable and agent-operable (one tool layer, five surfaces).

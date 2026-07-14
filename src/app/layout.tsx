@@ -127,6 +127,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <FooterTerminal />
             </div>
           </footer>
+          {/* the one always-available door into interview mode — zero-JS server
+              chrome; CommandPalette binds the click, stage-lock hides it while
+              a stage surface (interview bar, autopilot tour) is on. Without JS
+              these controls can't serve — the noscript rule removes them. */}
+          <noscript>
+            <style>{`[data-ask],[data-pal]{display:none}`}</style>
+          </noscript>
+          <button
+            type="button"
+            data-ask
+            aria-label="Ask AI about this portfolio — interview it by voice or text"
+            className="fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 cursor-pointer rounded-full border rule-hair bg-surface/90 px-3.5 py-2 font-mono text-xs text-muted shadow-lg backdrop-blur transition-colors hover:text-q0 print:hidden"
+          >
+            <span className="text-q0">✦</span> ask
+          </button>
           <CommandPalette />
           <WebmcpProvider />
         </ThemeProvider>

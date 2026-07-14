@@ -1,27 +1,63 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ComponentType } from "react";
 
-// The palette body lives in its own chunk — the eager cost of ⌘K on every
-// page is just this opener (per-route budget headroom is thin; plan-0005).
-const PaletteUi = dynamic(() => import("./palette-ui").then((m) => m.PaletteUi), { ssr: false });
+import { INTERVIEW_EVENT } from "@/lib/agent/autopilot-event";
 
-/** Hand-rolled ⌘K palette — mono, keyboard-first, ~zero dependencies. */
+// The palette body lives in its own chunk, hand-lazied on first open — the
+// eager cost of ⌘K on every page is just this opener, without even the
+// next/dynamic runtime (per-route budget headroom is thin; plan-0005).
+type PaletteUiComponent = ComponentType<{ onClose: () => void }>;
+
+/**
+ * Hand-rolled ⌘K palette — mono, keyboard-first, ~zero dependencies.
+ * Also the binder for the zero-JS global chrome (the nav's palette
+ * triggers + the ✦ ask launcher are server HTML — "/" has no headroom
+ * for more client modules, so this one island wires them all).
+ */
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
+  const [Ui, setUi] = useState<PaletteUiComponent | null>(null);
 
   useEffect(() => {
+    const toggle = () => {
+      // successful loads are memoized by the module system; a FAILED chunk
+      // fetch is deliberately not cached, so the next open retries it
+      void import("./palette-ui").then(
+        (m) => setUi(() => m.PaletteUi),
+        () => {},
+      );
+      setOpen((o) => !o);
+    };
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        setOpen((o) => !o);
+        toggle();
       }
     };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+
+    // one delegated binder for the zero-JS chrome: nav palette triggers open
+    // the palette, the ✦ ask launcher starts interview mode (the lazy stage
+    // modules hide/show the launcher themselves)
+    const onClick = (e: MouseEvent) => {
+      const t = (e.target as Element | null)?.closest?.("[data-pal],[data-ask]");
+      if (!t) return;
+      if (t.hasAttribute("data-ask")) window.dispatchEvent(new Event(INTERVIEW_EVENT));
+      else toggle();
+    };
+    document.addEventListener("click", onClick);
+
+    // show the real shortcut off Apple platforms (MacIntel / iPhone / iPad / iPod)
+    const key = document.querySelector("[data-pal-key]");
+    if (key && !/Mac|iP/.test(navigator.platform || navigator.userAgent)) key.textContent = "Ctrl K";
+
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.removeEventListener("click", onClick);
+    };
   }, []);
 
-  if (!open) return null;
-  return <PaletteUi onClose={() => setOpen(false)} />;
+  if (!open || !Ui) return null;
+  return <Ui onClose={() => setOpen(false)} />;
 }

@@ -1,6 +1,6 @@
 /** Site-wide constants. Stable production domain. */
 export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://ammar-portfolio-zeta.vercel.app";
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://abuammar.engineer";
 
 export const SITE_NAME = "Md. Abu Ammar";
 export const SITE_TITLE = "Md. Abu Ammar — Software Engineer · Quantum ML Researcher";

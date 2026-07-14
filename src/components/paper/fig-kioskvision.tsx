@@ -1,13 +1,13 @@
-/** Fig. 1 — KioskVisionAI architecture (real system: 120+ kiosks → Azure → Vision AI). */
+/** Fig. 1 — KioskVisionAI architecture (real system: 200+ kiosks → Azure → Vision AI). */
 export function FigKioskVision() {
   const box = "fill-[var(--color-bg)] stroke-[var(--color-muted)]";
   const label = "fill-[var(--color-ink)]";
   const small = "fill-[var(--color-muted)]";
   return (
-    <svg viewBox="0 0 520 150" role="img" aria-label="KioskVisionAI architecture: 120+ kiosks send screenshots to Azure Blob Storage; queues fan out to a Vision AI analysis worker; anomalies trigger notifications and automated recovery." className="w-full">
+    <svg viewBox="0 0 520 150" role="img" aria-label="KioskVisionAI architecture: 200+ kiosks send screenshots to Azure Blob Storage; queues fan out to a Vision AI analysis worker; anomalies trigger notifications and automated recovery." className="w-full">
       {/* kiosk fleet */}
       <rect x="8" y="46" width="92" height="58" rx="3" className={box} strokeWidth="1" />
-      <text x="54" y="70" textAnchor="middle" fontSize="11" fontFamily="var(--font-mono)" className={label}>120+ kiosks</text>
+      <text x="54" y="70" textAnchor="middle" fontSize="11" fontFamily="var(--font-mono)" className={label}>200+ kiosks</text>
       <text x="54" y="88" textAnchor="middle" fontSize="9" fontFamily="var(--font-mono)" className={small}>60+ orgs, US</text>
       {/* blob + queue */}
       <rect x="140" y="20" width="96" height="44" rx="3" className={box} strokeWidth="1" />

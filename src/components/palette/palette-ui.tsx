@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { applyLens, LENSES } from "@/lib/agent/lens";
 import { AUTOPILOT_EVENT, INTERVIEW_EVENT } from "@/lib/agent/autopilot-event";
@@ -39,6 +39,9 @@ export function PaletteUi({ onClose }: { onClose: () => void }) {
     };
   }, []);
 
+  // memoized so arrow-key / pointer active-row renders don't re-score the
+  // whole search index (router and setTheme are referentially stable)
+  const filtered = useMemo<Command[]>(() => {
   const commands: Command[] = [
     { id: "learn", label: "goto learn", hint: "qubit → QML, interactive", run: () => router.push("/learn") },
     { id: "playground", label: "goto playground", hint: "build a real 2-qubit circuit", run: () => router.push("/playground") },
@@ -72,7 +75,17 @@ export function PaletteUi({ onClose }: { onClose: () => void }) {
         run: () => router.push(e.path),
       }))
     : [];
-  const filtered = [...commands.filter((c) => c.label.includes(query.toLowerCase().trim())), ...contentHits];
+  return [...commands.filter((c) => c.label.includes(query.toLowerCase().trim())), ...contentHits];
+  }, [query, index, resolvedTheme, router, setTheme]);
+  // the async search index can shrink the list (or empty it, or ArrowDown may
+  // have run against an empty list) — clamp both ends, never trust `active` raw
+  const activeIdx = Math.max(0, Math.min(active, filtered.length - 1));
+
+  // keyboard navigation must follow into the overflow region of the list
+  const listRef = useRef<HTMLUListElement | null>(null);
+  useEffect(() => {
+    listRef.current?.children[activeIdx]?.scrollIntoView({ block: "nearest" });
+  }, [activeIdx]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -113,7 +126,7 @@ export function PaletteUi({ onClose }: { onClose: () => void }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 pt-[18vh] backdrop-blur-[2px]"
+      className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 px-4 pt-[12vh] backdrop-blur-[2px] sm:pt-[18vh]"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -135,9 +148,11 @@ export function PaletteUi({ onClose }: { onClose: () => void }) {
               setActive(0);
             }}
             onKeyDown={(e) => {
-              if (e.key === "ArrowDown") { e.preventDefault(); setActive((a) => Math.min(a + 1, filtered.length - 1)); }
-              if (e.key === "ArrowUp") { e.preventDefault(); setActive((a) => Math.max(a - 1, 0)); }
-              if (e.key === "Enter") exec(filtered[active]);
+              // activeIdx is the one source of truth (clamped above); keydown is a
+              // discrete event so React flushes between presses — no staleness
+              if (e.key === "ArrowDown") { e.preventDefault(); setActive(Math.max(0, Math.min(activeIdx + 1, filtered.length - 1))); }
+              if (e.key === "ArrowUp") { e.preventDefault(); setActive(Math.max(activeIdx - 1, 0)); }
+              if (e.key === "Enter") exec(filtered[activeIdx]);
             }}
             placeholder="type a command…"
             aria-label="Search commands"
@@ -145,16 +160,18 @@ export function PaletteUi({ onClose }: { onClose: () => void }) {
           />
           <kbd className="text-xs text-muted">esc</kbd>
         </div>
-        <ul className="max-h-72 overflow-y-auto py-1 font-mono text-sm">
+        <ul ref={listRef} className="max-h-72 overflow-y-auto py-1 font-mono text-sm">
           {filtered.length === 0 && <li className="px-4 py-2 text-muted">no matching command</li>}
           {filtered.map((c, i) => (
             <li key={c.id}>
+              {/* pointerMOVE, not enter: keyboard-scrolling the list under a
+                  stationary cursor must not steal the active row back */}
               <button
                 type="button"
                 onClick={() => exec(c)}
-                onPointerEnter={() => setActive(i)}
+                onPointerMove={() => setActive(i)}
                 className={`flex w-full items-baseline justify-between px-4 py-2 text-left ${
-                  i === active ? "bg-q0/10 text-q0" : "text-ink"
+                  i === activeIdx ? "bg-q0/10 text-q0" : "text-ink"
                 }`}
               >
                 <span>{c.label}</span>
