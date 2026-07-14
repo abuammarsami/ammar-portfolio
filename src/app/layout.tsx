@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, IBM_Plex_Sans, STIX_Two_Text } from "next/font/google";
 import { ThemeProvider } from "next-themes";
-import { AskLauncher } from "@/components/agent/ask-launcher";
 import { WebmcpProvider } from "@/components/agent/webmcp-provider";
 import { CommandPalette } from "@/components/palette/command-palette";
 import { FooterTerminal } from "@/components/ui/footer-terminal";
@@ -128,8 +127,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <FooterTerminal />
             </div>
           </footer>
+          {/* the one always-available door into interview mode — zero-JS server
+              chrome; CommandPalette binds it and stage events hide/show it */}
+          <button
+            type="button"
+            data-ask
+            aria-label="Ask AI about this portfolio — interview it by voice or text"
+            className="fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 cursor-pointer rounded-full border rule-hair bg-surface/90 px-3.5 py-2 font-mono text-xs text-muted shadow-lg backdrop-blur transition-colors hover:text-q0 print:hidden"
+          >
+            <span className="text-q0">✦</span> ask
+          </button>
           <CommandPalette />
-          <AskLauncher />
           <WebmcpProvider />
         </ThemeProvider>
       </body>

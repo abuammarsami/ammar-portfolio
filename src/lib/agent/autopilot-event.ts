@@ -6,6 +6,5 @@
  */
 export const AUTOPILOT_EVENT = "ammar:autopilot";
 export const INTERVIEW_EVENT = "ammar:interview";
-export const PALETTE_EVENT = "ammar:palette";
 /** Fired by a stage surface when it ends — lets eager chrome (the ask launcher) reappear. */
 export const STAGE_DONE_EVENT = "ammar:stage-done";
