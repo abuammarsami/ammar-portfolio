@@ -1,0 +1,22 @@
+%----------HEADING----------%
+% arXiv-style sidebar (page 1 left margin) — doubles as the visible build stamp
+\begin{tikzpicture}[remember picture, overlay]
+  \node[rotate=90, anchor=center, text=gray]
+    at ([xshift=0.28in]current page.west)
+    {\ttfamily\footnotesize arXiv:ammar.cv.v\BuildHash{}\ \ [cs.SE]\ \ \BuildDate};
+\end{tikzpicture}%
+\begin{center}
+    {\Huge\rmfamily\bfseries Md. Abu Ammar} \\ \vspace{3pt}
+    {\ttfamily\footnotesize
+    \seticon{faPhone}\ +8801731786464 \enspace
+    \href{mailto:abuammarsami@gmail.com}{\seticon{faEnvelope}\ abuammarsami@gmail.com} \enspace
+    \href{https://www.linkedin.com/in//abu-ammar/}{\seticon{faLinkedin}\ linkedin.com/in/abu-ammar/} \enspace
+    \href{https://github.com/abuammarsami}{\seticon{faGithub}\ github.com/abuammarsami}} \\ \vspace{4pt}
+    % Signature: the site hero's Bell pair — a live demo link, not clip art
+    \href{https://ammar-portfolio-zeta.vercel.app/playground}{%
+      \scalebox{0.62}{\color{gray}%
+        \begin{quantikz}[row sep=0.14cm, column sep=0.22cm]
+          \lstick{$|0\rangle$} & \gate{H} & \ctrl{1} & \qw \\
+          \lstick{$|0\rangle$} & \qw      & \targ{}  & \qw
+        \end{quantikz}}}
+\end{center}

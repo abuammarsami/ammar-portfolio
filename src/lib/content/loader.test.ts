@@ -147,6 +147,11 @@ describe("real content/ files", () => {
     expect(about.narrativeHtml).toContain("<p>");
   });
 
+  it("loads the two state-vector kets for the About flourish", async () => {
+    const about = await getAbout();
+    expect(about.stateVector).toEqual(["backend engineer", "QML researcher"]);
+  });
+
   it("resolves every lens subheading, falling back to the base when a variant is absent", async () => {
     const about = await getAbout();
     expect(about.subheadings.recruiter).toBe(about.subheading);

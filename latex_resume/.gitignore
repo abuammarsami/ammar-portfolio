@@ -1,0 +1,16 @@
+# CI-fetched machine-readable resume (embedded into the PDF at build time)
+resume.json
+
+# Build outputs
+*.pdf
+
+# LaTeX aux files
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.xdv
+*.png

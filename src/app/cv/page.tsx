@@ -157,8 +157,12 @@ export default async function CvPage() {
         for the academic ordering, or download the{" "}
         <a href="/resume.pdf" className="text-q0 hover:underline">
           one-page resume.pdf
+        </a>{" "}
+        (
+        <a href="/verify" className="text-q0 hover:underline">
+          verify
         </a>
-        .
+        ).
       </p>
     </main>
   );

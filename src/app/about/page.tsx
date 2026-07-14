@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { StateVector } from "@/components/agent/state-vector";
 import { TestimonialCard } from "@/components/ui/testimonial-card";
 import { getAbout, getExperience, getSkills, getTestimonials } from "@/lib/content/loader";
 
@@ -28,6 +29,7 @@ export default async function AboutPage() {
             className="mt-5 font-serif leading-relaxed [&>p+p]:mt-4"
             dangerouslySetInnerHTML={{ __html: about.narrativeHtml }}
           />
+          {about.stateVector[0] && about.stateVector[1] && <StateVector kets={about.stateVector} />}
         </div>
         <div>
           <Image
