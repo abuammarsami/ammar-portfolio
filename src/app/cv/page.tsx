@@ -133,12 +133,23 @@ export default async function CvPage() {
         </div>
         <div className="flex shrink-0 flex-col items-end gap-2 print:hidden">
           <PrintButton />
-          <a
-            href="/resume.pdf"
-            className="rounded-sm border rule-hair px-3 py-1.5 font-mono text-sm text-q0 transition-colors hover:text-q1"
-          >
-            resume.pdf ↓
-          </a>
+          {/* lens-aware download: professor lens gets the academic ordering */}
+          <span className="lens-not-professor">
+            <a
+              href="/resume.pdf"
+              className="rounded-sm border rule-hair px-3 py-1.5 font-mono text-sm text-q0 transition-colors hover:text-q1"
+            >
+              resume.pdf ↓
+            </a>
+          </span>
+          <span className="lens-professor">
+            <a
+              href="/resume-academic.pdf"
+              className="rounded-sm border rule-hair px-3 py-1.5 font-mono text-sm text-q0 transition-colors hover:text-q1"
+            >
+              academic cv.pdf ↓
+            </a>
+          </span>
         </div>
       </header>
 

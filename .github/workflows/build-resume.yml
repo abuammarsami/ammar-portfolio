@@ -45,11 +45,13 @@ jobs:
           \newcommand{\VerifyURL}{https://ammar-portfolio-zeta.vercel.app/verify}
           EOF
 
-      - name: Compile resume.pdf
+      - name: Compile resume.pdf + resume-academic.pdf
         uses: xu-cheng/latex-action@v3
         with:
           working_directory: latex-resume
-          root_file: resume.tex
+          root_file: |
+            resume.tex
+            resume-academic.tex
 
       - name: Sanity checks (ATS text layer, attachment, footer stamp)
         run: |
@@ -61,6 +63,7 @@ jobs:
           if [ -f resume.json ]; then
             pdfdetach -list resume.pdf | grep -q "resume.json" || { echo "::error::embedded resume.json missing"; exit 1; }
           fi
+          pdftotext resume-academic.pdf - | grep -q "Publications" || { echo "::error::academic variant missing publications"; exit 1; }
 
       - name: Write resume-manifest.json
         run: |
@@ -82,16 +85,18 @@ jobs:
           name: resume
           path: |
             latex-resume/resume.pdf
+            latex-resume/resume-academic.pdf
             latex-resume/resume-manifest.json
 
       - name: Commit PDF + manifest to public/
         if: github.event_name != 'pull_request'
         run: |
           cp latex-resume/resume.pdf public/resume.pdf
+          cp latex-resume/resume-academic.pdf public/resume-academic.pdf
           cp latex-resume/resume-manifest.json public/resume-manifest.json
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/resume.pdf public/resume-manifest.json
+          git add public/resume.pdf public/resume-academic.pdf public/resume-manifest.json
           git diff --cached --quiet && { echo "No changes to commit"; exit 0; }
           # The stamp step dirtied tracked files (build-info.tex); restore them
           # or `git pull --rebase` refuses to run on an unclean worktree.

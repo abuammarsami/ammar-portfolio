@@ -22,6 +22,12 @@ const WEBMCP_TOOLS = createWebmcpTools({
   setLens: () => {},
 }).map((t) => ({ name: t.name, description: t.description }));
 
+const PROSE_CLASS =
+  "mt-3 max-w-none font-serif leading-relaxed [&_a]:link-super [&_code]:font-mono [&_code]:text-[0.9em] [&_p+p]:mt-3 [&_pre]:mt-4 [&_pre]:overflow-x-auto [&_pre]:border [&_pre]:border-muted/20 [&_pre]:bg-surface/60 [&_pre]:p-4 [&_pre]:font-mono [&_pre]:text-xs [&_pre]:leading-relaxed";
+
+/** Reference sections fold away so the page has one focus: the fit report. */
+const FOLDED = ["MCP server", "WebMCP tools", "Agent card", "Why agent-native", "How to interview this site"] as const;
+
 function ToolTable({ tools, caption }: { tools: readonly { name: string; description: string }[]; caption: string }) {
   return (
     <figure className="mt-4 overflow-x-auto">
@@ -42,8 +48,11 @@ function ToolTable({ tools, caption }: { tools: readonly { name: string; descrip
 
 export default async function AgentsPage() {
   const sections = await getAgentsPage();
-  const tagline = sections.find((s) => s.heading === "Tagline");
-  const rest = sections.filter((s) => s.heading !== "Tagline");
+  const byHeading = new Map(sections.map((s) => [s.heading, s]));
+  const tagline = byHeading.get("Tagline");
+  const fit = byHeading.get("Fit report");
+  const feeds = byHeading.get("Feeds");
+  const guestbook = byHeading.get("Guestbook");
 
   return (
     <main className="mx-auto max-w-3xl px-6 pb-16">
@@ -56,23 +65,54 @@ export default async function AgentsPage() {
       )}
       <AutopilotButton />
 
-      {rest.map((s) => (
-        <section key={s.heading} id={s.heading === "Fit report" ? "fit" : undefined} className="mt-12">
-          <h2 className="font-serif text-2xl">{s.heading}</h2>
-          <div
-            className="mt-3 max-w-none font-serif leading-relaxed [&_a]:link-super [&_code]:font-mono [&_code]:text-[0.9em] [&_p+p]:mt-3 [&_pre]:mt-4 [&_pre]:overflow-x-auto [&_pre]:border [&_pre]:border-muted/20 [&_pre]:bg-surface/60 [&_pre]:p-4 [&_pre]:font-mono [&_pre]:text-xs [&_pre]:leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: s.bodyHtml }}
-          />
-          {s.heading === "MCP server" && <ToolTable tools={TOOLS} caption="MCP tools" />}
-          {s.heading === "WebMCP tools" && <ToolTable tools={WEBMCP_TOOLS} caption="WebMCP tools" />}
-          {s.heading === "Fit report" && (
-            <div className="mt-6">
-              <FitReport placeholder="Paste a job description or a research topic — e.g. 'Senior backend engineer: .NET, Azure, event-driven systems, payment infrastructure…'" />
-            </div>
-          )}
-          {s.heading === "Guestbook" && <GuestbookWall />}
+      {/* The one interactive thing on this page — everything else is reference. */}
+      {fit && (
+        <section id="fit" className="mt-12">
+          <h2 className="font-serif text-2xl">{fit.heading}</h2>
+          <div className={PROSE_CLASS} dangerouslySetInnerHTML={{ __html: fit.bodyHtml }} />
+          <div className="mt-6">
+            <FitReport placeholder="Paste a job description or a research topic — e.g. 'Senior backend engineer: .NET, Azure, event-driven systems, payment infrastructure…'" />
+          </div>
         </section>
-      ))}
+      )}
+
+      {/* Connect: the four URLs an agent needs, nothing else. */}
+      {feeds && (
+        <section className="mt-14">
+          <h2 className="font-serif text-2xl">Connect</h2>
+          <div className={PROSE_CLASS} dangerouslySetInnerHTML={{ __html: feeds.bodyHtml }} />
+        </section>
+      )}
+
+      {/* Reference: folded — open what you came for. */}
+      <section className="mt-14" aria-label="Protocol reference">
+        <h2 className="font-serif text-2xl">Under the hood</h2>
+        {FOLDED.map((heading) => {
+          const s = byHeading.get(heading);
+          if (!s) return null;
+          return (
+            <details key={heading} className="group mt-4 border-b rule-hair pb-4">
+              <summary className="cursor-pointer list-none font-mono text-sm text-muted transition-colors hover:text-q0 [&::-webkit-details-marker]:hidden">
+                <span aria-hidden className="mr-2 inline-block transition-transform group-open:rotate-90">
+                  ▸
+                </span>
+                {heading}
+              </summary>
+              <div className={PROSE_CLASS} dangerouslySetInnerHTML={{ __html: s.bodyHtml }} />
+              {heading === "MCP server" && <ToolTable tools={TOOLS} caption="MCP tools" />}
+              {heading === "WebMCP tools" && <ToolTable tools={WEBMCP_TOOLS} caption="WebMCP tools" />}
+            </details>
+          );
+        })}
+      </section>
+
+      {guestbook && (
+        <section className="mt-14">
+          <h2 className="font-serif text-2xl">{guestbook.heading}</h2>
+          <div className={PROSE_CLASS} dangerouslySetInnerHTML={{ __html: guestbook.bodyHtml }} />
+          <GuestbookWall />
+        </section>
+      )}
     </main>
   );
 }
