@@ -14,16 +14,16 @@ layout: case-study
 # Mosque Search — Semantic-Quality Relevance Without a Model
 
 **Summary:** Built the mosque-discovery search for the Masjid Solutions community app — the box a
-congregant uses to find their masjid by name, nickname, acronym, slug, city, or ZIP, tolerating
-typos and partial and middle-word hits, and *ranking* the results the way a real search engine
+congregant uses to find their masjid by name, nickname, slug, city, or ZIP, tolerating typos and
+partial and middle-word hits, and *ranking* the results the way a real search engine
 does. It reads like semantic search, but there is **no ML anywhere**: no embeddings, no vector
 store, no model to train or serve. It is classical information retrieval done carefully — weighted
 multi-field fuzzy matching (`FuzzySharp`) aggregated by a **Solr/Lucene-style DisMax** relevance
 model — so relevance is deterministic, explainable, and free to run.
 
 **Problem:** The old lookup was substring `LIKE` matching with no ranking. It missed the way people
-actually search: the acronym "ICCR" never found *Islamic Center of Cedar Rapids*; a nickname or a
-hyphen/slug variant missed; a single typo returned nothing; and when many mosques *did* match,
+actually search: the nickname or short code a community uses — stored as a slug or nickname, not the
+legal `Name` — never matched; a single typo returned nothing; and when many mosques *did* match,
 nothing decided which was most relevant — so the one you wanted could sit below ten you didn't, or
 fall off the list entirely. On a discovery screen, "no results" and "wrong first result" both read
 as "the app is broken."
@@ -45,8 +45,8 @@ served **cache-aside**: `FindAsync` caches the full mosque list in `IMemoryCache
 invalidates — so a search is in-memory string math, not a database round-trip per keystroke.
 `FluentResults` throughout; Dapper + SQL Server underneath.
 
-**Impact:** Congregants now find their mosque the first way they think to type it — the acronym, the
-nickname, the misspelling — and the right one comes back on top. A reported ranking bug, where an
+**Impact:** Congregants now find their mosque the first way they think to type it — the nickname, a
+fragment of the name, the misspelling — and the right one comes back on top. A reported ranking bug, where an
 *exact* full-name search buried the mosque under other 100-scoring rows, is fixed by construction:
 an exact word-boundary hit on any field always floats to the top, the way search is supposed to
 work. And the whole thing stays a deterministic algorithm you can read, unit-test, and reason about

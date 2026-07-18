@@ -8,7 +8,7 @@ headings:
   problem: "Substring matching isn't search"
   bigIdea: "Semantic behavior, no semantic model"
   howItWorks: "One score per mosque, decided by its strongest field"
-  followAJob: "Follow one query — \"ICCR\""
+  followAJob: "Follow one query — \"cedar rapids\""
   decisions: "Where the real thinking went"
   warStoryKicker: "The war story · the exact name search hid"
   warStory: "When an exact-name search buried the mosque"
@@ -17,7 +17,7 @@ headings:
 
 ## Tagline
 
-A mosque-finder that understands how people actually type — the acronym, the nickname, the typo — and ranks the right masjid first, with zero machine learning: no embeddings, no model, just classical information retrieval done carefully.
+A mosque-finder that understands how people actually type — the nickname, a fragment of the name, the typo — and ranks the right masjid first, with zero machine learning: no embeddings, no model, just classical information retrieval done carefully.
 
 ## Role
 
@@ -25,7 +25,7 @@ Engineer on the Masjid Solutions platform — donation and community apps used a
 
 ## In one minute
 
-Think about how you search for a place you already know. You type its initials. Or the name everyone actually calls it, not its legal name. Or you fat-finger a letter. A good search engine shrugs all of that off and still puts the thing you meant at the top. A naive one — the kind most apps ship — matches only the exact letters you typed, in order, and returns everything or nothing, in no particular order.
+Think about how you search for a place you already know. You type the short name everyone actually calls it, not its legal name. Or just part of it. Or you fat-finger a letter. A good search engine shrugs all of that off and still puts the thing you meant at the top. A naive one — the kind most apps ship — matches only the exact letters you typed, in order, and returns everything or nothing, in no particular order.
 
 This project is the good kind, built without any AI. It reads a query, scores every mosque against it across several fields (name, nickname, slug, city, state, ZIP), tolerates typos and word-order and punctuation, and then — the part that's easy to skip — *ranks* them so the most relevant one wins. The interesting engineering isn't "find matches." It's "decide which match matters most," and do it with a deterministic algorithm you can read and test instead of a model you have to trust.
 
@@ -39,15 +39,15 @@ This project is the good kind, built without any AI. It reads a query, scores ev
 
 ## The problem
 
-The old lookup was substring matching — `LIKE '%term%'` — with no notion of relevance. That fails the three ways people really search. **Acronyms:** typing "ICCR" for *Islamic Center of Cedar Rapids* matched nothing, because those four letters never appear consecutively. **Nicknames and slugs:** the name a community uses, or the hyphenated URL slug, isn't the legal name in the `Name` column. **Typos:** one wrong letter and substring matching returns an empty list. And even when many mosques *did* match, there was no ranking — so the result you wanted could sit tenth, or drop off a capped list entirely. On a "find your mosque" screen, an empty result and a wrong-first result are the same bug to the user: the app looks broken.
+The old lookup was substring matching — `LIKE '%term%'` — with no notion of relevance. That fails the ways people really search. **Nicknames & short codes:** the name a community actually uses — or its slug — isn't the legal name in the `Name` column, so a search that only looks there misses it. **Typos:** one wrong letter and substring matching returns an empty list. **No ranking:** even when many mosques *did* match, nothing ordered them — so the result you wanted could sit tenth, or drop off a capped list entirely. On a "find your mosque" screen, an empty result and a wrong-first result are the same bug to the user: the app looks broken.
 
 ## Incidents
 
-### The acronym that found nothing
+### The name on the door, not in the column
 
 *query → empty result*
 
-A user in Iowa typed "ICCR" to find the Islamic Center of Cedar Rapids — exactly the mental shortcut everyone uses. Substring search looked for the literal string "iccr", found it in no mosque name, and returned nothing. The mosque was right there in the database; the search just couldn't think in initials.
+A community knows its masjid by the short name on the sign, not the long legal name on file. The old search only queried the `Name` column, so typing the nickname everyone actually uses returned nothing — the mosque was right there, indexed under a name no one types.
 
 ### One wrong letter, zero results
 
@@ -63,7 +63,7 @@ The tempting fix — make *everything* fuzzy — has its own trap. Run Levenshte
 
 ## The big idea
 
-You can buy semantic search off the shelf now: embed the query, embed every record, rank by cosine similarity. It's the obvious 2026 answer, and for this problem it's the wrong one. This catalog is a bounded list of mosques with structured fields — names, nicknames, slugs, ZIPs. The "meaning" a user encodes is an acronym, an abbreviation, a typo, a word out of order. **All of that is recoverable with string algorithms — deterministically, explainably, and for free** — without a model to train, a vector index to host, or an inference call on every keystroke.
+You can buy semantic search off the shelf now: embed the query, embed every record, rank by cosine similarity. It's the obvious 2026 answer, and for this problem it's the wrong one. This catalog is a bounded list of mosques with structured fields — names, nicknames, slugs, ZIPs. The "meaning" a user encodes is a nickname, a fragment of the name, a typo, a word out of order. **All of that is recoverable with string algorithms — deterministically, explainably, and for free** — without a model to train, a vector index to host, or an inference call on every keystroke.
 
 So the thesis is: *get semantic-quality relevance from classical IR.* Two moves make it work. First, score each mosque per field with fuzzy matching that already understands typos, partial hits, and token reordering — and take the **strongest** field rather than muddling them together. Second, borrow the **DisMax** (disjunction-max) rule that Elasticsearch and Solr use for exactly this: the best-matching single field decides the score, and the other fields only nudge ties. The result behaves like it understands intent, but every point of every score is a number you can trace back to a line of code.
 
@@ -88,13 +88,13 @@ So the thesis is: *get semantic-quality relevance from classical IR.* Two moves 
 
 *fold the noise*
 
-"ICCR" (or "cedar rapids", or a typo'd name) is lowercased and separator-normalized so punctuation and spacing stop mattering. The same normalization is applied to the fields it'll be compared against, so the match is on meaning-bearing characters, not formatting.
+"cedar rapids" (a fragment of the name, or a nickname, or a typo) is lowercased and separator-normalized so punctuation and spacing stop mattering. The same normalization is applied to the fields it'll be compared against, so the match is on meaning-bearing characters, not formatting.
 
 ### 2. Every mosque is scored, field by field
 
 *max of three*
 
-For each mosque, each field gets the best of `PartialRatio` / `TokenSetRatio` / `Ratio` on both raw and normalized text — with slug and nickname running the extra exact→substring→strip→prefix→fuzzy ladder that lets "ICCR" resolve to *Islamic Center of Cedar Rapids*. ZIP is scored by regional grouping, never by string distance.
+For each mosque, each field gets the best of `PartialRatio` / `TokenSetRatio` / `Ratio` on both raw and normalized text — with slug and nickname running the extra exact→substring→strip→prefix→fuzzy ladder, so a short code or nickname matches even when it looks nothing like the legal name. ZIP is scored by regional grouping, never by string distance.
 
 ### 3. DisMax decides, exacts float, top 10 returns
 
@@ -132,18 +132,18 @@ The catalog is small, read-heavy, and changes rarely — the textbook cache-asid
 
 *chose: deterministic fuzzy + DisMax · over: a vector/embedding semantic search*
 
-Embeddings would add a model to train and version, an index to host, an inference cost per query, and a failure mode ("why did it rank that?") you can't step through in a debugger. For a bounded catalog whose "semantics" are acronyms, nicknames, and typos, string algorithms recover the same intent with none of that — and every score is explainable to the line.
+Embeddings would add a model to train and version, an index to host, an inference cost per query, and a failure mode ("why did it rank that?") you can't step through in a debugger. For a bounded catalog whose "semantics" are nicknames, abbreviations, and typos, string algorithms recover the same intent with none of that — and every score is explainable to the line.
 
 ## The war story
 
 The subtle bug wasn't "no results" — it was a *wrong* result on the easiest possible query. Searching the full, exact name **"Islamic Center of Cedar Rapids"** didn't return that mosque near the top. Debugging it, I isolated the mosque and saw its score was a perfect 100 — so it *was* matching. The problem was that several *other* mosques also scored 100, and with the results ordered by score alone, the exact match wasn't guaranteed a seat in the capped top 10. A user typing a mosque's exact name and not finding it is the one failure a search engine is never allowed to have.
 
-The fix was to encode the rule everyone assumes is already there: an exact hit outranks a fuzzy one, even when the numbers tie. I added word-boundary exact-match detection across every field (`IsExactMatchInAnyField` / `ContainsExactWord`, regex-anchored so "rah" doesn't count as an exact hit on "Rahmah") and made it the *primary* sort key — `OrderByDescending(IsExactMatch).ThenByDescending(Score)` — ahead of the numeric score. Now an exact name, nickname, or acronym match floats to the top by construction, and only genuine ties fall back to the DisMax score. The lesson stuck: fuzzy relevance is the right default, but a search engine must still honor certainty when it has it.
+The fix was to encode the rule everyone assumes is already there: an exact hit outranks a fuzzy one, even when the numbers tie. I added word-boundary exact-match detection across every field (`IsExactMatchInAnyField` / `ContainsExactWord`, regex-anchored so "rah" doesn't count as an exact hit on "Rahmah") and made it the *primary* sort key — `OrderByDescending(IsExactMatch).ThenByDescending(Score)` — ahead of the numeric score. Now an exact name, nickname, or slug match floats to the top by construction, and only genuine ties fall back to the DisMax score. The lesson stuck: fuzzy relevance is the right default, but a search engine must still honor certainty when it has it.
 
 ## Impact
 
-Congregants find their mosque the first way they think to type it — the initials, the nickname, the misspelling — and the right one comes back first. The three failure modes of the old search (acronyms found nothing, one typo returned nothing, matches came back unranked) are gone, and the exact-name ranking bug is closed by construction rather than patched. Most of all, the relevance is a deterministic algorithm: no model to drift, no training set to curate, no vector index to operate, no inference bill — every point of every score traces to a line you can unit-test. It's semantic-quality search that a reviewer can read top to bottom and understand completely.
+Congregants find their mosque the first way they think to type it — the nickname, a fragment of the name, the misspelling — and the right one comes back first. The three failure modes of the old search (a nickname found nothing, one typo returned nothing, matches came back unranked) are gone, and the exact-name ranking bug is closed by construction rather than patched. Most of all, the relevance is a deterministic algorithm: no model to drift, no training set to curate, no vector index to operate, no inference bill — every point of every score traces to a line you can unit-test. It's semantic-quality search that a reviewer can read top to bottom and understand completely.
 
 ## Going deeper
 
-To be exact about the claim: this is **not** embedding or vector search, and that's a deliberate design choice, not a limitation I'm hiding. The behavior *is* semantic — it recovers what the user meant across acronyms, nicknames, punctuation, and typos — but the mechanism is classical IR: weighted multi-field fuzzy matching (`FuzzySharp`, Levenshtein) aggregated by a DisMax relevance model, the same shape Elasticsearch and Solr expose. The honest trade: embeddings would help with true *synonymy and paraphrase* ("house of worship" → "masjid"), which a bounded, structured mosque catalog rarely needs; classical IR wins on determinism, explainability, zero training data, and zero inference cost, which this problem values far more. Knowing where each approach earns its keep — and picking the boring one on purpose — is the point.
+To be exact about the claim: this is **not** embedding or vector search, and that's a deliberate design choice, not a limitation I'm hiding. The behavior *is* semantic — it recovers what the user meant across nicknames, abbreviations, punctuation, and typos — but the mechanism is classical IR: weighted multi-field fuzzy matching (`FuzzySharp`, Levenshtein) aggregated by a DisMax relevance model, the same shape Elasticsearch and Solr expose. The honest trade: embeddings would help with true *synonymy and paraphrase* ("house of worship" → "masjid"), which a bounded, structured mosque catalog rarely needs; classical IR wins on determinism, explainability, zero training data, and zero inference cost, which this problem values far more. Knowing where each approach earns its keep — and picking the boring one on purpose — is the point.
