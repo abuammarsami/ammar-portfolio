@@ -6,7 +6,16 @@ import { BlochSvg } from "@/components/quantum/bloch-svg";
 import type { BlochTarget } from "./bloch-stage";
 
 // The only import path that pulls three.js — route-scoped per ADR-0006.
-const BlochStage = dynamic(() => import("./bloch-stage"), { ssr: false });
+// The parent reserves the height (zero CLS); the loading placeholder just fills
+// the reserved box while the three.js chunk fetches, instead of a blank gap.
+const BlochStage = dynamic(() => import("./bloch-stage"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex min-h-[240px] w-full items-center justify-center font-mono text-xs text-muted" aria-hidden>
+      rendering the Bloch sphere …
+    </div>
+  ),
+});
 
 const REDUCED_MQ = "(prefers-reduced-motion: reduce)";
 function usePrefersReducedMotion(): boolean {

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CircuitStatic } from "@/components/hero/circuit-static";
 import { QuantumCircuitCanvas } from "@/components/hero/quantum-circuit-canvas";
 import { ArxivRow } from "@/components/paper/arxiv-row";
 import { FigKioskVision } from "@/components/paper/fig-kioskvision";
@@ -90,11 +91,18 @@ export default async function HomePage() {
               </Link>
             </p>
           </div>
-          <div className="enter enter-4 hidden md:block">
-            <QuantumCircuitCanvas />
-            {explainers.get("hero-classifier") && (
-              <ExplainThis html={explainers.get("hero-classifier")!} />
-            )}
+          <div className="enter enter-4">
+            {/* desktop: the interactive trainer. mobile: the static converged circuit
+                 (dragging data points is a desktop interaction) — so phones aren't heroless. */}
+            <div className="hidden md:block">
+              <QuantumCircuitCanvas />
+              {explainers.get("hero-classifier") && (
+                <ExplainThis html={explainers.get("hero-classifier")!} />
+              )}
+            </div>
+            <div className="mx-auto max-w-md md:hidden">
+              <CircuitStatic />
+            </div>
           </div>
         </div>
       </section>
