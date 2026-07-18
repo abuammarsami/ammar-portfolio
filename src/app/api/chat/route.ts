@@ -4,6 +4,7 @@ import { buildChatProfile } from "@/lib/agent/corpus";
 import { recordEvent } from "@/lib/agent/guestbook";
 import { parseChatBody } from "@/lib/agent/interview";
 import { callTool, TOOLS } from "@/lib/agent/mcp-tools";
+import { lookupStarterAnswer } from "@/lib/agent/starter-cache";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -69,6 +70,17 @@ export async function POST(req: Request) {
     parsed.surface === "interview" ? { tool: "interview", surface: "interview" } : { tool: "ask", surface: "chat" },
     req.headers.get("user-agent"),
   );
+
+  // hot-path cache: an exact starter-chip question on the FIRST turn (no history)
+  // is answered from curated content — it never touches the model, so the
+  // most-clicked recruiter/professor prompts are instant and immune to the free
+  // tier's per-minute token limit (plan-0008 §4). Follow-ups go to the live model.
+  if (parsed.turns.length === 1) {
+    const cached = lookupStarterAnswer(parsed.turns[0]!.content);
+    if (cached) {
+      return new Response(cached + "\n", { headers: { "content-type": "text/plain; charset=utf-8" } });
+    }
+  }
 
   // compact profile, not the full corpus: the prompt rides EVERY hop of the
   // tool loop and the free tier allows 8k tokens/minute (plan-0005)
