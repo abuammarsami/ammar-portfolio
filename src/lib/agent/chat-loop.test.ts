@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import { ACTION_PREFIX } from "./chat-actions";
-import { type ChatMessage, GROQ_URL, NAVIGATE_TOOL, parseToolArgs, runAgenticChat, toGroqTools } from "./chat-loop";
+import { type ChatMessage, GROQ_URL, NAVIGATE_TOOL, parseToolArgs, retryAfterSeconds, runAgenticChat, toGroqTools } from "./chat-loop";
 
 const TOOLS = [
   { name: "search_publications", description: "search", inputSchema: { type: "object", properties: { query: { type: "string" } }, required: ["query"] } },
@@ -148,5 +148,41 @@ describe("runAgenticChat", () => {
       apiKey: "k", messages: baseMessages(), tools: TOOLS, callTool: vi.fn(), fetchFn,
     });
     expect(res).toMatchObject({ kind: "error", status: 502 });
+  });
+
+  it("maps a 429 to an honest cooldown taken from the provider's retry-after header", async () => {
+    const fetchFn = vi.fn(async () => new Response("rate limited", { status: 429, headers: { "retry-after": "9" } }));
+    const res = await runAgenticChat({
+      apiKey: "k", messages: baseMessages(), tools: TOOLS, callTool: vi.fn(), fetchFn,
+    });
+    expect(res).toMatchObject({ kind: "error", status: 429 });
+    if (res.kind === "error") expect(res.message).toContain("~9 seconds");
+  });
+
+  it("falls back to ~15 seconds on a 429 with no rate-limit headers", async () => {
+    const fetchFn = vi.fn(async () => new Response("rate limited", { status: 429 }));
+    const res = await runAgenticChat({
+      apiKey: "k", messages: baseMessages(), tools: TOOLS, callTool: vi.fn(), fetchFn,
+    });
+    if (res.kind === "error") expect(res.message).toContain("~15 seconds");
+  });
+});
+
+describe("retryAfterSeconds", () => {
+  const h = (init: Record<string, string>) => new Headers(init);
+  it("reads integer retry-after seconds", () => {
+    expect(retryAfterSeconds(h({ "retry-after": "8" }))).toBe(8);
+  });
+  it("floors sub-second waits to at least 1", () => {
+    expect(retryAfterSeconds(h({ "retry-after": "0" }))).toBe(1);
+  });
+  it("parses the x-ratelimit-reset-tokens duration form", () => {
+    expect(retryAfterSeconds(h({ "x-ratelimit-reset-tokens": "7.5s" }))).toBe(8);
+  });
+  it("prefers retry-after over the reset header", () => {
+    expect(retryAfterSeconds(h({ "retry-after": "3", "x-ratelimit-reset-tokens": "12s" }))).toBe(3);
+  });
+  it("returns null when neither header is present", () => {
+    expect(retryAfterSeconds(h({}))).toBeNull();
   });
 });
