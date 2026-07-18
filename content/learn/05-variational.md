@@ -23,17 +23,18 @@ parameter-shift rule. Evaluate the circuit twice — once with a dial turned
 gradient descent, just like any ML model.
 
 ## Try it
-Watch the four θ dials tick as gradient descent runs, the loss curve fall, and
-the Bloch arrows settle. Then drag the two data points — you're changing the
-problem, and the circuit retrains in front of you. Move them close together and
-watch it struggle.
+This is the parameter-shift rule itself, live. Pick a dial (θ0–θ3) and slide it:
+the curve is ⟨Z⟩ as that one angle sweeps. The two coloured dots are the circuit
+evaluated at θ+π/2 and θ−π/2 — their half-difference is the exact gradient,
+drawn as the tangent touching the curve. Press **descend** to take one downhill
+step, or **run** to let the dial roll into the trough where the gradient vanishes.
 
 ## Takeaway
 Quantum ML = circuits as models, parameter-shift for gradients, descent for
 training. The physics does the forward pass; calculus stays classical.
 
 ## Deeper
-This is the exact code running on the homepage hero — same simulator, same
+This widget runs on the same simulator as the homepage hero — the same
 parameter-shift gradients, unit-tested against finite differences. My thesis
 benchmarked these models (CVQNN, quanvolutional networks) on MNIST with
 PennyLane and IBM's real quantum hardware.

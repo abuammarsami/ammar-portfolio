@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { QuantumCircuitCanvas } from "@/components/hero/quantum-circuit-canvas";
+import { useCallback, useState } from "react";
 import { mulberry32 } from "@/components/quantum/qml";
+import { ParameterShiftWidget } from "@/components/quantum/parameter-shift-widget";
 import { QuanvolutionDemo } from "@/components/quantum/quanvolution-demo";
 import {
   blochVector,
@@ -29,6 +29,7 @@ const btnCls =
 export function QubitLesson() {
   const [theta, setTheta] = useState(0.9);
   const [phi, setPhi] = useState(0.6);
+  const onDrag = useCallback((t: number, f: number) => { setTheta(t); setPhi(f); }, []);
   const s = rz(ry(zeroState(), 0, theta), 0, phi);
   const b = blochVector(s, 0);
   const { p0, p1 } = probZ(s, 0);
@@ -36,7 +37,11 @@ export function QubitLesson() {
   const beta = Math.sin(theta / 2);
   return (
     <div className="flex flex-col items-center gap-4">
-      <Bloch3D targets={[{ x: b.x, y: b.y, z: b.z, accent: "q0" }]} height={260} />
+      <Bloch3D
+        targets={[{ x: b.x, y: b.y, z: b.z, accent: "q0" }]}
+        height={260}
+        onDrag={onDrag}
+      />
       <ProbBars p0={p0} p1={p1} />
       <p className="font-mono text-xs text-muted">
         α={alpha.toFixed(3)} · |β|={beta.toFixed(3)} · state = α|0⟩ + βe<sup>iφ</sup>|1⟩
@@ -167,10 +172,12 @@ export function MeasurementLesson() {
   );
 }
 
-/** L5/L6 reuse the site's existing interactives — same engine, already tested. */
+/** L5 — the parameter-shift rule made watchable (ADR-0017): ⟨Z⟩(θ), the two
+ *  ±π/2 evaluations, the tangent = gradient, descent into the trough. */
 export function VariationalLesson() {
-  return <QuantumCircuitCanvas />;
+  return <ParameterShiftWidget />;
 }
+/** L6 reuses the site's existing interactive — same engine, already tested. */
 export function QuanvolutionLesson() {
   return <QuanvolutionDemo />;
 }

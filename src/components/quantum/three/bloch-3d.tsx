@@ -48,8 +48,18 @@ function webglAvailable(): boolean {
 /**
  * Fallback ladder (ADR-0006): WebGL stage → SVG Bloch figures.
  * SVG renders in SSR/first paint (zero CLS: fixed height), 3D swaps in when safe.
+ * `onDrag` (ADR-0017) makes a single-qubit arrow draggable — desktop only, so
+ * touch scrolling is never hijacked; the SVG fallback keeps the lesson sliders.
  */
-export function Bloch3D({ targets, height = 300 }: { targets: BlochTarget[]; height?: number }) {
+export function Bloch3D({
+  targets,
+  height = 300,
+  onDrag,
+}: {
+  targets: BlochTarget[];
+  height?: number;
+  onDrag?: (theta: number, phi: number) => void;
+}) {
   const reduced = usePrefersReducedMotion();
   // client-only constant; server snapshot false keeps SVG in SSR HTML
   const webgl = useSyncExternalStore(
@@ -59,7 +69,11 @@ export function Bloch3D({ targets, height = 300 }: { targets: BlochTarget[]; hei
   );
 
   const use3d = !reduced && webgl;
-  const effects = use3d && typeof window !== "undefined" && matchMedia("(pointer: fine)").matches;
+  // pointer:fine gates both the (expensive) postprocessing and drag interaction —
+  // on touch the stage stays display-only so vertical scroll keeps working
+  const fine = use3d && typeof window !== "undefined" && matchMedia("(pointer: fine)").matches;
+  const effects = fine;
+  const interactive = fine;
 
   const colors =
     typeof window !== "undefined"
@@ -74,7 +88,7 @@ export function Bloch3D({ targets, height = 300 }: { targets: BlochTarget[]; hei
     <div style={{ minHeight: height }} className="flex items-center justify-center">
       {use3d ? (
         <div className="w-full">
-          <BlochStage targets={targets} effects={effects} height={height} colors={colors} />
+          <BlochStage targets={targets} effects={effects} height={height} colors={colors} interactive={interactive} onDrag={onDrag} />
         </div>
       ) : (
         <div className="flex gap-6">

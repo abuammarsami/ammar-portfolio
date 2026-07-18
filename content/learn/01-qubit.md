@@ -23,9 +23,11 @@ the probabilities), φ spins it around the axis (changing something subtler —
 you'll meet it in the next lesson).
 
 ## Try it
-Move the θ and φ sliders and watch the arrow swing. The amplitudes α and β
-update live, and the probability bars follow |α|² and |β|². Notice: tilting θ
-shifts probability between 0 and 1; spinning φ doesn't move the bars at all.
+On a desktop, **grab the arrow's tip and drag it** to point the qubit anywhere on
+the sphere — or drag the empty space to orbit and look around. Either way (or with
+the θ and φ sliders) the amplitudes α and β update live and the probability bars
+follow |α|² and |β|². Notice: tilting θ shifts probability between 0 and 1;
+spinning φ doesn't move the bars at all.
 
 ## Takeaway
 A qubit isn't "0 and 1 at the same time" — it's an arrow on a sphere. Where the
@@ -34,5 +36,5 @@ arrow points decides the odds of what you'll see when you measure.
 ## Deeper
 The two dials are exactly the two rotation gates in this site's simulator: RY(θ)
 tilts, RZ(φ) spins. The state is stored as two complex amplitudes, and the arrow
-you're steering is computed from them — the code is 166 lines, and it's the same
-engine that trains the classifier on the homepage.
+you're steering is computed from them — about 200 lines of dependency-free code,
+the same engine that trains the classifier on the homepage.
