@@ -22,10 +22,10 @@ superposition, interfere phases, and only measure at the very end — one shot a
 extracting an answer from an arrow you spent the whole circuit preparing.
 
 ## Try it
-Prepare any state with the sliders, then press measure — repeatedly. Each shot
-flashes, snaps the arrow to a pole, and adds a tick to the tally. Watch the
-histogram of your shots converge toward the theoretical bars. Same state, same
-odds, different rolls.
+Prepare any state with the slider, then press measure — repeatedly. Each shot
+swings the arrow to a pole and adds a tick to the tally. Watch the histogram of
+your shots converge toward the theoretical bars. Same state, same odds,
+different rolls.
 
 ## Takeaway
 Measurement converts amplitudes to probabilities and erases the quantum state.
@@ -35,4 +35,4 @@ destructive question.
 ## Deeper
 The snap is projection: the state is projected onto the measured outcome and
 renormalized to length 1. On the Bell pair from Lesson 3, measuring one qubit
-instantly fixes the other — try it there and watch both arrows snap together.
+would instantly fix the other — the defining move of entanglement.
