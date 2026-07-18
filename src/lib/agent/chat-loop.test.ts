@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import { ACTION_PREFIX } from "./chat-actions";
-import { type ChatMessage, GROQ_URL, NAVIGATE_TOOL, parseToolArgs, retryAfterSeconds, runAgenticChat, toGroqTools } from "./chat-loop";
+import { type ChatMessage, GROQ_URL, NAVIGATE_TOOL, parseGroqDuration, parseToolArgs, retryAfterSeconds, runAgenticChat, toGroqTools } from "./chat-loop";
 
 const TOOLS = [
   { name: "search_publications", description: "search", inputSchema: { type: "object", properties: { query: { type: "string" } }, required: ["query"] } },
@@ -168,6 +168,14 @@ describe("runAgenticChat", () => {
   });
 });
 
+describe("parseGroqDuration", () => {
+  it("parses plain seconds", () => expect(parseGroqDuration("7.5s")).toBeCloseTo(7.5));
+  it("parses compound minutes+seconds", () => expect(parseGroqDuration("2m59.56s")).toBeCloseTo(179.56));
+  it("parses bare minutes", () => expect(parseGroqDuration("1m")).toBe(60));
+  it("parses milliseconds without mistaking m for minutes", () => expect(parseGroqDuration("500ms")).toBeCloseTo(0.5));
+  it("returns null when no unit is present", () => expect(parseGroqDuration("nope")).toBeNull());
+});
+
 describe("retryAfterSeconds", () => {
   const h = (init: Record<string, string>) => new Headers(init);
   it("reads integer retry-after seconds", () => {
@@ -178,6 +186,13 @@ describe("retryAfterSeconds", () => {
   });
   it("parses the x-ratelimit-reset-tokens duration form", () => {
     expect(retryAfterSeconds(h({ "x-ratelimit-reset-tokens": "7.5s" }))).toBe(8);
+  });
+  it("parses a compound reset duration in full (not just the seconds part)", () => {
+    expect(retryAfterSeconds(h({ "x-ratelimit-reset-tokens": "2m59.56s" }))).toBe(180);
+  });
+  it("handles an HTTP-date retry-after relative to now", () => {
+    const now = 1_000_000;
+    expect(retryAfterSeconds(h({ "retry-after": new Date(now + 45_000).toUTCString() }), now)).toBe(45);
   });
   it("prefers retry-after over the reset header", () => {
     expect(retryAfterSeconds(h({ "retry-after": "3", "x-ratelimit-reset-tokens": "12s" }))).toBe(3);

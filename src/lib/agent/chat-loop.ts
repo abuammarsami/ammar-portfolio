@@ -69,19 +69,45 @@ const TOOL_RESULT_MAX = 3_000; // keep hop context sane; corpus is already in th
 // smaller = fewer tokens re-sent on the next hop, which matters under the free tier's ~8k tokens/minute ceiling.
 
 /**
- * Groq/OpenAI-compatible 429s carry the real wait: `retry-after` (integer seconds)
- * or `x-ratelimit-reset-tokens` / `-requests` (e.g. "7.5s"). Read it so the visitor
- * sees the actual cooldown instead of a hard-coded guess. Null when neither is present.
+ * Parse a Groq-style duration into seconds. Handles the compound and unit forms
+ * the rate-limit reset headers actually use: "7.5s", "2m59.56s", "1m", "500ms".
+ * Returns null if no time unit is present.
  */
-export function retryAfterSeconds(headers: Headers): number | null {
+export function parseGroqDuration(s: string): number | null {
+  const ms = /([\d.]+)\s*ms/.exec(s);
+  if (ms) return Number(ms[1]) / 1000; // milliseconds form ("500ms")
+  let total = 0;
+  let matched = false;
+  const min = /([\d.]+)\s*m(?!s)/.exec(s); // minutes, but not the "ms" unit
+  if (min) {
+    total += Number(min[1]) * 60;
+    matched = true;
+  }
+  const sec = /([\d.]+)\s*s/.exec(s);
+  if (sec) {
+    total += Number(sec[1]);
+    matched = true;
+  }
+  return matched ? total : null;
+}
+
+/**
+ * Groq/OpenAI-compatible 429s carry the real wait: `retry-after` (integer seconds
+ * or an HTTP-date) or `x-ratelimit-reset-tokens` / `-requests` (e.g. "7.5s",
+ * "2m59.56s"). Read it so the visitor sees the actual cooldown instead of a
+ * hard-coded guess. Null when neither header yields a usable value.
+ */
+export function retryAfterSeconds(headers: Headers, now: number = Date.now()): number | null {
   const ra = headers.get("retry-after");
   if (ra) {
     const n = Number(ra);
-    if (Number.isFinite(n) && n >= 0) return Math.max(1, Math.ceil(n));
+    if (Number.isFinite(n)) return Math.max(1, Math.ceil(n)); // delta-seconds form
+    const when = Date.parse(ra); // HTTP-date form
+    if (!Number.isNaN(when)) return Math.max(1, Math.ceil((when - now) / 1000));
   }
   const reset = headers.get("x-ratelimit-reset-tokens") ?? headers.get("x-ratelimit-reset-requests");
-  const m = reset ? /([\d.]+)\s*s/.exec(reset) : null;
-  if (m) return Math.max(1, Math.ceil(Number(m[1])));
+  const secs = reset ? parseGroqDuration(reset) : null;
+  if (secs !== null) return Math.max(1, Math.ceil(secs));
   return null;
 }
 
