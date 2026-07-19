@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import { ACTION_PREFIX } from "./chat-actions";
-import { type ChatMessage, GROQ_URL, NAVIGATE_TOOL, parseToolArgs, runAgenticChat, toGroqTools } from "./chat-loop";
+import { type ChatMessage, GROQ_URL, NAVIGATE_TOOL, parseGroqDuration, parseToolArgs, retryAfterSeconds, runAgenticChat, toGroqTools } from "./chat-loop";
 
 const TOOLS = [
   { name: "search_publications", description: "search", inputSchema: { type: "object", properties: { query: { type: "string" } }, required: ["query"] } },
@@ -148,5 +148,56 @@ describe("runAgenticChat", () => {
       apiKey: "k", messages: baseMessages(), tools: TOOLS, callTool: vi.fn(), fetchFn,
     });
     expect(res).toMatchObject({ kind: "error", status: 502 });
+  });
+
+  it("maps a 429 to an honest cooldown taken from the provider's retry-after header", async () => {
+    const fetchFn = vi.fn(async () => new Response("rate limited", { status: 429, headers: { "retry-after": "9" } }));
+    const res = await runAgenticChat({
+      apiKey: "k", messages: baseMessages(), tools: TOOLS, callTool: vi.fn(), fetchFn,
+    });
+    expect(res).toMatchObject({ kind: "error", status: 429 });
+    if (res.kind === "error") expect(res.message).toContain("~9 seconds");
+  });
+
+  it("falls back to ~15 seconds on a 429 with no rate-limit headers", async () => {
+    const fetchFn = vi.fn(async () => new Response("rate limited", { status: 429 }));
+    const res = await runAgenticChat({
+      apiKey: "k", messages: baseMessages(), tools: TOOLS, callTool: vi.fn(), fetchFn,
+    });
+    if (res.kind === "error") expect(res.message).toContain("~15 seconds");
+  });
+});
+
+describe("parseGroqDuration", () => {
+  it("parses plain seconds", () => expect(parseGroqDuration("7.5s")).toBeCloseTo(7.5));
+  it("parses compound minutes+seconds", () => expect(parseGroqDuration("2m59.56s")).toBeCloseTo(179.56));
+  it("parses bare minutes", () => expect(parseGroqDuration("1m")).toBe(60));
+  it("parses milliseconds without mistaking m for minutes", () => expect(parseGroqDuration("500ms")).toBeCloseTo(0.5));
+  it("returns null when no unit is present", () => expect(parseGroqDuration("nope")).toBeNull());
+});
+
+describe("retryAfterSeconds", () => {
+  const h = (init: Record<string, string>) => new Headers(init);
+  it("reads integer retry-after seconds", () => {
+    expect(retryAfterSeconds(h({ "retry-after": "8" }))).toBe(8);
+  });
+  it("floors sub-second waits to at least 1", () => {
+    expect(retryAfterSeconds(h({ "retry-after": "0" }))).toBe(1);
+  });
+  it("parses the x-ratelimit-reset-tokens duration form", () => {
+    expect(retryAfterSeconds(h({ "x-ratelimit-reset-tokens": "7.5s" }))).toBe(8);
+  });
+  it("parses a compound reset duration in full (not just the seconds part)", () => {
+    expect(retryAfterSeconds(h({ "x-ratelimit-reset-tokens": "2m59.56s" }))).toBe(180);
+  });
+  it("handles an HTTP-date retry-after relative to now", () => {
+    const now = 1_000_000;
+    expect(retryAfterSeconds(h({ "retry-after": new Date(now + 45_000).toUTCString() }), now)).toBe(45);
+  });
+  it("prefers retry-after over the reset header", () => {
+    expect(retryAfterSeconds(h({ "retry-after": "3", "x-ratelimit-reset-tokens": "12s" }))).toBe(3);
+  });
+  it("returns null when neither header is present", () => {
+    expect(retryAfterSeconds(h({}))).toBeNull();
   });
 });

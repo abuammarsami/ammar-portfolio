@@ -538,6 +538,43 @@ export async function getVerifyPage(): Promise<VerifySection[]> {
   return out;
 }
 
+// ---------------------------------------------------------------- evals
+
+export type EvalsContent = {
+  overviewHtml: string;
+  methodologyHtml: string;
+  honestyHtml: string;
+  /** Raw markdown of the `## Cases` table, for parseEvalCases (ADR-0019). */
+  casesRaw: string;
+};
+
+/** content/evals.md → the /evals page: rendered prose + the raw cases table. */
+export async function getEvalsContent(): Promise<EvalsContent | null> {
+  const parsed = read("evals.md");
+  if (!parsed) return null;
+  simpleFrontmatterSchema.parse(parsed.data ?? {});
+  const sections = splitHeadingSections(stripComments(parsed.body));
+  const [overviewHtml, methodologyHtml, honestyHtml] = await Promise.all([
+    markdownToHtml(sections.get("Overview") ?? missing("evals.md", '"## Overview" section')),
+    markdownToHtml(sections.get("Methodology") ?? missing("evals.md", '"## Methodology" section')),
+    markdownToHtml(sections.get("Honesty") ?? missing("evals.md", '"## Honesty" section')),
+  ]);
+  return { overviewHtml, methodologyHtml, honestyHtml, casesRaw: sections.get("Cases") ?? missing("evals.md", '"## Cases" section') };
+}
+
+/**
+ * The real internal detail routes (/work/<slug>, /research/<slug>) that exist,
+ * for the eval scorer's groundedness check — a cited detail route not in this
+ * set is a fabrication (ADR-0019).
+ */
+export async function getKnownRoutes(): Promise<Set<string>> {
+  const [projects, papers] = await Promise.all([getProjects().then(visibleProjects), getPapers().then(visiblePapers)]);
+  const routes = new Set<string>();
+  for (const p of projects) routes.add(`/work/${p.slug}`);
+  for (const p of papers) routes.add(`/research/${p.slug}`);
+  return routes;
+}
+
 // ---------------------------------------------------------------- hire
 
 /**

@@ -56,9 +56,13 @@ export function Composer() {
   const removeAt = (i: number) => setOps(ops.filter((_, j) => j !== i));
 
   const share = async () => {
-    await navigator.clipboard.writeText(location.href);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
+    try {
+      await navigator.clipboard.writeText(location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      /* clipboard unavailable (permission / insecure context) — skip the confirmation, don't throw */
+    }
   };
 
   return (

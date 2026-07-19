@@ -24,9 +24,9 @@ function of the patch that classical filters don't naturally express — and
 exploring where that helps is an open research question.
 
 ## Try it
-Draw on the grid. Watch a patch lift into the circuit, transform, and land in
-the four feature maps — each channel seeing your sketch differently. Every
-value is a real ⟨Z⟩ from the same simulator you've used all page.
+Draw on the grid and watch the four feature maps update live — a 2×2 quantum
+filter sweeps your sketch and each channel sees it differently. Every value is a
+real ⟨Z⟩ from the same simulator you've used all page.
 
 ## Takeaway
 Quantum layers can drop into classical ML architectures. Encoding data into

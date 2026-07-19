@@ -29,7 +29,7 @@ export type GuestbookEvent = {
  */
 export const GUESTBOOK_TOOLS = new Set([
   // MCP (mcp-tools.ts)
-  "get_resume", "list_projects", "search_publications", "get_paper", "get_lessons", "contact", "compose_circuit",
+  "get_resume", "list_projects", "search_publications", "get_paper", "get_lessons", "contact", "compose_circuit", "list_source", "get_source",
   // WebMCP (webmcp-tools.ts)
   "query_portfolio", "get_resume_summary", "navigate_to", "download_resume", "run_quantum_demo", "set_lens",
   // chat loop pseudo-tool + surface-level acts

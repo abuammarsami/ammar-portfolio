@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "evals": "vitest run src/lib/agent/evals.harness.test.ts",
     "budgets": "node scripts/check-budgets.mjs",
     "stats": "npm run build && node scripts/check-budgets.mjs --emit"
   },

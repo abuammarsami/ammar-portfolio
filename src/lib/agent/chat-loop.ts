@@ -65,7 +65,51 @@ export type AgenticChatResult =
 
 type GroqChoice = { message?: { content?: string | null; tool_calls?: ToolCall[] }; finish_reason?: string };
 
-const TOOL_RESULT_MAX = 8_000; // keep hop context sane; corpus is already in the system prompt
+const TOOL_RESULT_MAX = 3_000; // keep hop context sane; corpus is already in the system prompt.
+// smaller = fewer tokens re-sent on the next hop, which matters under the free tier's ~8k tokens/minute ceiling.
+
+/**
+ * Parse a Groq-style duration into seconds. Handles the compound and unit forms
+ * the rate-limit reset headers actually use: "7.5s", "2m59.56s", "1m", "500ms".
+ * Returns null if no time unit is present.
+ */
+export function parseGroqDuration(s: string): number | null {
+  const ms = /([\d.]+)\s*ms/.exec(s);
+  if (ms) return Number(ms[1]) / 1000; // milliseconds form ("500ms")
+  let total = 0;
+  let matched = false;
+  const min = /([\d.]+)\s*m(?!s)/.exec(s); // minutes, but not the "ms" unit
+  if (min) {
+    total += Number(min[1]) * 60;
+    matched = true;
+  }
+  const sec = /([\d.]+)\s*s/.exec(s);
+  if (sec) {
+    total += Number(sec[1]);
+    matched = true;
+  }
+  return matched ? total : null;
+}
+
+/**
+ * Groq/OpenAI-compatible 429s carry the real wait: `retry-after` (integer seconds
+ * or an HTTP-date) or `x-ratelimit-reset-tokens` / `-requests` (e.g. "7.5s",
+ * "2m59.56s"). Read it so the visitor sees the actual cooldown instead of a
+ * hard-coded guess. Null when neither header yields a usable value.
+ */
+export function retryAfterSeconds(headers: Headers, now: number = Date.now()): number | null {
+  const ra = headers.get("retry-after");
+  if (ra) {
+    const n = Number(ra);
+    if (Number.isFinite(n)) return Math.max(1, Math.ceil(n)); // delta-seconds form
+    const when = Date.parse(ra); // HTTP-date form
+    if (!Number.isNaN(when)) return Math.max(1, Math.ceil((when - now) / 1000));
+  }
+  const reset = headers.get("x-ratelimit-reset-tokens") ?? headers.get("x-ratelimit-reset-requests");
+  const secs = reset ? parseGroqDuration(reset) : null;
+  if (secs !== null) return Math.max(1, Math.ceil(secs));
+  return null;
+}
 
 export async function runAgenticChat(opts: {
   apiKey: string;
@@ -85,7 +129,7 @@ export async function runAgenticChat(opts: {
     callTool,
     model = GROQ_MODEL,
     maxTokens = 400,
-    maxHops = 3,
+    maxHops = 2, // one or two tool calls covers virtually every question; fewer hops = fewer full-prompt re-sends under the free-tier TPM ceiling
     deadlineMs = 20_000,
     fetchFn = fetch,
   } = opts;
@@ -104,7 +148,8 @@ export async function runAgenticChat(opts: {
     // status + body land in the function logs; the client only sees the status class
     console.error(`[chat] groq upstream ${res.status}: ${(await res.text().catch(() => "")).slice(0, 500)}`);
     if (res.status === 429) {
-      return { kind: "error", status: 429, message: "the free-tier model hit its per-minute token limit — ask again in ~15 seconds" };
+      const secs = retryAfterSeconds(res.headers) ?? 15;
+      return { kind: "error", status: 429, message: `the free-tier model hit its per-minute token limit — ask again in ~${secs} seconds` };
     }
     return { kind: "error", status: 502, message: `upstream error (${res.status}) — try again shortly` };
   };

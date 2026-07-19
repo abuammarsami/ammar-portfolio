@@ -8,6 +8,14 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
   },
+  // "Chat with this codebase" (ADR-0018): the get_source tool reads these
+  // allowlisted files from process.cwd() at request time. Trace them into the
+  // /api/chat and /api/mcp serverless bundles explicitly — the same files the
+  // curated allowlist in src/lib/agent/source-index.ts exposes, nothing else.
+  outputFileTracingIncludes: {
+    "/api/chat": ["./src/components/quantum/statevector.ts", "./src/components/quantum/param-shift.ts", "./src/components/quantum/three/bloch-stage.tsx", "./src/lib/agent/*.ts"],
+    "/api/mcp": ["./src/components/quantum/statevector.ts", "./src/components/quantum/param-shift.ts", "./src/components/quantum/three/bloch-stage.tsx", "./src/lib/agent/*.ts"],
+  },
   experimental: {
     // cross-page crossfade via the View Transitions API (progressive enhancement)
     viewTransition: true,

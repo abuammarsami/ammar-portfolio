@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 360" width="860" height="360" role="img" aria-labelledby="mss-title">
+  <title id="mss-title">How a search is served: the find-mosque endpoint calls MosqueService.FindAsync, which reads the mosque catalog from an in-memory cache (1-hour absolute, 30-minute sliding); on a miss it hydrates from an Azure Blob JSON snapshot, then FuzzySearchHelper scores the catalog in memory and returns the top 10. A refresh job rewrites the blob snapshot and invalidates the cache — so a search is in-memory string math, never a database round-trip per keystroke</title>
+  <defs>
+    <marker id="mss-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted, #8a8f9c)" />
+    </marker>
+  </defs>
+  <g style="font-family: var(--font-mono, 'IBM Plex Mono', ui-monospace, monospace)" fill="var(--color-ink, #e9e7e0)" font-size="12.5">
+
+    <!-- top pipeline -->
+    <rect x="20" y="92" width="150" height="52" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" />
+    <text x="95" y="114" text-anchor="middle" font-size="12">GET /find-mosque</text>
+    <text x="95" y="132" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">{find}</text>
+
+    <rect x="210" y="92" width="150" height="52" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" />
+    <text x="285" y="114" text-anchor="middle" font-size="12">MosqueService</text>
+    <text x="285" y="132" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">FindAsync</text>
+
+    <rect x="400" y="92" width="160" height="52" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-q1, #9d8cff)" stroke-width="2" />
+    <text x="480" y="114" text-anchor="middle" font-size="12">IMemoryCache</text>
+    <text x="480" y="132" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">"mosque_list" · 1h / 30m</text>
+
+    <rect x="600" y="92" width="170" height="52" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" />
+    <text x="685" y="114" text-anchor="middle" font-size="12">FuzzySearchHelper</text>
+    <text x="685" y="132" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">score → top 10</text>
+
+    <g stroke="var(--color-muted, #8a8f9c)" stroke-width="2" fill="none" marker-end="url(#mss-ah)">
+      <line x1="170" y1="118" x2="210" y2="118" />
+      <line x1="360" y1="118" x2="400" y2="118" />
+      <line x1="560" y1="118" x2="600" y2="118" />
+    </g>
+    <text x="580" y="86" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">warm: in-memory list</text>
+
+    <!-- blob (miss path) -->
+    <rect x="400" y="238" width="160" height="52" rx="2" fill="var(--color-surface, #12151d)" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" />
+    <text x="480" y="260" text-anchor="middle" font-size="12">Azure Blob</text>
+    <text x="480" y="278" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">mosque list · JSON snapshot</text>
+
+    <!-- cache <-> blob (miss hydrates) -->
+    <line x1="470" y1="144" x2="470" y2="238" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" marker-end="url(#mss-ah)" />
+    <line x1="490" y1="238" x2="490" y2="144" stroke="var(--color-muted, #8a8f9c)" stroke-width="2" marker-end="url(#mss-ah)" />
+    <text x="380" y="180" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">miss</text>
+    <text x="512" y="200" font-size="10.5" fill="var(--color-muted, #8a8f9c)">hydrate</text>
+
+    <!-- refresh job -->
+    <rect x="180" y="238" width="150" height="52" rx="2" fill="none" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" stroke-dasharray="5 4" />
+    <text x="255" y="260" text-anchor="middle" font-size="12">refresh job</text>
+    <text x="255" y="278" text-anchor="middle" font-size="10.5" fill="var(--color-muted, #8a8f9c)">rebuild catalog</text>
+
+    <line x1="330" y1="264" x2="400" y2="264" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" fill="none" marker-end="url(#mss-ah)" />
+    <text x="365" y="256" text-anchor="middle" font-size="10.5" fill="var(--color-q0, #5fc9bf)">rewrite</text>
+    <path d="M 255 238 C 255 190, 300 168, 400 132" fill="none" stroke="var(--color-q0, #5fc9bf)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#mss-ah)" />
+    <text x="300" y="150" text-anchor="middle" font-size="10.5" fill="var(--color-q0, #5fc9bf)">invalidate</text>
+
+    <!-- footer -->
+    <text x="430" y="336" text-anchor="middle" font-size="11" fill="var(--color-muted, #8a8f9c)">cache-aside — a search is in-memory string math, not a DB round-trip per keystroke</text>
+  </g>
+</svg>
