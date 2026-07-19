@@ -1,5 +1,6 @@
 import { composeCircuit } from "@/lib/agent/compose-circuit";
 import { buildCorpus } from "@/lib/agent/corpus";
+import { listSource, readSource } from "@/lib/agent/source-index";
 import { getLessons, getPaper, getPapers, getProjects, visiblePapers, visibleProjects } from "@/lib/content/loader";
 import { LINKS, SITE_URL } from "@/lib/site";
 
@@ -16,6 +17,8 @@ export const TOOLS = [
   { name: "get_lessons", description: "The /learn interactive quantum curriculum outline.", inputSchema: { type: "object", properties: {} } },
   { name: "contact", description: "How to contact Md. Abu Ammar.", inputSchema: { type: "object", properties: {} } },
   { name: "compose_circuit", description: "Run a 2-qubit quantum circuit on the site's exact statevector simulator. Grammar: gates joined by '_': h0/h1 (Hadamard), ry0:θ/ry1:θ, rz0:θ/rz1:θ (rotations, θ in radians, |θ|≤π), cx (CNOT q0→q1). Example Bell pair: 'h0_cx'. Returns outcome probabilities, per-qubit Bloch vectors, and a shareable /playground URL.", inputSchema: { type: "object", properties: { circuit: { type: "string", description: "e.g. h0_ry1:0.7854_cx" } }, required: ["circuit"] } },
+  { name: "list_source", description: "Chat with this codebase: list the portfolio's curated, read-only source files (the quantum simulator, the agent/MCP layer, the eval scorer) with a blurb and why each is worth reading. Use to answer questions about HOW this site is built.", inputSchema: { type: "object", properties: {} } },
+  { name: "get_source", description: "Return the real, current source of one allowlisted file from list_source (e.g. 'statevector', 'chat-loop', 'mcp-tools'). Read-only; the repo is public. Use when asked to show or explain the actual implementation.", inputSchema: { type: "object", properties: { slug: { type: "string", description: "A slug from list_source, e.g. statevector or chat-loop" } }, required: ["slug"] } },
 ] as const;
 
 export async function callTool(name: string, args: Record<string, unknown>): Promise<string> {
@@ -79,6 +82,17 @@ export async function callTool(name: string, args: Record<string, unknown>): Pro
       return JSON.stringify({ email: LINKS.email, github: LINKS.github, linkedin: LINKS.linkedin, site: SITE_URL });
     case "compose_circuit":
       return composeCircuit(args.circuit);
+    case "list_source":
+      return JSON.stringify(listSource(), null, 2);
+    case "get_source": {
+      const file = readSource(String(args.slug ?? ""));
+      if (!file) throw new Error(`unknown source slug: ${String(args.slug)} — call list_source first`);
+      return JSON.stringify(
+        { slug: file.slug, path: file.path, lang: file.lang, blurb: file.blurb, truncated: file.truncated, source: file.content },
+        null,
+        2,
+      );
+    }
     default:
       throw new Error(`unknown tool: ${name}`);
   }

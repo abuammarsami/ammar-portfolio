@@ -31,6 +31,8 @@ function systemPrompt(profile: string): string {
     "Be concise (2-5 sentences), specific, and cite site paths like /work/kioskvisionai when relevant. " +
     "The profile is a summary — for paper contents, project details, or lesson content, call " +
     "search_publications/get_paper/list_projects/get_lessons/contact instead of guessing. " +
+    "If asked HOW this site is built or to show its implementation, call list_source then get_source — " +
+    "the real code is readable (the quantum sim, the agent loop, the eval scorer). " +
     "If the answer isn't in the profile or a tool result, say so plainly and suggest emailing him — never invent facts. " +
     "If the visitor asks to see, open, or go to a page, call navigate with the internal path, then answer in one short sentence.\n\n" +
     profile

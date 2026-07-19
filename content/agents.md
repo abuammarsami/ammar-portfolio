@@ -26,7 +26,10 @@ everything on this page is hand-rolled and dependency-free.
 ## MCP server
 My CV is an MCP server. `POST /api/mcp` speaks JSON-RPC 2.0 (streamable
 HTTP) and exposes the tool layer to any MCP client — Claude, IDEs, screening
-pipelines, your own scripts.
+pipelines, your own scripts. It even lets you **read this site's own source**:
+`list_source` catalogs the best files (the quantum simulator, the agent loop,
+the eval scorer) and `get_source` returns the real, current code of any of them —
+so an agent can inspect *how* this is built, not just read about it (ADR-0018).
 
 ```bash
 # list the tools
@@ -68,7 +71,9 @@ For crawlers and context windows: [/llms.txt](/llms.txt) is the index,
 corpus, [/resume.json](/resume.json) is the JSON Resume schema, and every
 page carries JSON-LD. The same corpus grounds the `ask` command in the
 terminal below and the fit report on this page — one source of truth,
-many surfaces.
+many surfaces. And [/evals](/evals) holds that grounding to account: a
+held-out test set for the chat agent, graded by a deterministic scorer
+(groundedness, rubric, refusal) and published as a live table.
 
 ## Fit report
 Paste a job description or a research topic. The engine reads it against
